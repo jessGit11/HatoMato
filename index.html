@@ -513,10 +513,10 @@ setInterval(()=>{if(noBird())document.querySelectorAll('#bd .bd').forEach(e=>{e.
 $('nt').innerHTML=[[30,22],[40,30],[52,20],[62,32],[72,24],[46,40],[24,37]].map(([l,t],i)=>`<div class="tw" style="left:${l}%;top:${t}%;animation-delay:${i*.4}s">${icon('star',16)}</div>`).join('')+`<svg class="ic" id="moonG" style="position:absolute;left:50%;top:25%;width:11%;height:auto;transform:translate(-50%,-50%)" viewBox="0 0 64 64" fill="none" stroke="#7a5f42" stroke-width="5"><circle cx="32" cy="32" r="22" fill="#f5e8b8"/>${eyes(25,39,32)}</svg>`;
 var SLP=false;const kh=()=>SLP?23.5:kst();
 function kst(){const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Seoul',hour:'numeric',minute:'numeric',hourCycle:'h23'}).formatToParts(new Date());return +p.find(x=>x.type==='hour').value%24+ +p.find(x=>x.type==='minute').value/60}
-const TK=[[0,[200,186,170]],[5,[200,186,170]],[6.5,[238,196,170]],[8,[255,232,208]],[10,[255,255,255]],[16,[255,255,255]],[17.5,[255,238,210]],[18.7,[255,195,155]],[19.8,[228,178,148]],[21,[200,186,170]],[24,[200,186,170]]];
+const TK=[[0,[200,186,170]],[5,[200,186,170]],[6.5,[234,208,198]],[8,[255,240,226]],[10,[255,255,255]],[16,[255,255,255]],[17.5,[255,238,210]],[18.7,[255,195,155]],[19.8,[228,178,148]],[21,[200,186,170]],[24,[200,186,170]]];
 function lerp(h){for(let i=1;i<TK.length;i++)if(h<=TK[i][0]){const[a,A]=TK[i-1],[b,B]=TK[i],f=(h-a)/(b-a);return A.map((v,j)=>Math.round(v+(B[j]-v)*f))}return TK[0][1]}
 const nightF=h=>h<5?1:h<6.5?1-(h-5)/1.5:h<18.7?0:h<20.5?(h-18.7)/1.8:1;
-const SKT=[[0,[82,68,56]],[5,[86,72,60]],[6,[222,150,110]],[7.5,[238,205,170]],[9,[212,237,230]],[16,[212,237,230]],[17.5,[240,215,170]],[18.5,[240,150,85]],[19.5,[200,105,70]],[20.5,[110,80,62]],[21.5,[82,68,56]],[24,[82,68,56]]];
+const SKT=[[0,[82,68,56]],[5,[86,72,60]],[5.7,[146,118,138]],[6.4,[230,172,168]],[7.5,[248,224,198]],[9,[212,237,230]],[16,[212,237,230]],[17.5,[240,215,170]],[18.5,[240,150,85]],[19.5,[200,105,70]],[20.5,[110,80,62]],[21.5,[82,68,56]],[24,[82,68,56]]];
 function skyT(h){for(let i=1;i<SKT.length;i++)if(h<=SKT[i][0]){const[a,A]=SKT[i-1],[b,B]=SKT[i],f=(h-a)/(b-a);return A.map((v,j)=>v+(B[j]-v)*f)}return SKT[0][1]}
 function skyBase(ctx){const h=kh(),lv=lerp(h),wf=WX==='rain'?.84:WX==='snow'?.95:WX==='cloud'?.93:1,T=skyT(h).map(v=>v*wf),cl=v=>Math.max(0,Math.min(255,Math.round(v)));
  if(SLP)return T.map(cl);
