@@ -941,12 +941,14 @@ const slpHatos=()=>document.querySelectorAll('.hato').forEach(el=>{const sv=el.q
 function slpMask(){const t=$('htint'),g=$('tint');if(!SLP){[t,g].forEach(e=>{e.style.webkitMaskImage=e.style.maskImage=''});return}
  const L=[];const hole=(x,y,r0,r1)=>`radial-gradient(circle at ${x}% ${y}%,#0000 ${r0}%,#000 ${r1}%)`;
  if(HV==='out'&&SCREEN==='house'){L.push('linear-gradient(#0000 0,#0000 30%,#000 46%)')}
- else{L.push('radial-gradient(ellipse 27% 21% at 49.5% 38%,#0000 62%,#000 100%)');
-  [[9.6,42],[90.4,42],[16,22],[49.5,11],[83,22]].forEach(p=>L.push(hole(p[0],p[1],2,8)));
-  [.3,.6,.85].forEach(k=>{[[[16,22],[30,37],[49.5,11]],[[49.5,11],[69,37],[83,22]]].forEach(([a,c,b])=>{const p=bz(a,c,b,k);L.push(hole(p[0],p[1]+2.5,2,7))})});
-  Object.keys(S.pos||{}).forEach(id=>{const f=ALL.find(x=>x.id===id);if(f&&f.cat==='lamp'){const p=S.pos[id],b=f.box.split(' ').map(Number);L.push(hole(p.x,p.y-b[3]*.55,4,19))}})}
+ else{L.push('radial-gradient(ellipse 24% 18% at 49.5% 38%,#0000 55%,#000 100%)');
+  [[9.6,42],[90.4,42],[16,22],[49.5,11],[83,22]].forEach(p=>L.push(hole(p[0],p[1],1,4.5)));
+  [.3,.6,.85].forEach(k=>{[[[16,22],[30,37],[49.5,11]],[[49.5,11],[69,37],[83,22]]].forEach(([a,c,b])=>{const p=bz(a,c,b,k);L.push(hole(p[0],p[1]+2.5,1,4.5))})});
+  Object.keys(S.pos||{}).forEach(id=>{const f=ALL.find(x=>x.id===id);if(f&&f.cat==='lamp'){const p=S.pos[id],b=f.box.split(' ').map(Number);L.push(hole(p.x,p.y-b[3]*.55,3,15))}})}
  t.style.background='rgb(70,78,132)';t.style.webkitMaskImage=t.style.maskImage=L.join(',');t.style.webkitMaskComposite='source-in';t.style.maskComposite='intersect';
- g.style.webkitMaskImage=g.style.maskImage='linear-gradient(#0000 0,#0000 34%,#000 54%)'}
+ const G=[];[[30,22],[40,30],[52,20],[62,32],[72,24],[46,40],[24,37]].forEach(p=>G.push(hole(p[0],p[1],1,4.5)));
+ const mg=$('moonG');if(mg&&mg.style.display!=='none'&&mg.style.left)G.push(hole(parseFloat(mg.style.left),parseFloat(mg.style.top),3,9));
+ g.style.webkitMaskImage=g.style.maskImage=G.join(',');g.style.webkitMaskComposite='source-in';g.style.maskComposite='intersect'}
 function slpFF(on){if(SLPF){SLPF.remove();SLPF=null}if(!on)return;const c=document.createElement('div');c.style.cssText='position:absolute;inset:0;pointer-events:none;z-index:4';
  for(let i=0;i<9;i++){const e=document.createElement('i');e.className='ffl';e.style.cssText=`left:${6+Math.random()*88}%;top:${46+Math.random()*44}%;--x:${(Math.random()*40-20)|0}px;--y:${(Math.random()*30-22)|0}px;--t:${5+Math.random()*5}s;--b:${2.2+Math.random()*2.6}s;animation-delay:${-Math.random()*5}s`;c.appendChild(e)}
  $('scene').appendChild(c);SLPF=c}
