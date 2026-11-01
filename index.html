@@ -145,7 +145,7 @@ body{transition:background-color 2.5s}body.slp{background:#0a0e2a}
 body.slp .bar,body.slp .app>*:not(.stage):not(#slpv){filter:brightness(.5) saturate(.7);transition:filter 1.5s}
 body.slp .stage button,body.slp #care,body.slp .hbtn,body.slp #hscore{filter:brightness(.6) saturate(.7);transition:filter 1s}
 body.slp #clk{opacity:.55;transition:opacity 2s}
-body.slp .hato,body.slp .hato.jump{animation:none!important;transform:none}body.slp .hp{animation-play-state:paused!important}
+body.slp .hato{animation:hbreath 4.8s ease-in-out infinite!important}@keyframes hbreath{0%,100%{transform:scale(1,1)}50%{transform:scale(1.03,.97)}}body.slp .hato.jump{animation:hbreath 4.8s ease-in-out infinite!important}body.slp .hp{animation-play-state:paused!important}
 .zq{transform-box:fill-box;transform-origin:center;opacity:0;animation:zup 3.9s ease-in infinite}@keyframes zup{0%{opacity:0;transform:translate(-6px,10px) scale(.6)}25%{opacity:1}100%{opacity:0;transform:translate(16px,-34px) scale(1.15)}}
 body.slp .hato.yw{animation:hyawn 1.8s ease-in-out!important}@keyframes hyawn{0%,100%{transform:scale(1)}35%,65%{transform:scale(1.08,1.1)}}
 #slpv{display:none;color:#cfd6ff;text-align:center;margin-top:10px}#slpv.on{display:block}
