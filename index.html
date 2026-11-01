@@ -1343,7 +1343,7 @@ function townAct(k){const T=tw();
   if(g){const b=g.getBoundingClientRect(),x=((b.left+b.right)/2-r.left)/r.width*100,y=(b.bottom-r.top)/r.height*100,k=g.dataset.t;walk(x,Math.max(GY[0]+2,y-1),()=>{if(!busy())townAct(k)})}
   else walk((e.clientX-r.left)/r.width*100,(e.clientY-r.top)/r.height*100)});
  $('tplaza').onclick=()=>{if(!busy())townAct('plaza')};$('tback').onclick=()=>busGo('house');$('tcontest').onclick=()=>{if(!busy())contestAct()};$('talbum').onclick=()=>{if(!busy())albumAct()};$('tshot').onclick=takePhoto;
- $('busst').onclick=()=>{if(!busy())busGo('town')}})();
+ $('busst').onclick=()=>{if(busy())return;tModal(`<h2 style="margin:0 0 4px">마을로 이동할까요?</h2><p style="font-size:17px;margin:4px 0">버스를 타고 마을에 다녀와요.</p>`,null,1);$('mb').insertAdjacentHTML('beforeend','<div class="row"><button id="busy">좋아요</button><button id="busn">괜찮아요</button></div>');$('busn').onclick=tClose;$('busy').onclick=()=>{tClose();busGo('town')}}})();
 
 /* ===== 움직이는 안내 그림 ===== */
 const SV0='<svg viewBox="0 0 260 128" fill="none" stroke="#7a5f42" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">';
