@@ -1024,7 +1024,8 @@ function slpFF(on){if(SLPF){SLPF.remove();SLPF=null}if(!on)return;const c=docume
  $('scene').appendChild(c);SLPF=c}
 function slpUI(){const v=$('slpv');const st=SLPEND?'음악이 '+Math.max(1,Math.ceil((SLPEND-Date.now())/60000))+'분 뒤에 꺼져요':'타이머 없이 계속 들려줘요';
  v.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',+b.dataset.m===SLPMIN));$('slps').textContent=st}
-function slpOn(){if(SLP||busy())return;closePanel();ensureAC();SLP=true;SLPMIN=0;SLPEND=0;SLPT=Date.now();document.body.classList.add('slp');
+const isNight=()=>nightF(kst())>.5;
+function slpOn(){if(SLP||busy())return;if(!isNight()){msg='숙면 모드는 밤에만 쓸 수 있어요.';render();if(SCREEN==='house')setSay(msg);return}closePanel();ensureAC();SLP=true;SLPMIN=0;SLPEND=0;SLPT=Date.now();document.body.classList.add('slp');
  SLPH={mon:mon};$('slpv').classList.add('on');
  if(S.music!==false&&AC){ms=0;mn=AC.currentTime+.1;if(!mon)startMusic();M0.gain.setTargetAtTime(.34,AC.currentTime,1.5)}
  sky();if(SCREEN==='house')renderHouse();else $('hpets').dataset.n='';slpHatos();slpMask();slpFF(true);slpUI();sfx('care')}
@@ -1040,6 +1041,7 @@ function slpYawn(el){const i=+el.dataset.i,sv=el.querySelector('svg');if(!sv||el
  v.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{SLPMIN=+b.dataset.m;SLPEND=SLPMIN?Date.now()+SLPMIN*60000:0;if(AC&&S.music!==false&&SLP&&!mon){mon=true;mn=AC.currentTime+.1;ms=0}if(AC&&SLP)M0.gain.setTargetAtTime(.34,AC.currentTime,.5);slpUI()});
  setInterval(()=>{if(!SLP||!SLPEND)return;if(Date.now()>=SLPEND){SLPEND=0;if(AC&&mon){M0.gain.setTargetAtTime(0,AC.currentTime,5);setTimeout(()=>{if(SLP){mon=false;if(AC)M0.gain.cancelScheduledValues(AC.currentTime)}},20000)}}slpUI()},5000);
  $('slpb').onclick=()=>SLP?slpOff():slpOn();
+ setInterval(()=>{if(SLP&&!isNight())slpOff()},30000);
  const q=document.createElement('div');q.id='slpq';q.innerHTML='밤이 깊었어요.<br>숙면 모드로 볼까요?<div class="qr"><button id="slpy">좋아요</button><button id="slpn">괜찮아요</button></div>';$('stage').appendChild(q);
  $('slpy').onclick=()=>{q.style.display='none';slpOn()};$('slpn').onclick=()=>{q.style.display='none'};
  const ask=()=>{if(SLP||S.slpq===today())return;const h=kst();if(!(h>=23||h<4))return;const ad=$('adopt'),tut=$('tut');if(busy()||$('panel').style.display==='flex'||(tut&&!tut.hidden))return;S.slpq=today();save();q.style.display='block'};
