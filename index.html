@@ -1126,7 +1126,7 @@ const lbl=(x,y,t,sz)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="$
 const HP=i=>({x:[4,24,44][i%3],y:[24,43][(i/3)|0]});
 /* ---------- 공통 B ---------- */
 const ropeY=(x,y0,d,W)=>{const h=W/2,t=(x%h)/h;return y0+(x<h?1:-1)*2*d*t*(1-t)};
-const lant=(x,y,c,sc,k)=>`<g transform="translate(${x} ${(+y).toFixed(2)}) scale(${sc})"><g class="t-ln" style="animation-delay:${-(k||0)*.4}s" stroke-width=".6"><rect x="-1" y="-.1" width="2" height=".8" rx=".3" fill="#7a5f42"/><path d="M-1.1 .7Q-2.7 3.2 -1.1 5.4H1.1Q2.7 3.2 1.1 .7Z" fill="${c}"/><path d="M0 .8V5.4M-1 .8Q-1.7 3.1 -1 5.3M1 .8Q1.7 3.1 1 5.3" fill="none" stroke-width=".3" stroke-opacity=".55"/><path d="M-1.6 2Q-1.8 3 -1.5 4" fill="none" stroke="#fff" stroke-width=".35" stroke-opacity=".7"/><rect x="-1.1" y="5.3" width="2.2" height=".7" rx=".3" fill="#7a5f42"/><path d="M-.5 6V8M0 6V8.4M.5 6V8" fill="none" stroke="${c}" stroke-width=".3"/></g></g>`;
+const lant=(x,y,c,sc,k)=>`<g transform="translate(${x} ${(+y).toFixed(2)}) scale(${sc})"><g class="t-ln" style="animation-delay:${-(k||0)*.4}s" stroke-width=".6"><rect x="-1" y="-.1" width="2" height="1.2" rx=".4" fill="#a9794f"/><path d="M-.9 1Q-2.9 2.2 -2.4 3.9Q-2 5.5 0 5.9Q2 5.5 2.4 3.9Q2.9 2.2 .9 1Z" fill="${c}"/><path d="M-1.5 2.9Q-1.7 3.9 -1.1 4.6" fill="none" stroke="#fff" stroke-width=".55" stroke-opacity=".8"/><circle cx="1.1" cy="2.4" r=".3" fill="#fff" stroke="none" fill-opacity=".8"/></g></g>`;
 const wxk=()=>nightF(kh())>.5?'n':WX==='rain'?'r':WX==='snow'?'s':'c';
 const growth=()=>{const T=tw();let f=0;adopted().forEach(i=>f+=lvOf(frd(i).xp));return Math.min(4,Math.floor((Object.keys(T.build).length+f)/3))};
 const ARN={v:'마을',f:'숲',b:'바닷가',h:'별빛 언덕'};
