@@ -1041,11 +1041,7 @@ function slpYawn(el){const i=+el.dataset.i,sv=el.querySelector('svg');if(!sv||el
  v.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{SLPMIN=+b.dataset.m;SLPEND=SLPMIN?Date.now()+SLPMIN*60000:0;if(AC&&S.music!==false&&SLP&&!mon){mon=true;mn=AC.currentTime+.1;ms=0}if(AC&&SLP)M0.gain.setTargetAtTime(.34,AC.currentTime,.5);slpUI()});
  setInterval(()=>{if(!SLP||!SLPEND)return;if(Date.now()>=SLPEND){SLPEND=0;if(AC&&mon){M0.gain.setTargetAtTime(0,AC.currentTime,5);setTimeout(()=>{if(SLP){mon=false;if(AC)M0.gain.cancelScheduledValues(AC.currentTime)}},20000)}}slpUI()},5000);
  $('slpb').onclick=()=>SLP?slpOff():slpOn();
- setInterval(()=>{if(SLP&&!isNight())slpOff()},30000);
- const q=document.createElement('div');q.id='slpq';q.innerHTML='밤이 깊었어요.<br>숙면 모드로 볼까요?<div class="qr"><button id="slpy">좋아요</button><button id="slpn">괜찮아요</button></div>';$('stage').appendChild(q);
- $('slpy').onclick=()=>{q.style.display='none';slpOn()};$('slpn').onclick=()=>{q.style.display='none'};
- const ask=()=>{if(SLP||S.slpq===today())return;const h=kst();if(!(h>=23||h<4))return;const ad=$('adopt'),tut=$('tut');if(busy()||$('panel').style.display==='flex'||(tut&&!tut.hidden))return;S.slpq=today();save();q.style.display='block'};
- setTimeout(ask,4000);setInterval(ask,60000)})();
+ setInterval(()=>{if(SLP&&!isNight())slpOff()},30000);})();
 
 /* ===== 마을 ===== */
 var BUSY_B=0,TMSG='',STIM=0,WKT=0,WKON=0;
