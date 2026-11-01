@@ -1248,6 +1248,7 @@ const WILD=[{k:'o',n:'주황 하토',cls:'ho',want:['tea','cookie'],x:30,y:80},{
 function plRender(){const p=$('tpl');if(!p)return;const T=tw(),i=pH();if(i===undefined||SCREEN!=='town'){p.style.display='none';return}
  p.style.display='block';p.style.transition='none';p.style.left=(T.pos.x-3.4)+'%';p.style.top=(T.pos.y-9)+'%';p.querySelector('svg').innerHTML=accSvg(S.hs[i].a||{});$('tpl').className=SLP?'slp':''}
 let WKT2=0;
+const sgY=(x,y)=>(x<24||x>76)?Math.min(y,70.4):y;
 const gyOf=a=>a==='v'?[66,84]:[62,84];
 const NPCR=()=>(NPCS[tw().area]||[]).map(q=>[q[1]-2.6,q[2]-2.4,q[1]+2.6,q[2]+1.6]);
 const blk=()=>{const a=tw().area;let L=NPCR();
@@ -1267,11 +1268,11 @@ function route(a,b){const g=gyOf(tw().area),rs=blk().filter(r=>!inR(a,r)&&!inR(b
  return pts.slice(1)}
 function curPos(){const p=$('tpl'),sc=$('tscene');if(!p||p.style.display==='none')return tw().pos;const r=p.getBoundingClientRect(),q=sc.getBoundingClientRect();return{x:(r.left-q.left)/q.width*100+3.4,y:(r.top-q.top)/q.height*100+9}}
 function walk(x,y,cb){const p=$('tpl'),T=tw();clearTimeout(WKT2);if(!p||p.style.display==='none'){T.pos={x:x,y:y};cb&&cb();return}
- const g=gyOf(T.area);x=Math.max(4,Math.min(96,x));y=Math.max(g[0],Math.min(g[1],y));T.pos=curPos();const pts=route(T.pos,{x:x,y:y}),fl=p.firstChild;fl.classList.add('walk');let i=0;
+ const g=gyOf(T.area);x=Math.max(4,Math.min(96,x));y=sgY(x,Math.max(g[0],Math.min(g[1],y)));T.pos=curPos();const pts=route(T.pos,{x:x,y:y}),fl=p.firstChild;if((x<24||x>76)&&T.pos.x>=24&&T.pos.x<=76&&T.pos.y>70.4)pts.unshift({x:x<24?24.5:75.5,y:70.4});fl.classList.add('walk');let i=0;
  const step=()=>{if(i>=pts.length){fl.classList.remove('walk');save();cb&&cb();return}const q=pts[i++],pr=T.pos,dx=q.x-pr.x,d=Math.hypot(dx,q.y-pr.y),t=Math.max(.12,d/42);if(Math.abs(dx)>.5)fl.style.transform=dx<0?'scaleX(-1)':'scaleX(1)';
   p.style.transition=`left ${t}s linear,top ${t}s linear`;p.style.left=(q.x-3.4)+'%';p.style.top=(q.y-9)+'%';T.pos={x:q.x,y:q.y};WKT2=setTimeout(step,t*1000+20)};step()}
 function sayAt(x,y,t){const b=$('tsp');if(!b)return;b.textContent=t;b.style.left=Math.max(14,Math.min(86,x))+'%';{const W=b.parentNode.clientWidth,w=b.offsetWidth;if(W&&w){const m=w/2+6;b.style.left=Math.max(m,Math.min(W-m,x/100*W))+'px'}}b.style.top=Math.max(6,y-12)+'%';b.className='on';clearTimeout(b._t);b._t=setTimeout(()=>b.className='',3200)}
-function goArea(a,side){const T=tw(),g=gyOf(a);T.area=a;T.pos={x:side==='L'?90:side==='R'?10:50,y:Math.max(g[0],Math.min(g[1],(T.pos&&T.pos.y)||80))};save();const t=$('tart');t.classList.remove('fadein');void t.offsetWidth;townRender();t.classList.add('fadein');sfx('pop')}
+function goArea(a,side){const T=tw(),g=gyOf(a);T.area=a;T.pos={x:side==='L'?90:side==='R'?10:50,y:sgY(side==='L'?90:side==='R'?10:50,Math.max(g[0],Math.min(g[1],(T.pos&&T.pos.y)||80)))};save();const t=$('tart');t.classList.remove('fadein');void t.offsetWidth;townRender();t.classList.add('fadein');sfx('pop')}
 const exList=()=>(S.hs||[]).map((s,i)=>i).filter(i=>S.hs[i].ex);
 function townRender(){const el=$('tscene');if(!el||SCREEN!=='town')return;const T=tw();if(!routes().includes(T.area))T.area='v';$('tart').innerHTML=townSVG()+townFX();plRender();
  const tt=$('ttint');tt.style.background=SLP?'rgb(70,78,132)':`rgb(${lerp(kh())})`;
@@ -1398,7 +1399,7 @@ function townAct(k){const T=tw();
   else walk((e.clientX-r.left)/r.width*100,(e.clientY-r.top)/r.height*100,edgeCheck)});
  let DRG=0;const clampv=(v,a,b)=>Math.max(a,Math.min(b,v));
  pl.addEventListener('pointerdown',e=>{if(busy())return;e.preventDefault();clearTimeout(WKT2);const T=tw();T.pos=curPos();pl.style.transition='none';pl.style.left=(T.pos.x-3.4)+'%';pl.style.top=(T.pos.y-9)+'%';pl.firstChild.classList.remove('walk');DRG=1;pl.classList.add('drag');try{pl.setPointerCapture(e.pointerId)}catch(x){}});
- pl.addEventListener('pointermove',e=>{if(!DRG)return;const T=tw(),r=sc.getBoundingClientRect(),g=gyOf(T.area),x=clampv((e.clientX-r.left)/r.width*100,1.5,98.5),y=clampv((e.clientY-r.top)/r.height*100+3,g[0],g[1]);if(Math.abs(x-T.pos.x)>.3)pl.firstChild.style.transform=x<T.pos.x?'scaleX(-1)':'scaleX(1)';pl.firstChild.classList.add('walk');T.pos={x:x,y:y};pl.style.left=(x-3.4)+'%';pl.style.top=(y-9)+'%'});
+ pl.addEventListener('pointermove',e=>{if(!DRG)return;const T=tw(),r=sc.getBoundingClientRect(),g=gyOf(T.area),x=clampv((e.clientX-r.left)/r.width*100,1.5,98.5),y=sgY(x,clampv((e.clientY-r.top)/r.height*100+3,g[0],g[1]));if(Math.abs(x-T.pos.x)>.3)pl.firstChild.style.transform=x<T.pos.x?'scaleX(-1)':'scaleX(1)';pl.firstChild.classList.add('walk');T.pos={x:x,y:y};pl.style.left=(x-3.4)+'%';pl.style.top=(y-9)+'%'});
  const dEnd=()=>{if(!DRG)return;DRG=0;pl.classList.remove('drag');pl.firstChild.classList.remove('walk');save();edgeCheck()};
  pl.addEventListener('pointerup',dEnd);pl.addEventListener('pointercancel',dEnd);
  $('tplaza').onclick=()=>{if(!busy())townAct('plaza')};$('tback').onclick=()=>busGo('house');$('tcontest').onclick=()=>{if(!busy())contestAct()};$('talbum').onclick=()=>{if(!busy())albumAct()};$('tshot').onclick=takePhoto;
