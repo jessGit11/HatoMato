@@ -142,15 +142,14 @@ button:disabled{opacity:.55;cursor:default;box-shadow:none}
 #slpb{position:absolute;left:10px;top:48px;z-index:5;width:36px;height:36px;padding:0;border-radius:50%;background:#3a4278;border:3px solid var(--ink);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 var(--ink)}#slpb svg{width:20px;height:20px}
 #tint,#htint{transition:background-color 3s}
 body{transition:background-color 2.5s}body.slp{background:#0a0e2a}
-body.slp .app>*:not(.stage){opacity:0;pointer-events:none;transition:opacity 1.5s}
-body.slp .stage button,body.slp #care,body.slp .hbtn,body.slp #hscore{opacity:0;pointer-events:none;transition:opacity 1s}
+body.slp .bar,body.slp .app>*:not(.stage):not(#slpv){filter:brightness(.5) saturate(.7);transition:filter 1.5s}
+body.slp .stage button,body.slp #care,body.slp .hbtn,body.slp #hscore{filter:brightness(.6) saturate(.7);transition:filter 1s}
 body.slp #clk{opacity:.55;transition:opacity 2s}
 body.slp .hato{animation:hbreath 4.8s ease-in-out infinite!important}@keyframes hbreath{0%,100%{transform:scale(1,1)}50%{transform:scale(1.03,.97)}}
 .zq{transform-box:fill-box;transform-origin:center;opacity:0;animation:zup 3.9s ease-in infinite}@keyframes zup{0%{opacity:0;transform:translate(-6px,10px) scale(.6)}25%{opacity:1}100%{opacity:0;transform:translate(16px,-34px) scale(1.15)}}
 .hato.yw{animation:hyawn 1.8s ease-in-out!important}@keyframes hyawn{0%,100%{transform:scale(1)}35%,65%{transform:scale(1.08,1.1)}}
-#slpv{position:fixed;inset:0;z-index:60;display:none;touch-action:none;color:#cfd6ff;text-align:center}#slpv.on{display:block}
-#slpv .sh{position:absolute;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:8px;opacity:.55;transition:opacity 1s}
-#slpv .sh.up{opacity:1}
+#slpv{display:none;color:#cfd6ff;text-align:center;margin-top:10px}#slpv.on{display:block}
+#slpv .sh{display:flex;flex-direction:column;align-items:center;gap:6px}
 #slpv .sc2{display:flex;gap:8px}#slpv button{font-family:inherit;font-size:17px;padding:3px 14px;border-radius:999px;background:rgba(255,255,255,.1);color:#cfd6ff;border:2px solid rgba(255,255,255,.28);box-shadow:none}#slpv button.on{background:rgba(255,236,160,.28);border-color:#f3e2a0;color:#fff4c4}
 #slpv small{font-size:15px;opacity:.85}
 .ffl{position:absolute;z-index:4;width:6px;height:6px;border-radius:50%;background:#f6f19a;box-shadow:0 0 9px 4px rgba(246,241,154,.55);opacity:0;pointer-events:none;animation:ffm var(--t) ease-in-out infinite alternate,fft var(--b) ease-in-out infinite}
@@ -953,8 +952,8 @@ function slpFF(on){if(SLPF){SLPF.remove();SLPF=null}if(!on)return;const c=docume
  $('scene').appendChild(c);SLPF=c}
 function slpUI(){const v=$('slpv');const st=SLPEND?'음악이 '+Math.max(1,Math.ceil((SLPEND-Date.now())/60000))+'분 뒤에 꺼져요':'타이머 없이 계속 들려줘요';
  v.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',+b.dataset.m===SLPMIN));$('slps').textContent=st}
-function slpOn(){if(SLP||busy())return;ensureAC();SLP=true;SLPMIN=0;SLPEND=0;SLPT=Date.now();document.body.classList.add('slp');
- SLPH={mon:mon};$('slpv').classList.add('on');$('slpv').querySelector('.sh').classList.add('up');setTimeout(()=>{const e=$('slpv').querySelector('.sh');if(e)e.classList.remove('up')},5000);
+function slpOn(){if(SLP||busy())return;closePanel();ensureAC();SLP=true;SLPMIN=0;SLPEND=0;SLPT=Date.now();document.body.classList.add('slp');
+ SLPH={mon:mon};$('slpv').classList.add('on');
  if(S.music!==false&&AC){ms=0;mn=AC.currentTime+.1;if(!mon)startMusic();M0.gain.setTargetAtTime(.34,AC.currentTime,1.5)}
  sky();if(SCREEN==='house')renderHouse();else $('hpets').dataset.n='';slpHatos();slpMask();slpFF(true);slpUI();sfx('care')}
 function slpOff(){if(!SLP)return;SLP=false;SLPEND=0;document.body.classList.remove('slp');$('slpv').classList.remove('on');
@@ -963,15 +962,12 @@ function slpOff(){if(!SLP)return;SLP=false;SLPEND=0;document.body.classList.remo
 function slpYawn(el){const i=+el.dataset.i,sv=el.querySelector('svg');if(!sv||el.classList.contains('yw'))return;sv.innerHTML=SLY+accFor(i);el.classList.add('yw');
  if(AC&&S.sfx!==false){const t=AC.currentTime;gl(330,190,t,.9,.05,'sine')}
  setTimeout(()=>{el.classList.remove('yw');if(SLP&&sv.isConnected)sv.innerHTML=face('normal')+accFor(i)},1800)}
-(function(){const v=document.createElement('div');v.id='slpv';v.innerHTML='<div class="sh"><div class="sc2"><button data-m="15">15분</button><button data-m="30">30분</button><button data-m="0">끄지 않기</button></div><small id="slps"></small><small>길게 누르면 일어나요</small></div>';document.body.appendChild(v);
- let tm=0,sx=0,sy=0,dn=0;
- v.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;dn=1;sx=e.clientX;sy=e.clientY;clearTimeout(tm);tm=setTimeout(()=>{dn=0;slpOff()},900)});
- v.addEventListener('pointermove',e=>{if(dn&&Math.hypot(e.clientX-sx,e.clientY-sy)>14){dn=0;clearTimeout(tm)}});
- const up=e=>{if(!dn)return;dn=0;clearTimeout(tm);const el=document.elementsFromPoint(e.clientX,e.clientY).map(x=>x.closest&&x.closest('.hato')).find(Boolean);if(el)slpYawn(el);const h=v.querySelector('.sh');h.classList.add('up');setTimeout(()=>h.classList.remove('up'),3500)};
- v.addEventListener('pointerup',up);v.addEventListener('pointercancel',()=>{dn=0;clearTimeout(tm)});
+(function(){const v=document.createElement('div');v.id='slpv';v.innerHTML='<div class="sh"><div class="sc2"><button data-m="15">15분</button><button data-m="30">30분</button><button data-m="0">끄지 않기</button></div><small id="slps"></small><button id="slpw">일어나기</button></div>';document.querySelector('.app').appendChild(v);
+ document.addEventListener('click',e=>{if(!SLP)return;const el=e.target.closest&&e.target.closest('.hato');if(el&&!el.closest('.slots'))slpYawn(el)},true);
+ $('slpw').onclick=()=>slpOff();
  v.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{SLPMIN=+b.dataset.m;SLPEND=SLPMIN?Date.now()+SLPMIN*60000:0;if(AC&&S.music!==false&&SLP&&!mon){mon=true;mn=AC.currentTime+.1;ms=0}if(AC&&SLP)M0.gain.setTargetAtTime(.34,AC.currentTime,.5);slpUI()});
  setInterval(()=>{if(!SLP||!SLPEND)return;if(Date.now()>=SLPEND){SLPEND=0;if(AC&&mon){M0.gain.setTargetAtTime(0,AC.currentTime,5);setTimeout(()=>{if(SLP){mon=false;if(AC)M0.gain.cancelScheduledValues(AC.currentTime)}},20000)}}slpUI()},5000);
- $('slpb').onclick=()=>slpOn();
+ $('slpb').onclick=()=>SLP?slpOff():slpOn();
  const q=document.createElement('div');q.id='slpq';q.innerHTML='밤이 깊었어요.<br>숙면 모드로 볼까요?<div class="qr"><button id="slpy">좋아요</button><button id="slpn">괜찮아요</button></div>';$('stage').appendChild(q);
  $('slpy').onclick=()=>{q.style.display='none';slpOn()};$('slpn').onclick=()=>{q.style.display='none'};
  const ask=()=>{if(SLP||S.slpq===today())return;const h=kst();if(!(h>=23||h<4))return;const ad=$('adopt'),tut=$('tut');if(busy()||$('panel').style.display==='flex'||(tut&&!tut.hidden))return;S.slpq=today();save();q.style.display='block'};
