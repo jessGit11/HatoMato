@@ -80,7 +80,9 @@ button:disabled{opacity:.55;cursor:default;box-shadow:none}
 .sheet .gh{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;font-size:17px;min-height:26px}.sheet .gh span{display:flex;gap:6px}.sheet button{font-size:14px;padding:1px 9px;box-shadow:0 2px 0 var(--ink);border-width:2.5px;border-radius:12px}.sheet button:disabled{opacity:.4}
 .sheet .gg{display:flex;gap:6px;overflow-x:auto;padding-bottom:3px}.sheet .gc{flex:none;width:76px;display:flex;flex-direction:column;align-items:center;gap:1px;border:3px solid var(--ink);border-radius:14px;padding:3px 2px;background:#f1e8d0;text-align:center}.sheet .gc.on{background:#f4a79b}.sheet .gc.off{opacity:.7}.sheet .gc small{font-size:12px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;font-weight:700;line-height:1.1}.sheet .gc button{margin-top:2px}.sheet .gp{font-size:14px;margin:6px 0 0;text-align:center}
 .ged .gdr:has(svg){outline:2px dashed #7a5f4288;outline-offset:2px}
-.rm{display:none}#hscene.ed .hbtn{left:auto;right:10px;top:10px;bottom:auto;z-index:20}#hsheet{z-index:19}*{scrollbar-width:thin;scrollbar-color:#f4a79b #f8f1e2}*::-webkit-scrollbar{width:8px;height:8px}*::-webkit-scrollbar-track{background:#f8f1e2;border-radius:99px}*::-webkit-scrollbar-thumb{background:#f4a79b;border-radius:99px;border:2px solid #f8f1e2}*::-webkit-scrollbar-thumb:hover{background:#ee8f84}
+.rm{display:none}#hscene.ed .hbtn{left:auto;right:10px;top:10px;bottom:auto;z-index:20}#hsheet{z-index:19}
+.stage>.sheet{border-bottom:4px solid var(--ink);border-radius:22px}
+.stage>#hsheet.open~.hbtn,.stage>.hbtn{z-index:20}*{scrollbar-width:thin;scrollbar-color:#f4a79b #f8f1e2}*::-webkit-scrollbar{width:8px;height:8px}*::-webkit-scrollbar-track{background:#f8f1e2;border-radius:99px}*::-webkit-scrollbar-thumb{background:#f4a79b;border-radius:99px;border:2px solid #f8f1e2}*::-webkit-scrollbar-thumb:hover{background:#ee8f84}
 .sheet .chips{padding:0 0 5px}.sheet .chips button{font-size:13px;padding:0 9px}
 .bgs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}.bgc{padding:0;height:44px;border-width:3px;border-radius:14px;box-shadow:0 3px 0 var(--ink);display:flex;align-items:flex-end;justify-content:center}.bgc span{font-size:12px;white-space:nowrap;line-height:1;margin-bottom:3px}.bgc.on{outline:3px solid #f47876;outline-offset:2px}
 .gsel{outline:3px solid #f47876;outline-offset:2px;border-radius:8px}
@@ -266,7 +268,7 @@ html,body{touch-action:manipulation;-webkit-touch-callout:none}body{-webkit-user
 /* 화면 세로 확장(5:7): 정사각형 장면은 가운데, 위 띠=벽·하늘, 아래 띠=바닥·땅·길. 하단 아이콘 줄 대신 가방·설정 버튼 */
 .app{width:min(100vw,560px,max(300px,calc((100svh - 230px) / 1.4)))}
 .stage{aspect-ratio:auto!important;height:var(--sh,140vw)}
-.stage>.scene{top:var(--st,14.2857%);bottom:auto;height:var(--sw,71.4286%);z-index:2}
+.stage>.scene{transition:top .3s;top:var(--st,14.2857%);bottom:auto;height:var(--sw,71.4286%);z-index:2}
 .band{position:absolute;left:0;right:0;display:none;overflow:hidden;pointer-events:none;z-index:3}
 .band.top{top:0;height:var(--bt,16%);-webkit-mask-image:linear-gradient(#000 calc(100% - var(--fd,3px)),transparent);mask-image:linear-gradient(#000 calc(100% - var(--fd,3px)),transparent)}
 .band.bot{bottom:0;height:var(--bb,16.7%);-webkit-mask-image:linear-gradient(transparent,#000 var(--fd,3px));mask-image:linear-gradient(transparent,#000 var(--fd,3px))}
@@ -1170,7 +1172,7 @@ $('px').onclick=closePanel;
 function setScreen(s){endEdit();SCREEN=s;closePanel();$('scene').style.display=s==='garden'?'block':'none';$('hscene').style.display=s==='house'?'block':'none';$('tscene').style.display=s==='town'?'block':'none';
  if(s==='house'&&Object.keys(S.homes).length&&S.visit!==today()&&Math.random()<.6){S.visit=today();gain(3);msg='입양 간 집 친구가 놀러 와서 코인 3개를 두고 갔어요!';sfx('coin')}
  render()}
-function hub(){barRender();curShow();$('coin').innerHTML=`<span class="cur" tabindex="0" data-tip="코인: 하토를 키우며 미니게임에 성공하거나 수확하면 얻어요. 하토 놀이와 오늘의 선물로도 받아요. 정원 소품을 살 수 있어요.">${icon('coin',24)}${S.coin|0}</span><span class="cur r" tabindex="0" data-tip="입양금: 하토를 입양 보내면 사례금으로 받아요. 집 안과 밖의 가구를 살 수 있어요.">${icon('money',28)}${(S.money|0).toLocaleString('ko-KR')}원</span>`;
+function hub(){barRender();curShow();$('coin').innerHTML=`<span class="cur" tabindex="0" data-tip="코인: 하토를 키우며 미니게임에 성공하거나 수확하면 얻어요. 정원 소품을 살 수 있어요.">${icon('coin',24)}${S.coin|0}</span><span class="cur r" tabindex="0" data-tip="입양금: 하토를 입양 보내면 사례금으로 받아요. 집 안과 밖의 가구를 살 수 있어요.">${icon('money',28)}${(S.money|0).toLocaleString('ko-KR')}원</span>`;
  if(!P)return;$('ptitle').textContent=PT[P];
  $('pg-inv').style.display=P==='inv'?'block':'none';$('tb').style.display=P==='inv'?'none':'block';
  if(P==='inv')return;const tb=$('tb');
@@ -1897,12 +1899,13 @@ function fit(){const app=document.querySelector('.app'),st=$('stage');if(!app||!
  const acs=getComputedStyle(app);let other=parseFloat(acs.paddingTop)+parseFloat(acs.paddingBottom);for(const c of app.children){if(c===st||!(c instanceof HTMLElement))continue;const ccs=getComputedStyle(c);if(c.id==='main'){const mh=c.offsetHeight?c.offsetHeight+parseFloat(ccs.marginTop)+parseFloat(ccs.marginBottom):0;if(mh)window.__mh=mh;other+=window.__mh||61;continue}if(c.id==='say'){other+=Math.max(c.offsetHeight,window.__sy||0)+parseFloat(ccs.marginTop)+parseFloat(ccs.marginBottom);window.__sy=Math.max(c.offsetHeight,window.__sy||0);continue}if(ccs.display==='none'||ccs.position==='absolute'||ccs.position==='fixed')continue;other+=c.offsetHeight+parseFloat(ccs.marginTop)+parseFloat(ccs.marginBottom)}let W=Math.min(vw-padX-(app.offsetWidth-st.offsetWidth),560);let H=Math.floor(vh-padY-other-2);
  const nb=19,nt=9,need=1+(nb+nt)/100;let s=W-8;if(H-8<s*need){s=Math.max(240,Math.floor((H-8)/need));W=s+8}H=Math.min(H,Math.round(s*2.1)+8);if(H-8<s*need)H=Math.round(s*need)+8;
  const ext=H-8-s,u0=s/100;let bot=Math.max(Math.round(ext*.5),Math.round(nb*u0));let top=ext-bot;if(top<nt*u0){top=Math.round(nt*u0);bot=ext-top}
+ {const op=[...st.querySelectorAll(':scope>.sheet.open')].find(e=>!e.classList.contains('col'));if(op){const need=op.offsetHeight+(parseFloat(op.style.bottom)||0)+6,mt=Math.floor(H-8-need-s);if(top>mt){top=Math.max(0,mt);bot=ext-top}}}
  const aw=W+(app.offsetWidth-st.offsetWidth);if(Math.abs(app.offsetWidth-aw)>1)app.style.width=aw+'px';
  const u=s/100;st.style.setProperty('--sh',H+'px');st.style.setProperty('--st',top+'px');st.style.setProperty('--sw',s+'px');st.style.setProperty('--bt',(top+2.4*u)+'px');st.style.setProperty('--bb',(bot+3.4*u)+'px');st.style.setProperty('--fd',(.9*u)+'px');
  TU=top/u;BU=bot/u;SPX=s}
 window.addEventListener('resize',()=>{fit();upd()});window.addEventListener('orientationchange',()=>setTimeout(()=>{fit();upd()},300));
 function setBand(el,h,tint){if(el.dataset.h!==h){el.dataset.h=h;el.innerHTML=h+'<div class="bt"></div>'}el.lastChild.style.background=tint}
-function upd(){const st=$('stage');if(!st)return;fit();
+function upd(){const st=$('stage');if(!st)return;fit();for(const id of ['hsheet','gsheet']){const e=$(id);if(e&&e.parentNode!==st)st.appendChild(e)}{const e=$('hsheet'),r=st.querySelector(':scope>.hbtn');if(e&&r){const b=(r.offsetHeight||36)+14+'px';if(e.style.bottom!==b)e.style.bottom=b}}
  const tb=document.querySelector('#tscene>.tbtn'),hb=document.querySelector('#hscene>.hbtn');if(tb)st.appendChild(tb);if(hb)st.appendChild(hb);const hv=$('hview'),hr=st.querySelector(':scope>.hbtn');if(hv&&hr&&hv.parentNode!==hr)hr.insertBefore(hv,$('hgarden')||null);
  for(const k in TOP){const sc=$(k),bt=$(TOP[k]),bb=$(BOT[k]);if(!sc||!bt)continue;const on=getComputedStyle(sc).display!=='none';bt.style.display=bb.style.display=on?'block':'none';
   if(k==='tscene'){const r=st.querySelector(':scope>.tbtn');if(r)r.style.display=on?'flex':'none'}
