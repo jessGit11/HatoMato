@@ -1924,7 +1924,7 @@ upd()})();
 // ---- 정원: 자라는 동안에는 아래 버튼 대신 화분을 눌러 미니게임 ----
 (()=>{const grow=()=>SCREEN==='garden'&&!S.alt&&S.st>0&&S.st<8;
  const h=document.createElement('div');h.id='pothint';h.textContent='톡!';$('scene').appendChild(h);
- setInterval(()=>{const g=grow(),m=$('main');if(g){if(m.style.display!=='none'){m.dataset.hid='1';m.style.display='none'}}else if(m.dataset.hid){delete m.dataset.hid;m.style.display=''}h.style.display=g&&!busy()&&!P&&!(typeof GEDIT!=='undefined'&&GEDIT)?'block':'none'},250);
+ setInterval(()=>{const g=grow(),m=$('main');if(g){if(m.style.display!=='none'){m.dataset.hid='1';m.style.display='none'}}else if(m.dataset.hid){delete m.dataset.hid;m.style.display=SCREEN!=='garden'?'none':''}h.style.display=g&&!busy()&&!P&&!(typeof GEDIT!=='undefined'&&GEDIT)?'block':'none'},250);
  $('scene').addEventListener('click',e=>{if(!grow()||busy()||P||(typeof GEDIT!=='undefined'&&GEDIT))return;const r=$('scene').getBoundingClientRect(),x=(e.clientX-r.left)/r.width*100,y=(e.clientY-r.top)/r.height*100;if(x>28&&x<72&&y>22&&y<92){e.stopPropagation();startGame()}},true)})();
 
 // ---- 처음 하는 사람에게만 한 번씩 보여 주는 말풍선 안내 + 기존 플레이어에게는 '바뀐 점' 알림 한 번 ----
