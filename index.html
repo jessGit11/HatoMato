@@ -299,6 +299,11 @@ html,body{touch-action:manipulation;-webkit-touch-callout:none}body{-webkit-user
 @keyframes coachb{50%{transform:translateY(-3px)}}
 #pothint{position:absolute;left:61%;top:58%;z-index:6;display:none;pointer-events:none;background:#fffdf6;border:3px solid var(--ink);border-radius:999px;padding:0 9px;font-weight:700;font-size:clamp(14px,3.8vw,18px);box-shadow:0 3px 0 var(--ink);animation:coachb 1.2s ease-in-out infinite}
 #gedit,#gcancel{top:54px;z-index:4!important}
+#hshop{display:none!important}
+.stage>.hbtn button[hidden]{display:none!important}
+.stage>.hbtn{gap:10px!important}
+.stage>.hbtn button.hb2{width:min(70px,calc(var(--sw,360px)*.19));height:auto;padding:4px 0 3px!important;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:min(14px,calc(var(--sw,360px)*.038))!important;line-height:1.1;border-radius:16px}
+.stage>.hbtn button.hb2 svg{width:min(30px,calc(var(--sw,360px)*.08));height:auto}
 .stage>#hscene{overflow:visible;z-index:4}
 #hroom>svg{overflow:visible}
 #hscene>#htint{bottom:calc(-1 * var(--below,0px))}
@@ -1916,7 +1921,7 @@ function fit(){const app=document.querySelector('.app'),st=$('stage');if(!app||!
 window.addEventListener('resize',()=>{fit();upd()});window.addEventListener('orientationchange',()=>setTimeout(()=>{fit();upd()},300));
 function setBand(el,h,tint){if(el.dataset.h!==h){el.dataset.h=h;el.innerHTML=h+'<div class="bt"></div>'}el.lastChild.style.background=tint}
 function upd(){const st=$('stage');if(!st)return;fit();for(const id of ['hsheet','gsheet']){const e=$(id);if(e&&e.parentNode!==st)st.appendChild(e)}{const ed=typeof EDIT!=='undefined'&&EDIT&&SCREEN==='house';st.classList.toggle('edm',!!ed);const e=$('hsheet'),r=st.querySelector(':scope>.hbtn');if(e&&r){const b=ed?'0px':(r.offsetHeight||36)+14+'px';if(e.style.bottom!==b)e.style.bottom=b}}
- const tb=document.querySelector('#tscene>.tbtn'),hb=document.querySelector('#hscene>.hbtn');if(tb)st.appendChild(tb);if(hb)st.appendChild(hb);const hv=$('hview'),hr=st.querySelector(':scope>.hbtn');if(hv&&hr&&hv.parentNode!==hr)hr.insertBefore(hv,$('hgarden')||null);
+ const tb=document.querySelector('#tscene>.tbtn'),hb=document.querySelector('#hscene>.hbtn');if(tb)st.appendChild(tb);if(hb)st.appendChild(hb);const hv=$('hview'),hr=st.querySelector(':scope>.hbtn');if(hv&&hr&&hv.parentNode!==hr)hr.insertBefore(hv,$('hgarden')||null);if(hr){const out=HV==='out',L=[['hedit','lamp','꾸미기'],['hview','home',out?'안으로':'밖으로'],['hgarden','tmt','정원']];L.forEach(([id,ic,t])=>{const b=$(id);if(!b)return;const h=`${icon(ic,30)}<span>${t}</span>`;if(b.dataset.ih!==h||!b.querySelector('svg')){b.dataset.ih=h;b.innerHTML=h;b.setAttribute('aria-label',id==='hview'?(out?'안으로 들어가기':'밖에서 보기'):t)}b.classList.add('hb2')})}
  for(const k in TOP){const sc=$(k),bt=$(TOP[k]),bb=$(BOT[k]);if(!sc||!bt)continue;const on=getComputedStyle(sc).display!=='none';bt.style.display=bb.style.display=on?'block':'none';
   if(k==='tscene'){const r=st.querySelector(':scope>.tbtn');if(r)r.style.display=on?'flex':'none'}
   if(k==='hscene'){const r=st.querySelector(':scope>.hbtn');if(r)r.style.display=on?'flex':'none'}
@@ -1968,7 +1973,7 @@ window.BUSES=BUSES;window.busArt=busArt;{const im=document.querySelector('#busv 
 const G=[
  {k:'bag',ok:()=>true,el:()=>$('bagb'),t:'하토와 도감은 여기 [가방]에 있어요!'},
  {k:'garden',ok:()=>SCREEN==='garden',el:()=>document.querySelector('#bandGb svg'),t:'[업적]과 [집으로]를 눌러 봐요',sub:'정원 화면 맨 아래에 있어요'},
- {k:'hshop',ok:()=>SCREEN==='house'&&!EDIT,el:()=>$('hshop'),t:'가구는 마을 쇼핑센터에서 사요',sub:'누르면 버스로 바로 데려다줘요'},
+ {k:'hshop',ok:()=>SCREEN==='house'&&!EDIT,el:()=>$('hedit'),t:'가구는 마을 쇼핑센터에서 사요',sub:'마을 광장 시계탑 오른쪽 길로 가요'},
  {k:'mall',ok:()=>SCREEN==='town'&&tw().area==='s',el:()=>document.querySelector('#tart [data-t="shop:furn"]'),t:'가게를 누르면 그 가게 물건을 살 수 있어요'}];
 let cur=null;
 function hide(){const c=$('coach');if(c)c.remove();cur=null}
@@ -1978,7 +1983,7 @@ function show(g){const st=$('stage'),el=g.el();if(!st||!el)return;const r=el.get
  c.className=below?'dn':'up';c.style.left=left+'px';c.style.top=Math.max(4,top)+'px';c.style.setProperty('--ax',Math.max(14,Math.min(cw-14,tx-left))+'px');
  c.onclick=e=>{e.stopPropagation();S.gd[g.k]=1;save();hide()};cur=g.k}
 setInterval(()=>{if(!S.tut||busy()||P||($('md')&&getComputedStyle($('md')).display!=='none')||($('tut')&&!$('tut').hidden)){if(cur)hide();return}
- if(S.uinew){S.uinew=0;save();tModal(`<h2 style="margin:0 0 6px">화면이 바뀌었어요!</h2><p style="font-size:16px;margin:4px 0;text-align:left;line-height:1.45">· 아래 아이콘 줄이 없어지고 화면이 넓어졌어요<br>· <b>가방</b>(오른쪽 위): 인벤토리와 도감<br>· <b>톱니</b>(오른쪽 위): 설정<br>· 정원 맨 아래: <b>업적 · 집으로</b><br>· 물건은 <b>쇼핑센터</b>에서 사요 (마을 광장의 쇼핑센터 표지판) (집의 [가구 사기]를 누르면 바로 가요)</p>`);return}
+ if(S.uinew){S.uinew=0;save();tModal(`<h2 style="margin:0 0 6px">화면이 바뀌었어요!</h2><p style="font-size:16px;margin:4px 0;text-align:left;line-height:1.45">· 아래 아이콘 줄이 없어지고 화면이 넓어졌어요<br>· <b>가방</b>(오른쪽 위): 인벤토리와 도감<br>· <b>톱니</b>(오른쪽 위): 설정<br>· 정원 맨 아래: <b>업적 · 집으로</b><br>· 물건은 <b>쇼핑센터</b>에서 사요 (마을 광장의 쇼핑센터 표지판) </p>`);return}
  const g=G.find(x=>!S.gd[x.k]&&x.ok());if(!g){if(cur)hide();return}if(cur===g.k)return;hide();show(g)},700)})();
 </script>
 </body></html>
