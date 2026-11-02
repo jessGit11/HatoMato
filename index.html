@@ -2188,6 +2188,11 @@ const busArt=id=>BUSSVG[id]||'';
 window.busNow=()=>(S.bus&&BUSSVG[S.bus])?S.bus:'';
 window.busIcon=(id,w)=>true?`<svg class="ic" viewBox="2 0 96 48" width="${w}" fill="none" stroke-linecap="round" stroke-linejoin="round">${busArt(id)}</svg>`:`<svg class="ic" viewBox="0 0 120 70" width="${w}" fill="none" stroke="#7a5f42" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">${window.BUS0||''}</svg>`;
 window.BUSES=BUSES;window.busArt=busArt;{const im=document.querySelector('#busv .busimg');if(im&&!window.BUS0)window.BUS0=im.innerHTML}
+
+// ---- 가구 가격 정리 (마을 테마·버스 가격과 맞춤) ----
+(()=>{const big={bed:{1800:2000,2000:2300,2200:2500},shelf:{1800:2200,1200:1400},table:{1500:1800,1200:1400}},ext={200:300,300:400,400:500,500:600,600:700,700:800,800:900};
+ ALL.forEach(f=>{if(!f.p)return;const m=big[f.cat];if(m&&m[f.p])f.p=m[f.p];if(f.cat==='pet'&&!f.lim)f.p=f.id==='pt2'||f.id==='pt5'?800:700;if(f.cat==='frame'&&!f.lim)f.p=f.id==='fr2'?700:500});
+ XALL.forEach(f=>{if(f.p&&ext[f.p])f.p=ext[f.p]})})();
 // ---- 정원: 자라는 동안에는 아래 버튼 대신 화분을 눌러 미니게임 ----
 (()=>{const grow=()=>SCREEN==='garden'&&!S.alt&&S.st>0&&S.st<8;
  const h=document.createElement('div');h.id='pothint';h.textContent='톡!';$('scene').appendChild(h);
