@@ -271,6 +271,7 @@ html,body{touch-action:manipulation;-webkit-touch-callout:none}body{-webkit-user
 .band.bot{bottom:0;height:var(--bb,16.7%);-webkit-mask-image:linear-gradient(transparent,#000 var(--fd,3px));mask-image:linear-gradient(transparent,#000 var(--fd,3px))}
 .band>svg{position:absolute;inset:0;width:100%;height:100%}
 .band>.bt{position:absolute;inset:0;mix-blend-mode:multiply}
+.stage>.scene,.stage>.band{left:-4px!important;right:-4px!important}
 .band [data-go]{pointer-events:auto;cursor:pointer}
 .band [data-go]:hover{filter:brightness(1.06)}
 #bar{display:none!important}
@@ -291,6 +292,7 @@ html,body{touch-action:manipulation;-webkit-touch-callout:none}body{-webkit-user
 #coach.dn::after{top:-8px;transform:translateX(-50%) rotate(225deg)}
 #coach.up::after{bottom:-8px}
 @keyframes coachb{50%{transform:translateY(-3px)}}
+#pothint{position:absolute;left:61%;top:58%;z-index:6;display:none;pointer-events:none;background:#fffdf6;border:3px solid var(--ink);border-radius:999px;padding:0 9px;font-weight:700;font-size:clamp(14px,3.8vw,18px);box-shadow:0 3px 0 var(--ink);animation:coachb 1.2s ease-in-out infinite}
 #gedit,#gcancel{top:54px}
 </style></head><body><div class="app">
 <svg width="0" height="0" style="position:absolute"><defs><radialGradient id="glw"><stop offset="0" stop-color="#fbe9a0" stop-opacity=".62"/><stop offset=".35" stop-color="#f7dc82" stop-opacity=".34"/><stop offset=".7" stop-color="#f3d070" stop-opacity=".1"/><stop offset="1" stop-color="#f3d070" stop-opacity="0"/></radialGradient></defs><filter id="rough"><feTurbulence baseFrequency=".04" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="3.5"/></filter><filter id="rough2"><feTurbulence baseFrequency=".09" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1"/></filter></svg><h1>하토 키우기</h1>
@@ -577,7 +579,7 @@ function render(){
  if(st>=6){setTomC(['g','o','r'][st-6]);tm.style.transform=`translateX(-50%) scale(${[.5,.75,1][st-6]})`;tm.classList.toggle('bob',st==8)}
  $('alt').style.display=S.alt?'block':'none';$('alt').innerHTML=ICONS[S.alt]?icon(S.alt,'100%'):'';
  $('dots').innerHTML=[1,2,3,4,5,6,7,8].map(i=>`<i class="${i<=st?'on':''}" title="${NAMES[i]}"></i>`).join('');
- $('say').textContent=msg||(SCREEN==='town'?((S.hs||[]).some(s=>!s.ex)?'하토를 끌어서 길 끝까지 가면 다른 곳으로 가요.':'하토가 원정 중이에요. 돌아오면 마을에서 다시 만나요!'):SCREEN==='house'?HSAY():S.st==0&&!S.alt&&S.inv>=12?'인벤토리가 꽉 찼어요! 하토를 입양 보내야 새로 키울 수 있어요.':S.alt?'':SAY[st]);msg='';
+ $('say').textContent=msg||(SCREEN==='town'?((S.hs||[]).some(s=>!s.ex)?'하토를 끌어서 길 끝까지 가면 다른 곳으로 가요.':'하토가 원정 중이에요. 돌아오면 마을에서 다시 만나요!'):SCREEN==='house'?HSAY():S.st==0&&!S.alt&&S.inv>=12?'인벤토리가 꽉 찼어요! 하토를 입양 보내야 새로 키울 수 있어요.':S.alt?'':(st>0&&st<8?SAY[st]+' 화분을 톡 눌러 미니게임에 도전해요!':SAY[st]));msg='';
  $('main').textContent=S.alt?'뽑아내기':st==0?'씨앗 심기':st==8?'수확하기':'미니게임 도전: '+G[st].t;
  const full=S.st==0&&!S.alt&&S.inv>=12;$('main').disabled=full;if(full)$('main').textContent='입양을 보내야 새로 심을 수 있어요';$('adbtn').disabled=S.inv<1;const n=Math.min(S.inv,12);$('slots').innerHTML=Array.from({length:12},(_,i)=>`<div class="${i<n?'f':''}">${i<n?hato('r',40+i)+`<em>${esc(nameOf(i))}</em>`:''}</div>`).join('');
  tickPets();applyPot();applyWall();applyBg();$('ic').textContent='하토 '+S.inv+'/12 · 입양 '+(S.sent|0)+'마리';$('dA').innerHTML=S.dec.cat&&!(S.dh||{}).cat?icon('cat',80):'';$('dB').innerHTML=S.dec.lamp&&!(S.dh||{}).lamp?icon('lamp',80):'';gdec();if(SCREEN==='house'){$('main').textContent='인테리어 꾸미기';$('main').disabled=EDIT;renderHouse()}if(SCREEN==='town')townRender();$('main').style.display=SCREEN!=='garden'?'none':'';$('dots').style.visibility=SCREEN!=='garden'?'hidden':'visible';hub();save()}
@@ -1247,7 +1249,7 @@ document.addEventListener('pointerdown',e=>{if(e.target.id!=='mus'&&S.music!==fa
 document.addEventListener('pointerdown',e=>{try{if(navigator.storage&&navigator.storage.persist&&!window.__pst){window.__pst=1;navigator.storage.persist()}}catch(_){}ensureAC();const b=e.target.closest&&e.target.closest('button');if(!b||b.disabled||b.id==='mus')return;if(b.closest('#bar'))sfx('tab');else if(b.closest('#care'))sfx('care');else sfx('tick')},true);
 document.addEventListener('visibilitychange',()=>{if(!AC)return;if(document.hidden)AC.suspend();else if(mon){AC.resume();mn=AC.currentTime+.1}});
 const TUT=[['sprout','하토 키우기에 어서 와요!','씨앗을 심고 토마토를 닮은 하토를 키워요. 다 키운 하토는 좋은 집으로 입양 보낼 수 있어요.'],
-['sprout','1. 씨앗을 심고 키워요','정원 화면에서 [씨앗 심기]를 눌러요. 그다음 [미니게임 도전] 버튼을 눌러 성공하면 한 단계씩 자라요. 실패하면 하토가 시들 수 있으니 조심해요!'],
+['sprout','1. 씨앗을 심고 키워요','정원 화면에서 [씨앗 심기]를 눌러요. 그다음 화분을 눌러 미니게임에 성공하면 한 단계씩 자라요. 실패하면 하토가 시들 수 있으니 조심해요!'],
 ['bag','2. 수확하고 입양 보내요','다 자라면 [수확하기]를 눌러요. 하토는 오른쪽 위 [가방]에 들어가고(최대 12마리), 가방의 [입양 보내기]로 새 집에 보내면 입양금을 받아요.'],
 ['coin','3. 코인과 입양금','코인은 정원 소품·화분·벽지를 사고, 입양금으로는 집 가구를 사요. 물건은 마을 외곽 왼쪽의 쇼핑센터에서 사요. 시간 옆에서 지금 가진 양을 볼 수 있어요.'],
 ['home','4. 집에서 돌봐 줘요','정원 아래쪽 문을 누르면 집으로 가요. 집에서 하토에게 밥을 주고 놀아 주고 씻겨 줘요. [집꾸미기]로 가구를 놓고 옮길 수 있어요.'],
@@ -1542,8 +1544,7 @@ function vSVG(){const T=tw(),n=nightF(kh())>.5,B=T.build,ad=adopted(),g=growth()
  if((window.TBH&&TBH.on())){const o=TBH.v({n,glow,hrA,mnA,se,festC,lbl})||{};if(o.tower)tower=o.tower;if(o.bakery)bakery=o.bakery;if(o.stall)stall=o.stall;if(se&&o.booth)booth=o.booth}
  return `${SVGO}${skyPart()}
 ${HILL1(66,'#cfe6ae','#bcdc96')}
-${GRD('brick',62,86)}<path d="M0 62Q50 59 100 62" stroke-width=".9"/>
-<rect x="0" y="86" width="100" height="12" fill="#d9cba0" stroke="none"/><path d="M0 92H100" stroke-width=".8" stroke-dasharray="3 3" stroke-opacity=".5"/><path d="M0 86H100M0 98H100" stroke-width=".7" stroke-opacity=".5"/>
+${GRD('brick',62,100)}<path d="M0 62Q50 59 100 62" stroke-width=".9"/>
 ${rb}${bunt}${bl}
 ${B.tree?dsG(DSN.tree[4],4.4,61,.5,22,37):''}
 ${tower}${bakery}${wm}
@@ -1569,8 +1570,7 @@ function nSVG(){const T=tw(),n=nightF(kh())>.5,B=T.build;
  if((window.TBH&&TBH.on())){const o=TBH.post({n,glow,flag:B.flag});if(o)post=o}
  return `${SVGO}${skyPart()}
 ${HILL1(66,'#cfe6ae','#bcdc96')}
-${GRD('gstep',62,86,0,100,3)}<path d="M0 62Q50 59 100 62" stroke-width=".9"/>
-<rect x="0" y="86" width="100" height="12" fill="#d9cba0" stroke="none"/><path d="M0 92H100" stroke-width=".8" stroke-dasharray="3 3" stroke-opacity=".5"/><path d="M0 86H100M0 98H100" stroke-width=".7" stroke-opacity=".5"/>
+${GRD('gstep',62,100,0,100,3)}<path d="M0 62Q50 59 100 62" stroke-width=".9"/>
 ${homes}${stallsSVG('n')}${growDeco('n',growth())}${actSVG('n',growth())}${post}${B.flag?'<path d="M82 25V16" stroke-width="1"/>':''}
 ${[30,40,50,60,70].map((x,i)=>`<path d="M${x} 88.4V86.6" stroke="#7aa84c" stroke-width=".8"/><circle cx="${x}" cy="86" r="1.3" fill="${['#f4a79b','#e8d785','#f8f1e2','#d4ede6','#f4a79b'][i]}" stroke-width=".6"/>`).join('')}
 ${edgeSigns('n')}${sparkG('n')}</svg>${npcLayers('n')}`}
@@ -1875,7 +1875,7 @@ function botHTML(k){const Y=BOTY();
  if(k==='scene')return `<svg ${SVA(VB())}>${sillWood()}${toy(6,103.6)}${frame(43.5,101.2)}${door(81,100.6)}</svg>`;
  if(k==='hscene'){if(HV==='out')return `<svg ${SVA(VB())}><rect x="0" y="96" width="100" height="${Y-96}" fill="#b08565" stroke="none"/></svg>`;return `<svg ${SVA(VB())}>${roomFloor()}</svg>`}
  const a=tw().area;let o='';
- if(a==='v'||a==='n'){o=`<rect x="0" y="96" width="100" height="${Y-96}" fill="#d9cba0" stroke="none"/>`;for(let k=0;k<Math.round((Y-100)/2.2);k++){const x=(k*29.3+7)%94+3,y=101+(k*17.9)%Math.max(3,Y-104);o+=`<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${(.8+(k%3)*.3).toFixed(1)}" ry=".5" fill="#c9b98c" stroke="none"/>`}}
+ if(a==='v'||a==='n'){const R0=Math.max(100.5,Y-1-13);o=(a==='v'?GRD('brick',89.6,R0):GRD('gflow',96,R0,0,100,7))+`<rect x="0" y="${R0}" width="100" height="${Y-R0+2}" fill="#d9cba0" stroke="none"/><path d="M0 ${R0+5.2}H100" stroke-width=".8" stroke-dasharray="3 3" stroke-opacity=".5"/><path d="M0 ${R0}H100" stroke-width=".7" stroke-opacity=".5"/>`}
  else if(a==='f')o=`<rect x="0" y="96" width="100" height="${Y-96}" fill="#c3dd9c" stroke="none"/>`+GRD('tuftS',96,Y,0,100,dayNo()+3)+(inSeason('aut')?GRD('leaf',96,Y,0,100,dayNo()+3):'');
  else if(a==='h')o=`<rect x="0" y="96" width="100" height="${Y-96}" fill="#b9d8a0" stroke="none"/>`+GRD('tuft',96,Y,0,100,dayNo()+3);
  else if(a==='r')o=GRD('check',93.6,Y,0,100,1,['#efe4cb','#e2d3b0']);
@@ -1899,7 +1899,7 @@ function upd(){const st=$('stage');if(!st)return;fit();
  for(const k in TOP){const sc=$(k),bt=$(TOP[k]),bb=$(BOT[k]);if(!sc||!bt)continue;const on=getComputedStyle(sc).display!=='none';bt.style.display=bb.style.display=on?'block':'none';
   if(k==='tscene'){const r=st.querySelector(':scope>.tbtn');if(r)r.style.display=on?'flex':'none'}
   if(k==='hscene'){const r=st.querySelector(':scope>.hbtn');if(r)r.style.display=on?'flex':'none'}
-  if(!on)continue;if(k!=='scene'){const bg=k==='tscene'?({s:'#f3e6cc',v:'#d9cba0',n:'#d9cba0',f:'#c3dd9c',b:'#f0e2b0',h:'#b9d8a0',r:'#efe4cb'}[tw().area]||'#c3dd9c'):(HV==='out'?'#b08565':'#b48c63');if(sc.style.background!==bg)sc.style.background=bg}const t=$(TN[k]),tint=t?getComputedStyle(t).backgroundColor:'transparent';
+  if(!on)continue;if(k!=='scene'){const bg=k==='tscene'?({s:'#f3e6cc',v:'#ecc9ac',n:'#c6e09f',f:'#c3dd9c',b:'#f0e2b0',h:'#b9d8a0',r:'#efe4cb'}[tw().area]||'#c3dd9c'):(HV==='out'?'#b08565':'#b48c63');if(sc.style.background!==bg)sc.style.background=bg}const t=$(TN[k]),tint=t?getComputedStyle(t).backgroundColor:'transparent';
   setBand(bt,topHTML(k),tint);setBand(bb,botHTML(k),tint)}
  const nb=$('bagnb');if(nb)nb.style.display=(typeof bagNew==='function'&&bagNew())?'block':'none'}
 window.bandUpd=upd;setInterval(upd,400);
@@ -1920,6 +1920,12 @@ const _shop=shop;shop=function(tb){_shop(tb);if(!STORE)return;const st=STORES.fi
 const _cp=closePanel;closePanel=function(){STORE=null;return _cp.apply(this,arguments)};
 const _hub=hub;hub=function(){_hub.apply(this,arguments);const pb=$('pbody');if(!pb)return;let t=$('bagtabs');if(P==='inv'||P==='book'){if(!t){t=document.createElement('div');t.id='bagtabs';t.className='tabs4';t.style.gridTemplateColumns='repeat(2,1fr)';pb.insertBefore(t,pb.firstChild)}t.innerHTML=`<button data-bt="inv" class="${P==='inv'?'on':''}">${icon('bag',20)} 인벤토리</button><button data-bt="book" class="${P==='book'?'on':''}">${icon('book',20)} 도감</button>`;t.querySelectorAll('[data-bt]').forEach(b=>b.onclick=()=>{P=b.dataset.bt;$('pbody').scrollTop=0;hub()});t.style.display='grid';if(PT)$('ptitle').textContent='가방'}else if(t)t.style.display='none';if(P==='shop'&&STORE){const st=STORES.find(x=>x.k===STORE);if(st)$('ptitle').textContent=st.n};const hg=$('hgarden');if(hg)hg.hidden=!!EDIT};
 upd()})();
+
+// ---- 정원: 자라는 동안에는 아래 버튼 대신 화분을 눌러 미니게임 ----
+(()=>{const grow=()=>SCREEN==='garden'&&!S.alt&&S.st>0&&S.st<8;
+ const h=document.createElement('div');h.id='pothint';h.textContent='톡!';$('scene').appendChild(h);
+ setInterval(()=>{const g=grow(),m=$('main');if(g){if(m.style.display!=='none'){m.dataset.hid='1';m.style.display='none'}}else if(m.dataset.hid){delete m.dataset.hid;m.style.display=''}h.style.display=g&&!busy()&&!P&&!(typeof GEDIT!=='undefined'&&GEDIT)?'block':'none'},250);
+ $('scene').addEventListener('click',e=>{if(!grow()||busy()||P||(typeof GEDIT!=='undefined'&&GEDIT))return;const r=$('scene').getBoundingClientRect(),x=(e.clientX-r.left)/r.width*100,y=(e.clientY-r.top)/r.height*100;if(x>28&&x<72&&y>22&&y<92){e.stopPropagation();startGame()}},true)})();
 
 // ---- 처음 하는 사람에게만 한 번씩 보여 주는 말풍선 안내 + 기존 플레이어에게는 '바뀐 점' 알림 한 번 ----
 (()=>{if(S.uiv==null){S.uiv=2;if(S.tut){S.gd={bag:1,garden:1,mall:1,hshop:1};S.uinew=1}else S.gd={};save()}S.gd=S.gd||{};
