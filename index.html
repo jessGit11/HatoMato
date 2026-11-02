@@ -82,6 +82,7 @@ button:disabled{opacity:.55;cursor:default;box-shadow:none}
 .ged .gdr:has(svg){outline:2px dashed #7a5f4288;outline-offset:2px}
 .rm{display:none}#hscene.ed .hbtn{left:auto;right:10px;top:10px;bottom:auto;z-index:20}#hsheet{z-index:19}
 .stage>.sheet{border-bottom:4px solid var(--ink);border-radius:22px}
+.stage>.sheet:not(.open){transform:translateY(calc(105% + 80px));visibility:hidden;transition:transform .32s,visibility 0s .32s}
 .stage>#hsheet.open~.hbtn,.stage>.hbtn{z-index:20}*{scrollbar-width:thin;scrollbar-color:#f4a79b #f8f1e2}*::-webkit-scrollbar{width:8px;height:8px}*::-webkit-scrollbar-track{background:#f8f1e2;border-radius:99px}*::-webkit-scrollbar-thumb{background:#f4a79b;border-radius:99px;border:2px solid #f8f1e2}*::-webkit-scrollbar-thumb:hover{background:#ee8f84}
 .sheet .chips{padding:0 0 5px}.sheet .chips button{font-size:13px;padding:0 9px}
 .bgs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}.bgc{padding:0;height:44px;border-width:3px;border-radius:14px;box-shadow:0 3px 0 var(--ink);display:flex;align-items:flex-end;justify-content:center}.bgc span{font-size:12px;white-space:nowrap;line-height:1;margin-bottom:3px}.bgc.on{outline:3px solid #f47876;outline-offset:2px}
