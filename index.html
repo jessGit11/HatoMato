@@ -114,7 +114,7 @@ button:disabled{opacity:.55;cursor:default;box-shadow:none}
 #coin{display:flex;align-items:center;gap:3px;font-size:clamp(14px,3.8vw,18px);font-weight:700}
 #px{padding:0 10px;font-size:18px;box-shadow:0 3px 0 var(--ink);border-width:3px;border-radius:14px}
 #pbody{flex:1;overflow:auto;padding:8px 12px 12px}
-#pg-inv h2{margin:0 0 8px;font-size:22px;display:flex;justify-content:space-between}
+#pg-inv h2{margin:0 0 8px;font-size:clamp(16px,4.6vw,22px);display:flex;justify-content:space-between;gap:8px;white-space:nowrap;flex-wrap:wrap}
 .wide2{width:100%;margin-bottom:10px;font-size:clamp(17px,4.5vw,21px);padding:8px}
 .tabs2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
 .tabs2 button,.chips button{font-size:clamp(15px,4vw,18px);padding:5px 8px;box-shadow:0 3px 0 var(--ink);border-width:3px;border-radius:14px}
@@ -286,7 +286,8 @@ html,body{touch-action:manipulation;-webkit-touch-callout:none}body{-webkit-user
 #topb button{position:relative}
 .stage>.tbtn{left:8px;right:8px;bottom:8px;z-index:6}
 .stage>.hbtn{left:8px;right:8px;bottom:8px;z-index:6;top:auto;justify-content:center;flex-wrap:nowrap}
-.stage>.hbtn button,.stage>.hbtn #hview{position:static;font-size:clamp(12px,3.3vw,16px);padding:3px 8px;white-space:nowrap}
+.stage>.hbtn button,.stage>.hbtn #hview{position:static;font-size:min(16px,calc(var(--sw,360px)*.04));padding:3px min(8px,calc(var(--sw,360px)*.018));white-space:nowrap}
+.stage>.tbtn button{font-size:min(15px,calc(var(--sw,360px)*.04))}
 .stage>.hbtn{gap:5px}
 #bagtabs{margin:0 0 8px}
 
@@ -297,7 +298,8 @@ html,body{touch-action:manipulation;-webkit-touch-callout:none}body{-webkit-user
 #coach.up::after{bottom:-8px}
 @keyframes coachb{50%{transform:translateY(-3px)}}
 #pothint{position:absolute;left:61%;top:58%;z-index:6;display:none;pointer-events:none;background:#fffdf6;border:3px solid var(--ink);border-radius:999px;padding:0 9px;font-weight:700;font-size:clamp(14px,3.8vw,18px);box-shadow:0 3px 0 var(--ink);animation:coachb 1.2s ease-in-out infinite}
-#gedit,#gcancel{top:54px}
+#gedit,#gcancel{top:54px;z-index:4!important}
+.stage.nar #topb .bl{display:none}.stage.nar #topb button{padding:2px 5px}.stage.nar #clk{font-size:13px;padding:1px 8px;gap:5px}
 </style></head><body><div class="app">
 <svg width="0" height="0" style="position:absolute"><defs><radialGradient id="glw"><stop offset="0" stop-color="#fbe9a0" stop-opacity=".62"/><stop offset=".35" stop-color="#f7dc82" stop-opacity=".34"/><stop offset=".7" stop-color="#f3d070" stop-opacity=".1"/><stop offset="1" stop-color="#f3d070" stop-opacity="0"/></radialGradient></defs><filter id="rough"><feTurbulence baseFrequency=".04" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="3.5"/></filter><filter id="rough2"><feTurbulence baseFrequency=".09" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1"/></filter></svg><h1>하토 키우기</h1>
 <div class="stage" id="stage"><div class="band top" id="bandG"></div><div class="band top" id="bandH"></div><div class="band top" id="bandT"></div><div class="band bot" id="bandGb"></div><div class="band bot" id="bandHb"></div><div class="band bot" id="bandTb"></div><div id="clk"><span id="ct"></span><span id="cc"></span></div><button id="slpb" aria-label="숙면 모드"><svg viewBox="0 0 24 24"><path d="M16 3a9 9 0 1 0 5 15A8 8 0 0 1 16 3Z" fill="#f5e8b8" stroke="#7a5f42" stroke-width="1.8" stroke-linejoin="round"/></svg></button><div id="busv"><svg class="busimg" viewBox="0 0 120 70" fill="none" stroke="#7a5f42" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="112" height="44" rx="11" fill="#f4a79b"/><path d="M4 38H116" stroke-width="3"/><rect x="12" y="15" width="19" height="15" rx="3" fill="#d4ede6" stroke-width="3"/><rect x="36" y="15" width="19" height="15" rx="3" fill="#d4ede6" stroke-width="3"/><rect x="60" y="15" width="19" height="15" rx="3" fill="#d4ede6" stroke-width="3"/><path d="M86 14H106Q110 14 110 18V30H86Z" fill="#d4ede6" stroke-width="3"/><circle cx="108" cy="44" r="3" fill="#e8d785" stroke-width="2"/><circle cx="30" cy="54" r="9" fill="#7a5f42"/><circle cx="30" cy="54" r="3.4" fill="#f8f1e2" stroke="none"/><circle cx="88" cy="54" r="9" fill="#7a5f42"/><circle cx="88" cy="54" r="3.4" fill="#f8f1e2" stroke="none"/></svg></div><div id="md"><div class="mb" id="mb"></div></div><div id="gsheet" class="sheet"></div><div class="scene" id="scene">
@@ -1880,7 +1882,7 @@ function topHTML(k){const sc=$(k);
  if(k==='scene'){const w=curWall();return `<svg ${SVA(VT())}><rect x="0" y="${-TU-1}" width="100" height="${TU+4}" fill="${w.c}" stroke="none"/><g transform="translate(0 -100)">${wallPat(w)}</g>${TU>100?`<g transform="translate(0 -200)">${wallPat(w)}</g>`:''}</svg>`}
  const c=topFill(sc);let o=`<rect x="0" y="${-TU-1}" width="100" height="${TU+4}" fill="${c}" stroke="none"/>`;
  if(k==='tscene'&&lum(c)<110)o+=stars();
- if(k==='hscene'&&HV!=='out'&&!EDIT&&TU>=11)o+=`<g transform="translate(50 ${(-Math.min(TU-1,10.2)).toFixed(2)}) scale(.72)">${frame(0,0)}</g>`;
+ if(k==='hscene'&&HV!=='out'&&!EDIT&&TU>=14)o+=`<g transform="translate(0 ${(-Math.min(TU-1,14)-101.6).toFixed(2)})">${gBtn('ach',50,'업적')}</g>`;
  return `<svg ${SVA(VT())}>${o}</svg>`}
 function botHTML(k){const Y=BOTY();
  if(k==='scene')return `<svg ${SVA(VB())}>${sillWood()}${gBtn('ach',24,'업적')}${gBtn('house',76,'집으로')}</svg>`;
@@ -1903,7 +1905,7 @@ function fit(){const app=document.querySelector('.app'),st=$('stage');if(!app||!
  {const op=[...st.querySelectorAll(':scope>.sheet.open')].find(e=>!e.classList.contains('col'));if(op){const need=op.offsetHeight+(parseFloat(op.style.bottom)||0)+6,mt=Math.floor(H-8-need-s);if(top>mt){top=Math.max(0,mt);bot=ext-top}}}
  const aw=W+(app.offsetWidth-st.offsetWidth);if(Math.abs(app.offsetWidth-aw)>1)app.style.width=aw+'px';
  const u=s/100;st.style.setProperty('--sh',H+'px');st.style.setProperty('--st',top+'px');st.style.setProperty('--sw',s+'px');st.style.setProperty('--bt',(top+2.4*u)+'px');st.style.setProperty('--bb',(bot+3.4*u)+'px');st.style.setProperty('--fd',(.9*u)+'px');
- TU=top/u;BU=bot/u;SPX=s}
+ TU=top/u;BU=bot/u;SPX=s;st.classList.toggle('nar',W<370)}
 window.addEventListener('resize',()=>{fit();upd()});window.addEventListener('orientationchange',()=>setTimeout(()=>{fit();upd()},300));
 function setBand(el,h,tint){if(el.dataset.h!==h){el.dataset.h=h;el.innerHTML=h+'<div class="bt"></div>'}el.lastChild.style.background=tint}
 function upd(){const st=$('stage');if(!st)return;fit();for(const id of ['hsheet','gsheet']){const e=$(id);if(e&&e.parentNode!==st)st.appendChild(e)}{const e=$('hsheet'),r=st.querySelector(':scope>.hbtn');if(e&&r){const b=(r.offsetHeight||36)+14+'px';if(e.style.bottom!==b)e.style.bottom=b}}
@@ -1919,7 +1921,7 @@ window.bandUpd=upd;setInterval(upd,400);
 $('stage').addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('.band [data-go]');if(!g||busy())return;const k=g.dataset.go;sfx&&sfx('tap');
  if(k==='house'){HV='in';setScreen('house');render()}else openPanel(k)});
 // 위쪽 버튼: 가방(인벤토리+도감) · 설정
-const tp=document.createElement('div');tp.id='topb';tp.innerHTML=`<button id="bagb" aria-label="가방">${icon('bag',22)}가방<span class="nb" id="bagnb" style="display:none"></span></button><button id="setb" class="ic1" aria-label="설정">${icon('gear',24)}</button>`;$('stage').appendChild(tp);
+const tp=document.createElement('div');tp.id='topb';tp.innerHTML=`<button id="bagb" aria-label="가방">${icon('bag',22)}<span class="bl">가방</span><span class="nb" id="bagnb" style="display:none"></span></button><button id="setb" class="ic1" aria-label="설정">${icon('gear',24)}</button>`;$('stage').appendChild(tp);
 $('bagb').onclick=()=>{if(busy())return;openPanel(P==='book'?'book':'inv')};
 $('setb').onclick=()=>{if(busy())return;openPanel('set')};
 // 집 화면 버튼 줄에 '정원으로'
