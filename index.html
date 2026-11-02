@@ -284,6 +284,13 @@ html,body{touch-action:manipulation;-webkit-touch-callout:none}body{-webkit-user
 .stage>.hbtn button,.stage>.hbtn #hview{position:static;font-size:clamp(12px,3.3vw,16px);padding:3px 8px;white-space:nowrap}
 .stage>.hbtn{gap:5px}
 #bagtabs{margin:0 0 8px}
+
+#coach{position:absolute;z-index:8;max-width:62%;background:#fffdf6;border:3px solid var(--ink);border-radius:14px;padding:6px 10px 7px;font-weight:700;font-size:clamp(14px,3.8vw,17px);line-height:1.25;box-shadow:0 3px 0 var(--ink);animation:coachb 1.6s ease-in-out infinite;cursor:pointer}
+#coach small{display:block;font-size:.78em;opacity:.7;margin-top:2px}
+#coach::after{content:'';position:absolute;width:12px;height:12px;background:#fffdf6;border:3px solid var(--ink);border-width:0 3px 3px 0;left:var(--ax,50%);transform:translateX(-50%) rotate(45deg)}
+#coach.dn::after{top:-8px;transform:translateX(-50%) rotate(225deg)}
+#coach.up::after{bottom:-8px}
+@keyframes coachb{50%{transform:translateY(-3px)}}
 #gedit,#gcancel{top:54px}
 </style></head><body><div class="app">
 <svg width="0" height="0" style="position:absolute"><defs><radialGradient id="glw"><stop offset="0" stop-color="#fbe9a0" stop-opacity=".62"/><stop offset=".35" stop-color="#f7dc82" stop-opacity=".34"/><stop offset=".7" stop-color="#f3d070" stop-opacity=".1"/><stop offset="1" stop-color="#f3d070" stop-opacity="0"/></radialGradient></defs><filter id="rough"><feTurbulence baseFrequency=".04" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="3.5"/></filter><filter id="rough2"><feTurbulence baseFrequency=".09" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1"/></filter></svg><h1>하토 키우기</h1>
@@ -1240,12 +1247,12 @@ document.addEventListener('pointerdown',e=>{if(e.target.id!=='mus'&&S.music!==fa
 document.addEventListener('pointerdown',e=>{try{if(navigator.storage&&navigator.storage.persist&&!window.__pst){window.__pst=1;navigator.storage.persist()}}catch(_){}ensureAC();const b=e.target.closest&&e.target.closest('button');if(!b||b.disabled||b.id==='mus')return;if(b.closest('#bar'))sfx('tab');else if(b.closest('#care'))sfx('care');else sfx('tick')},true);
 document.addEventListener('visibilitychange',()=>{if(!AC)return;if(document.hidden)AC.suspend();else if(mon){AC.resume();mn=AC.currentTime+.1}});
 const TUT=[['sprout','하토 키우기에 어서 와요!','씨앗을 심고 토마토를 닮은 하토를 키워요. 다 키운 하토는 좋은 집으로 입양 보낼 수 있어요.'],
-['sprout','1. 씨앗을 심고 키워요','정원 탭에서 [씨앗 심기]를 눌러요. 그다음 [미니게임 도전] 버튼을 눌러 성공하면 한 단계씩 자라요. 실패하면 하토가 시들 수 있으니 조심해요!'],
-['bag','2. 수확하고 입양 보내요','다 자라면 [수확하기]를 눌러요. 하토는 인벤토리에 들어가고(최대 12마리), 인벤토리의 [입양 보내기]로 새 집에 보내면 입양금을 받아요.'],
-['coin','3. 코인과 입양금','코인은 정원 소품·화분·벽지를 사고, 입양금은 집 가구를 살 수 있어요. 상점 탭에서 살 수 있어요. 시간 옆에서 지금 가진 양을 볼 수 있어요.'],
-['home','4. 집에서 돌봐 줘요','집 탭에서 하토에게 밥을 주고 놀아 주고 씻겨 줘요. [집꾸미기]로 가구를 놓고 옮길 수 있어요.'],
-['ball','5. 매일 놀러 와요','놀이 탭에서 하루에 한 번 선물을 받고 놀이도 할 수 있어요. 설정에서 음악과 배경색을 바꾸고, 저장 코드로 진행 상황을 옮길 수 있어요.'],
-['bus','6. 마을로 놀러 가요','집 탭의 [밖에서 보기]에서 버스 정류장을 눌러요. 마을에선 하토를 끌거나 화면을 눌러 걷게 해요. 길 끝으로 가면 다른 곳이 나와요. 왼쪽은 입양 간 집이 있는 마을 외곽, 오른쪽은 숲이에요.'],
+['sprout','1. 씨앗을 심고 키워요','정원 화면에서 [씨앗 심기]를 눌러요. 그다음 [미니게임 도전] 버튼을 눌러 성공하면 한 단계씩 자라요. 실패하면 하토가 시들 수 있으니 조심해요!'],
+['bag','2. 수확하고 입양 보내요','다 자라면 [수확하기]를 눌러요. 하토는 오른쪽 위 [가방]에 들어가고(최대 12마리), 가방의 [입양 보내기]로 새 집에 보내면 입양금을 받아요.'],
+['coin','3. 코인과 입양금','코인은 정원 소품·화분·벽지를 사고, 입양금으로는 집 가구를 사요. 물건은 마을 외곽 왼쪽의 쇼핑센터에서 사요. 시간 옆에서 지금 가진 양을 볼 수 있어요.'],
+['home','4. 집에서 돌봐 줘요','정원 아래쪽 문을 누르면 집으로 가요. 집에서 하토에게 밥을 주고 놀아 주고 씻겨 줘요. [집꾸미기]로 가구를 놓고 옮길 수 있어요.'],
+['ball','5. 매일 놀러 와요','정원 아래쪽 놀이 상자에서 하루에 한 번 선물을 받고 놀이도 해요. 업적은 업적 액자에서 봐요. 오른쪽 위 톱니(설정)에서 음악과 배경색을 바꾸고, 저장 코드로 진행 상황을 옮길 수 있어요.'],
+['bus','6. 마을로 놀러 가요','집 화면의 [밖에서 보기]에서 버스 정류장을 눌러요. 마을에선 하토를 끌거나 화면을 눌러 걷게 해요. 길 끝으로 가면 다른 곳이 나와요. 왼쪽은 입양 간 집이 있는 마을 외곽, 오른쪽은 숲이에요.'],
 ['moon','7. 밤에는 숙면 모드','왼쪽 위 달 버튼을 누르면 자장가가 나오고 하토가 잠들어요. 타이머도 쓸 수 있어요.']];
 let tutI=0;
 function tutShow(i){let e=$('tut');if(!e){e=document.createElement('div');e.id='tut';document.body.appendChild(e)}tutI=i;const t=TUT[i],last=i===TUT.length-1;e.hidden=false;
@@ -1897,5 +1904,23 @@ const _shop=shop;shop=function(tb){_shop(tb);if(!STORE)return;const st=STORES.fi
 const _cp=closePanel;closePanel=function(){STORE=null;return _cp.apply(this,arguments)};
 const _hub=hub;hub=function(){_hub.apply(this,arguments);const pb=$('pbody');if(!pb)return;let t=$('bagtabs');if(P==='inv'||P==='book'){if(!t){t=document.createElement('div');t.id='bagtabs';t.className='tabs4';t.style.gridTemplateColumns='repeat(2,1fr)';pb.insertBefore(t,pb.firstChild)}t.innerHTML=`<button data-bt="inv" class="${P==='inv'?'on':''}">${icon('bag',20)} 인벤토리</button><button data-bt="book" class="${P==='book'?'on':''}">${icon('book',20)} 도감</button>`;t.querySelectorAll('[data-bt]').forEach(b=>b.onclick=()=>{P=b.dataset.bt;$('pbody').scrollTop=0;hub()});t.style.display='grid';if(PT)$('ptitle').textContent='가방'}else if(t)t.style.display='none';if(P==='shop'&&STORE){const st=STORES.find(x=>x.k===STORE);if(st)$('ptitle').textContent=st.n};const hg=$('hgarden');if(hg)hg.hidden=!!EDIT};
 upd()})();
+
+// ---- 처음 하는 사람에게만 한 번씩 보여 주는 말풍선 안내 + 기존 플레이어에게는 '바뀐 점' 알림 한 번 ----
+(()=>{if(S.uiv==null){S.uiv=2;if(S.tut){S.gd={bag:1,garden:1,mall:1,hshop:1};S.uinew=1}else S.gd={};save()}S.gd=S.gd||{};
+const G=[
+ {k:'bag',ok:()=>true,el:()=>$('bagb'),t:'하토와 도감은 여기 [가방]에 있어요!'},
+ {k:'garden',ok:()=>SCREEN==='garden',el:()=>document.querySelector('#bandGb svg'),t:'놀이 상자·업적 액자·집으로 문을 눌러 봐요',sub:'정원 화면 맨 아래에 있어요'},
+ {k:'hshop',ok:()=>SCREEN==='house'&&!EDIT,el:()=>$('hshop'),t:'가구는 마을 쇼핑센터에서 사요',sub:'누르면 버스로 바로 데려다줘요'},
+ {k:'mall',ok:()=>SCREEN==='town'&&tw().area==='s',el:()=>document.querySelector('#tart [data-t="shop:furn"]'),t:'가게를 누르면 그 가게 물건을 살 수 있어요'}];
+let cur=null;
+function hide(){const c=$('coach');if(c)c.remove();cur=null}
+function show(g){const st=$('stage'),el=g.el();if(!st||!el)return;const r=el.getBoundingClientRect(),q=st.getBoundingClientRect();if(!r.width)return;
+ const c=document.createElement('div');c.id='coach';c.innerHTML=g.t+(g.sub?`<small>${g.sub}</small>`:'')+'<small>눌러서 닫기</small>';st.appendChild(c);
+ const cw=c.offsetWidth,ch=c.offsetHeight,tx=(r.left+r.right)/2-q.left;let left=Math.max(6,Math.min(q.width-cw-6,tx-cw/2)),below=r.top-q.top<q.height*.45,top=below?r.bottom-q.top+12:r.top-q.top-ch-12;
+ c.className=below?'dn':'up';c.style.left=left+'px';c.style.top=Math.max(4,top)+'px';c.style.setProperty('--ax',Math.max(14,Math.min(cw-14,tx-left))+'px');
+ c.onclick=e=>{e.stopPropagation();S.gd[g.k]=1;save();hide()};cur=g.k}
+setInterval(()=>{if(!S.tut||busy()||P||($('md')&&getComputedStyle($('md')).display!=='none')||($('tut')&&!$('tut').hidden)){if(cur)hide();return}
+ if(S.uinew){S.uinew=0;save();tModal(`<h2 style="margin:0 0 6px">화면이 바뀌었어요!</h2><p style="font-size:16px;margin:4px 0;text-align:left;line-height:1.45">· 아래 아이콘 줄이 없어지고 화면이 넓어졌어요<br>· <b>가방</b>(오른쪽 위): 인벤토리와 도감<br>· <b>톱니</b>(오른쪽 위): 설정<br>· 정원 맨 아래: <b>놀이 상자 · 업적 액자 · 집으로 문</b><br>· 물건은 마을 외곽 왼쪽 <b>쇼핑센터</b>에서 사요 (집의 [가구 사기]를 누르면 바로 가요)</p>`);return}
+ const g=G.find(x=>!S.gd[x.k]&&x.ok());if(!g){if(cur)hide();return}if(cur===g.k)return;hide();show(g)},700)})();
 </script>
 </body></html>
