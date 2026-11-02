@@ -265,7 +265,7 @@ html,body{touch-action:manipulation;-webkit-touch-callout:none}body{-webkit-user
 /* 화면 세로 확장: 장면(정사각형)은 아래에, 위 띠(band)는 각 장면의 벽·하늘을 이어서 그림 */
 .stage{aspect-ratio:5/6}
 .stage>.scene{top:16.667%}
-.band{position:absolute;left:0;right:0;top:0;height:17.6%;display:none;overflow:hidden;pointer-events:none;z-index:2}
+.band{position:absolute;left:0;right:0;top:0;height:18.4%;display:none;overflow:hidden;pointer-events:none;z-index:2;-webkit-mask-image:linear-gradient(#000 95%,transparent);mask-image:linear-gradient(#000 95%,transparent)}
 .band>svg{position:absolute;inset:0;width:100%;height:100%}
 .band>.bt{position:absolute;inset:0;mix-blend-mode:multiply}
 </style></head><body><div class="app">
@@ -1790,7 +1790,7 @@ function html(k){const sc=$(k);
  if(k==='scene'){const w=curWall();return `<svg ${SA} filter="url(#rough2)"><rect width="100" height="20" fill="${w.c}" stroke="none"/><g transform="translate(0 -80)">${wallPat(w)}</g></svg>`}
  const c=topFill(sc),dark=/rgb\((\d+), ?(\d+), ?(\d+)\)/.exec(c)||/#(..)(..)(..)/.exec(c);let lum=255;if(dark){const v=dark.slice(1,4).map(x=>c[0]==='#'?parseInt(x,16):+x);lum=(v[0]*.3+v[1]*.59+v[2]*.11)}
  return `<svg ${SA}><rect width="100" height="20" fill="${c}" stroke="none"/>${k==='tscene'&&lum<110?stars():''}</svg>`}
-function upd(){for(const k in B){const sc=$(k),b=$(B[k]);if(!sc||!b)continue;const on=getComputedStyle(sc).display!=='none';b.style.display=on?'block':'none';if(!on)continue;if(k!=='scene'){const c=topFill(sc);if(sc.style.backgroundColor!==c)sc.style.backgroundColor=c}const h=html(k);if(b.dataset.h!==h){b.dataset.h=h;b.innerHTML=h+'<div class="bt"></div>'}const t=$(TN[k]);b.lastChild.style.background=t?getComputedStyle(t).backgroundColor:'transparent'}}
+function upd(){for(const k in B){const sc=$(k),b=$(B[k]);if(!sc||!b)continue;const on=getComputedStyle(sc).display!=='none';b.style.display=on?'block':'none';if(!on)continue;if(k!=='scene'){const c=topFill(sc);if(sc.style.backgroundColor!==c)sc.style.backgroundColor=c}const h=html(k);if(b.dataset.h!==h){b.dataset.h=h;b.innerHTML=h+'<div class="bt"></div>';b.style.background=k==='scene'?curWall().c:topFill(sc)}const t=$(TN[k]);b.lastChild.style.background=t?getComputedStyle(t).backgroundColor:'transparent'}}
 window.bandUpd=upd;setInterval(upd,400);upd()})();
 </script>
 </body></html>
