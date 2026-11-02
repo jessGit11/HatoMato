@@ -299,6 +299,9 @@ html,body{touch-action:manipulation;-webkit-touch-callout:none}body{-webkit-user
 @keyframes coachb{50%{transform:translateY(-3px)}}
 #pothint{position:absolute;left:61%;top:58%;z-index:6;display:none;pointer-events:none;background:#fffdf6;border:3px solid var(--ink);border-radius:999px;padding:0 9px;font-weight:700;font-size:clamp(14px,3.8vw,18px);box-shadow:0 3px 0 var(--ink);animation:coachb 1.2s ease-in-out infinite}
 #gedit,#gcancel{top:54px;z-index:4!important}
+.stage.edm>.hbtn{top:10px!important;bottom:auto!important;left:auto!important;right:10px!important;justify-content:flex-end}
+.stage.edm>.hbtn button{font-size:min(17px,calc(var(--sw,360px)*.045))!important;padding:3px 14px!important}
+.stage.edm #topb{display:none}
 .stage.nar #topb .bl{display:none}.stage.nar #topb button{padding:2px 5px}.stage.nar #clk{font-size:13px;padding:1px 8px;gap:5px}
 </style></head><body><div class="app">
 <svg width="0" height="0" style="position:absolute"><defs><radialGradient id="glw"><stop offset="0" stop-color="#fbe9a0" stop-opacity=".62"/><stop offset=".35" stop-color="#f7dc82" stop-opacity=".34"/><stop offset=".7" stop-color="#f3d070" stop-opacity=".1"/><stop offset="1" stop-color="#f3d070" stop-opacity="0"/></radialGradient></defs><filter id="rough"><feTurbulence baseFrequency=".04" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="3.5"/></filter><filter id="rough2"><feTurbulence baseFrequency=".09" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1"/></filter></svg><h1>하토 키우기</h1>
@@ -1908,7 +1911,7 @@ function fit(){const app=document.querySelector('.app'),st=$('stage');if(!app||!
  TU=top/u;BU=bot/u;SPX=s;st.classList.toggle('nar',W<370)}
 window.addEventListener('resize',()=>{fit();upd()});window.addEventListener('orientationchange',()=>setTimeout(()=>{fit();upd()},300));
 function setBand(el,h,tint){if(el.dataset.h!==h){el.dataset.h=h;el.innerHTML=h+'<div class="bt"></div>'}el.lastChild.style.background=tint}
-function upd(){const st=$('stage');if(!st)return;fit();for(const id of ['hsheet','gsheet']){const e=$(id);if(e&&e.parentNode!==st)st.appendChild(e)}{const e=$('hsheet'),r=st.querySelector(':scope>.hbtn');if(e&&r){const b=(r.offsetHeight||36)+14+'px';if(e.style.bottom!==b)e.style.bottom=b}}
+function upd(){const st=$('stage');if(!st)return;fit();for(const id of ['hsheet','gsheet']){const e=$(id);if(e&&e.parentNode!==st)st.appendChild(e)}{const ed=typeof EDIT!=='undefined'&&EDIT&&SCREEN==='house';st.classList.toggle('edm',!!ed);const e=$('hsheet'),r=st.querySelector(':scope>.hbtn');if(e&&r){const b=ed?'0px':(r.offsetHeight||36)+14+'px';if(e.style.bottom!==b)e.style.bottom=b}}
  const tb=document.querySelector('#tscene>.tbtn'),hb=document.querySelector('#hscene>.hbtn');if(tb)st.appendChild(tb);if(hb)st.appendChild(hb);const hv=$('hview'),hr=st.querySelector(':scope>.hbtn');if(hv&&hr&&hv.parentNode!==hr)hr.insertBefore(hv,$('hgarden')||null);
  for(const k in TOP){const sc=$(k),bt=$(TOP[k]),bb=$(BOT[k]);if(!sc||!bt)continue;const on=getComputedStyle(sc).display!=='none';bt.style.display=bb.style.display=on?'block':'none';
   if(k==='tscene'){const r=st.querySelector(':scope>.tbtn');if(r)r.style.display=on?'flex':'none'}
