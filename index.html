@@ -201,7 +201,7 @@ body.slp .hato.yw{animation:hyawn 1.8s ease-in-out!important}@keyframes hyawn{0%
 .t-bus{animation:t-bus 22s linear 4s infinite;transform:translateX(-20px)}@keyframes t-bus{from{transform:translateX(-20px)}to{transform:translateX(112px)}}
 
 .tbtn{gap:4px}.tbtn button{font-size:clamp(11px,3.1vw,15px);padding:3px 7px}
-@keyframes tfade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes tfade{from{opacity:.35}to{opacity:1}}
 .t-spk{animation:t-spk 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}@keyframes t-spk{0%,100%{transform:scale(.7);opacity:.7}50%{transform:scale(1.25);opacity:1}}
 .t-ln{animation:t-ln 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 0}@keyframes t-ln{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
 .t-fw{animation:t-fw 2.6s ease-out infinite;transform-origin:0 0}@keyframes t-fw{0%{transform:scale(.1);opacity:1}70%{opacity:1}100%{transform:scale(1.4);opacity:0}}
@@ -1920,6 +1920,13 @@ const _shop=shop;shop=function(tb){_shop(tb);if(!STORE)return;const st=STORES.fi
 const _cp=closePanel;closePanel=function(){STORE=null;return _cp.apply(this,arguments)};
 const _hub=hub;hub=function(){_hub.apply(this,arguments);const pb=$('pbody');if(!pb)return;let t=$('bagtabs');if(P==='inv'||P==='book'){if(!t){t=document.createElement('div');t.id='bagtabs';t.className='tabs4';t.style.gridTemplateColumns='repeat(2,1fr)';pb.insertBefore(t,pb.firstChild)}t.innerHTML=`<button data-bt="inv" class="${P==='inv'?'on':''}">${icon('bag',20)} 인벤토리</button><button data-bt="book" class="${P==='book'?'on':''}">${icon('book',20)} 도감</button>`;t.querySelectorAll('[data-bt]').forEach(b=>b.onclick=()=>{P=b.dataset.bt;$('pbody').scrollTop=0;hub()});t.style.display='grid';if(PT)$('ptitle').textContent='가방'}else if(t)t.style.display='none';if(P==='shop'&&STORE){const st=STORES.find(x=>x.k===STORE);if(st)$('ptitle').textContent=st.n};const hg=$('hgarden');if(hg)hg.hidden=!!EDIT};
 upd()})();
+
+// ---- 화면·지역 바뀔 때 위·아래 띠도 즉시 같이 바꿔서 깜빡임 없애기 ----
+(()=>{const now=()=>{try{window.bandUpd&&window.bandUpd()}catch(e){}};
+ const wrap=n=>{const f=window[n];if(typeof f!=='function')return;window[n]=function(){const r=f.apply(this,arguments);now();return r}};
+ ['townRender','renderHouse','setScreen','render'].forEach(wrap);
+ const ga=goArea;goArea=function(){const r=ga.apply(this,arguments);now();['bandT','bandTb'].forEach(id=>{const e=$(id);if(e){e.classList.remove('fadein');void e.offsetWidth;e.classList.add('fadein')}});return r};
+ townRender=window.townRender;renderHouse=window.renderHouse;setScreen=window.setScreen;render=window.render})();
 
 // ---- 정원: 자라는 동안에는 아래 버튼 대신 화분을 눌러 미니게임 ----
 (()=>{const grow=()=>SCREEN==='garden'&&!S.alt&&S.st>0&&S.st<8;
