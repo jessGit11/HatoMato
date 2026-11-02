@@ -1241,7 +1241,7 @@ const SVGO='<svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspect
 const npcsOf=a=>(NPCS[a]||[]).map(p=>npcG(...p)).join('');
 const npcLayers=a=>(NPCS[a]||[]).map(p=>`<svg class="tnpc" data-y="${p[2]}" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none" stroke="#7a5f42" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" filter="url(#rough2)" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:${zf(p[2])}">${npcG(...p)}</svg>`).join('');
 const zf=y=>10+Math.round(y*.75);
-const npcZ=()=>{if(SCREEN!=='town')return;const p=$('tpl');if(!p)return;const z=zf(curPos().y);if(p.style.zIndex!=z)p.style.zIndex=z};setInterval(npcZ,70);
+const npcZ=()=>{if(SCREEN!=='town')return;const p=$('tpl');if(!p)return;const z=zf(curPos().y-2.4);if(p.style.zIndex!=z)p.style.zIndex=z};setInterval(npcZ,70);
 function townSVG(){const a=tw().area;return a==='v'?vSVG():a==='n'?nSVG():sSVG(a)}
 function vSVG(){const T=tw(),n=nightF(kh())>.5,B=T.build,ad=adopted(),g=growth(),se=festOn(),mt=merOn();
  const glow=(x,y,r)=>n?`<circle cx="${x}" cy="${y}" r="${r}" fill="url(#glw)" stroke="none"/>`:'';
