@@ -305,22 +305,24 @@ html,body{touch-action:manipulation;-webkit-touch-callout:none}body{-webkit-user
 .stage>.tbtn button.hb2{width:min(70px,calc(var(--sw,360px)*.19));padding:4px 0 3px!important;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:min(14px,calc(var(--sw,360px)*.038))!important;line-height:1.1;border-radius:16px}.stage>.tbtn button.hb2 svg{width:min(30px,calc(var(--sw,360px)*.08));height:auto}
 
 /* 가로 전체 화면 */
-#title{position:fixed;inset:0;z-index:500;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4vh;cursor:pointer}
-#title h1{width:min(56vw,460px,96vh);margin:0;padding:5px 10px 7px}
-#title #tgo{font-size:clamp(18px,5vh,26px);padding:4px 34px;border-width:3px;border-radius:999px;box-shadow:0 4px 0 var(--ink);background:#f8c6c8;animation:coachb 1.6s ease-in-out infinite}
-#title small{opacity:.6;font-size:clamp(12px,3vh,16px)}
-body.ls{display:block;min-height:0;height:100svh;overflow:hidden}
+#title{position:fixed;inset:0;z-index:500;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--H,100vh)*.04);cursor:pointer}
+#title h1{width:min(calc(var(--W,100vw)*.56),460px,calc(var(--H,100vh)*.96));margin:0;padding:5px 10px 7px}
+#title #tgo{font-size:clamp(18px,calc(var(--H,100vh)*.05),26px);padding:4px 34px;border-width:3px;border-radius:999px;box-shadow:0 4px 0 var(--ink);background:#f8c6c8;animation:coachb 1.6s ease-in-out infinite}
+#title small{opacity:.6;font-size:clamp(12px,calc(var(--H,100vh)*.03),16px)}
+body.ls{display:block;min-height:0;height:var(--H,100svh);width:var(--W,100vw);overflow:hidden}
+body.rot{position:fixed;left:0;top:0;transform-origin:0 0;transform:translateX(var(--RW)) rotate(90deg)}
+html{overflow:hidden;background:var(--cream)}
 body.ls .dots,body.ls #bar{display:none!important}
-body.ls .app{width:100vw!important;max-width:none;padding:0}
-body.ls .stage{border:0;border-radius:0;height:100svh!important;width:100vw}
+body.ls .app{width:var(--W,100vw)!important;max-width:none;padding:0}
+body.ls .stage{border:0;border-radius:0;height:var(--H,100svh)!important;width:var(--W,100vw)}
 body.ls .stage>.scene{left:var(--sl,0)!important;right:auto!important;width:var(--sw)!important;top:0!important;height:var(--sw)!important}
 body.ls .stage>.band{display:none!important}
 body.ls #tfloor,body.ls #hfloor{display:none}
 body.ls .stage>.tbtn,body.ls .stage>.hbtn{left:var(--sl,0);right:auto;width:var(--sw)}
-body.ls .say{position:fixed;left:50%;top:50px;transform:translateX(-50%);z-index:9;margin:0;min-height:0;font-size:clamp(14px,2.4vw,20px);background:#fffdf6e6;border:3px solid var(--ink);border-radius:999px;padding:2px 14px;pointer-events:none;max-width:70vw}
+body.ls .say{position:fixed;left:50%;top:50px;transform:translateX(-50%);z-index:9;margin:0;min-height:0;font-size:clamp(14px,calc(var(--W,100vw)*.024),20px);background:#fffdf6e6;border:3px solid var(--ink);border-radius:999px;padding:2px 14px;pointer-events:none;max-width:calc(var(--W,100vw)*.7)}
 body.ls .say:empty{display:none}
 #ttiles{position:absolute;inset:0;display:none}body.ls #ttiles{display:block}
-.lsx{position:absolute;top:0;height:100%;pointer-events:none;overflow:hidden}
+.lsx{position:absolute;top:0;height:100%;pointer-events:none;overflow:hidden;will-change:transform}
 #ttiles .lsx{pointer-events:auto}#ttiles .lsx *{pointer-events:none}
 .lsw{position:absolute;inset:0;pointer-events:none;z-index:0}.lsw .lsx{pointer-events:none}
 body.ls #scene{overflow:visible}
@@ -328,12 +330,12 @@ body.ls #tint,body.ls #htint{left:calc(-1*var(--sl,0px));right:calc(-1*var(--sl,
 .por{position:absolute;pointer-events:none;z-index:40;display:flex;flex-direction:column;align-items:center;animation:porb 2.4s ease-in-out infinite}.por svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 6px #c9bdf3)}.por .psw{animation:psw 2.4s ease-in-out infinite;transform-origin:30px 50px}.por b{position:absolute;bottom:-6%;white-space:nowrap;background:#fffdf6;border:2px solid #7a5f42;border-radius:99px;padding:0 7px;font-size:12px;line-height:1.3;color:#7a5f42}.por.lk svg{filter:grayscale(.8)}
 @keyframes porb{50%{transform:translateY(-2%)}}@keyframes psw{50%{transform:scale(.9);opacity:.75}}
 body.ls #ttint{left:calc(-1*var(--sl,0px) - 30%);right:calc(-1*var(--sl,0px) - 30%)}
-body.ls #panel{left:auto;width:min(54vw,580px);border-left:4px solid var(--ink);border-radius:18px 0 0 18px;animation:psl .28s ease-out}
+body.ls #panel{left:auto;width:min(calc(var(--W,100vw)*.54),580px);border-left:4px solid var(--ink);border-radius:18px 0 0 18px;animation:psl .28s ease-out}
 @keyframes psl{from{transform:translateX(40%);opacity:.3}}
-body.ls #md .mb{width:min(72vw,600px);max-height:96%}
+body.ls #md .mb{width:min(calc(var(--W,100vw)*.72),600px);max-height:96%}
 body.ls #adopt,body.ls #game{overflow:auto;justify-content:flex-start}body.ls #adopt>:first-child,body.ls #game>:first-child{margin-top:auto}body.ls #adopt>:last-child,body.ls #game>:last-child{margin-bottom:auto}
 body.ls #care{position:fixed;right:12px;top:54px}
-#gohome{display:none;position:fixed;bottom:8px;z-index:6;flex-direction:column;align-items:center;gap:1px;width:min(70px,19vw);padding:4px 0 3px;border-radius:16px;font-size:14px;line-height:1.1;left:50%;transform:translateX(-50%)}
+#gohome{display:none;position:fixed;bottom:8px;z-index:6;flex-direction:column;align-items:center;gap:1px;width:70px;padding:4px 0 3px;border-radius:16px;font-size:14px;line-height:1.1;left:50%;transform:translateX(-50%)}
 body.ls.gar #gohome{display:flex}
 #game{z-index:25!important}#panel{z-index:22!important}#adopt{z-index:23!important}
 #hshop{display:none!important}
@@ -372,6 +374,17 @@ body.ls.gar #gohome{display:flex}
 <button id="main"></button>
 <nav class="bar" id="bar"></nav>
 </div>
+<script>
+/* 세로로 들고 있어도 가로 화면으로 보이게: 화면을 90도 돌리고 좌표를 맞춰 줌 */
+(function(){const d=document,oW=()=>window.innerWidth,oH=()=>window.innerHeight;window.ROT=false;window.VW=()=>ROT?oH():oW();window.VH=()=>ROT?oW():oH();
+ const gd=(P,n)=>{const g=P&&Object.getOwnPropertyDescriptor(P,n);return g&&g.get};
+ const def=(P,xn,yn)=>{const gx=gd(P,xn),gy=gd(P,yn);if(!gx||!gy)return;try{Object.defineProperty(P,xn,{get(){return ROT?gy.call(this):gx.call(this)},configurable:true});Object.defineProperty(P,yn,{get(){return ROT?oW()-gx.call(this):gy.call(this)},configurable:true})}catch(e){}};
+ def(MouseEvent.prototype,'clientX','clientY');def(MouseEvent.prototype,'pageX','pageY');if(window.Touch){def(Touch.prototype,'clientX','clientY');def(Touch.prototype,'pageX','pageY')}
+ const gbr=Element.prototype.getBoundingClientRect;Element.prototype.getBoundingClientRect=function(){const r=gbr.call(this);return ROT?new DOMRect(r.top,oW()-r.right,r.height,r.width):r};
+ const efp=d.elementsFromPoint.bind(d),ef=d.elementFromPoint.bind(d);d.elementsFromPoint=(x,y)=>ROT?efp(oW()-y,x):efp(x,y);d.elementFromPoint=(x,y)=>ROT?ef(oW()-y,x):ef(x,y);
+ function apply(){const w=oW(),h=oH(),r=w<h;ROT=r;const b=d.body;if(!b)return;b.classList.toggle('rot',r);const de=d.documentElement.style;de.setProperty('--W',(r?h:w)+'px');de.setProperty('--H',(r?w:h)+'px');de.setProperty('--RW',w+'px')}
+ apply();addEventListener('DOMContentLoaded',apply);addEventListener('resize',apply);addEventListener('orientationchange',()=>setTimeout(apply,200));window.__rotApply=apply})();
+</script>
 <script>
 (()=>{
 // ===== 마을 테마 (상점에서 구매) — 건물·소품 모양을 테마에 맞게 새로 그린다. 하늘·땅·언덕·바다·해/달·밤 색감은 그대로 =====
@@ -2480,7 +2493,7 @@ function botHTML(k){const Y=BOTY();
  return `<svg ${SVA(VB())}>${o}</svg>`+(mv?`<svg ${SVA(VB()).replace(' filter="url(#rough2)"','')}>${mv}</svg>`:'')}
 
 // ---- 화면 크기 자동 맞춤: 폰 높이에 맞춰 게임 화면을 최대한 크게 (정사각 장면 + 위·아래 띠) ----
-function fit(){const app=document.querySelector('.app'),st=$('stage');if(!app||!st)return;const cs=getComputedStyle(document.body),vw=document.documentElement.clientWidth,vh=window.innerHeight;
+function fit(){const app=document.querySelector('.app'),st=$('stage');if(!app||!st)return;const cs=getComputedStyle(document.body),vw=VW(),vh=VH();
  {const on=true;if(document.body.classList.contains('ls')!==on){document.body.classList.toggle('ls',on);TLA='';if(typeof SCREEN!=='undefined'&&SCREEN==='town')setTimeout(townRender,0)}
  if(on){const s=Math.round(Math.min(vh,vw)),u=s/100,sl=Math.round((vw-s)/2),P=(k,v)=>st.style.setProperty(k,v+'px');P('--sh',vh);P('--st',0);P('--sw',s);P('--sl',sl);P('--bt',0);P('--bb',0);P('--fd',0);P('--below',0);TU=0;BU=0;SPX=s;
   const tb=st.querySelector(':scope>.tbtn'),th=tb&&tb.offsetHeight?tb.offsetHeight+10:56,hb=st.querySelector(':scope>.hbtn'),bh=hb&&hb.offsetHeight?hb.offsetHeight+12:46;window.FMAXT=Math.max(78,+(100-th/u-1).toFixed(1));window.FMAX=Math.max(80,+(100-bh/u).toFixed(1));st.classList.remove('nar');return}}
@@ -2689,7 +2702,7 @@ cityInit();
 /* ===== 가로 모드: 한 맵씩, 배경을 옆으로 이어 그림 + 카메라 + 양 끝 포탈 ===== */
 let CAM=0,CAMD='snap';
 function camJump(d){CAMD=d}
-const LSE=()=>{const s=Math.min(innerWidth,innerHeight);return Math.max(0,(innerWidth/s*100-100)/2)};
+const LSE=()=>{const s=Math.min(VW(),VH());return Math.max(0,(VW()/s*100-100)/2)};
 function TWE(){return Math.round((LSE()+28)*10)/10}
 function sampleRows(svgs,ux){const rows=new Array(100).fill(null);
  for(const sv of svgs){if(!sv)continue;for(const e of sv.querySelectorAll('path,rect,ellipse,circle,polygon')){
@@ -2697,34 +2710,62 @@ function sampleRows(svgs,ux){const rows=new Array(100).fill(null);
   if(bb.width<45||ux<bb.x||ux>bb.x+bb.width)continue;const cs=getComputedStyle(e),f=cs.fill;if(!f||f==='none'||f.startsWith('url')||parseFloat(cs.fillOpacity)<.9||parseFloat(cs.opacity)<.9)continue;
   const y0=Math.max(0,Math.floor(bb.y)),y1=Math.min(99,Math.ceil(bb.y+bb.height));for(let y=y0;y<=y1;y++){let hit=false;try{hit=e.isPointInFill(new DOMPoint(ux,y+.5))}catch(_){}if(hit)rows[y]=f}}}
  let last=null;for(let y=0;y<100;y++){if(rows[y])last=rows[y];else if(last)rows[y]=last}last=null;for(let y=99;y>=0;y--){if(rows[y])last=rows[y];else if(last)rows[y]=last}return rows}
-function stripOf(svgs,side,E){const rows=sampleRows(svgs,side<0?1.5:98.5);if(!rows[0])return '';let o='',ln='',y0=0;
- for(let y=1;y<=100;y++){if(y===100||rows[y]!==rows[y0]){o+=`<rect x="0" y="${y0===0?-8:y0-.3}" width="100" height="${y-y0+(y0===0?8:.3)+(y===100?8:0)}" fill="${rows[y0]}" stroke="none"/>`;if(y<100)ln+=`M0 ${y}H100`;y0=y}}
- return `<div class="lsx" style="left:${side<0?-E+'%':'100%'};width:${E}%"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden">${o}<path d="${ln}" fill="none" stroke="#7a5f42" stroke-width="1.1" stroke-linecap="round"/></svg></div>`}
+const EXK={v:'brick',n:'meadow',f:'forest',b:'beach',h:'meadow',k:'lawn',c:'camp',t:'rail',r:'check',s:'check',s2:'check',p:'check',y:'plain'};
+const rgbOf=c=>(String(c).match(/[\d.]+/g)||[200,200,200]).slice(0,3).map(Number);
+const shade=(c,k)=>{const [r,g,b]=rgbOf(c);return `rgb(${Math.round(Math.min(255,r*k))},${Math.round(Math.min(255,g*k))},${Math.round(Math.min(255,b*k))})`};
+function extArt(kind,side,E,rows,seed){
+ const x0=side<0?-E:100,x1=x0+E,S=[];let y0=0;for(let y=1;y<=100;y++){if(y===100||rows[y]!==rows[y0]){S.push({y0,y1:y,c:rows[y0]});y0=y}}
+ const R=k=>sr(seed,k),seam=side<0?0:100,ramp=x=>Math.min(1,Math.abs(x-seam)/14),L=S.length-1,wavy=!['check','plain','sill','rail'].includes(kind),night=nightF(kh())>.5;
+ const topY=(i,x)=>(i>0&&i<L&&wavy)?S[i].y0+ramp(x)*(2.4*Math.sin(x*.07+i*1.7+seed)+1.3*Math.sin(x*.19+i)):S[i].y0;
+ let o='',ln='';const gy=S[L].y0;
+ for(let i=0;i<=L;i++){
+  if(i===L){ // 나무는 땅 뒤에서 올라오게 먼저 그림
+   if(['meadow','forest','lawn','camp','brick'].includes(kind)){const gap={forest:9,meadow:17,lawn:24,camp:12,brick:26}[kind];let d=6+R(1)*gap*.5,k=0;while(d<E-2){const x=side<0?-d:100+d,v=(k%2||kind==='camp')?4:1,sc=(.58+.3*R(k+5))*(kind==='forest'?1.15:1);o+=dsG(DSN.tree[v],x,gy+1.2,sc,22,37);d+=gap*(.7+.6*R(k+9));k++}}
+  }
+  let pts='';for(let x=x0;x<=x1+.01;x+=2)pts+=(pts?'L':'M')+x.toFixed(1)+' '+topY(i,x).toFixed(2);
+  o+=`<path d="${pts}V106H${x0}Z" fill="${S[i].c}" stroke="none"/>`;if(i>0)ln+=pts;
+  if(i===0&&night){for(let k=0;k<E/6;k++)o+=`<circle cx="${(x0+R(k+30)*E).toFixed(1)}" cy="${(3+R(k+60)*Math.max(8,(S[1]?S[1].y0:40)-14)).toFixed(1)}" r="1.1" fill="#f8f1e2" stroke="none"/>`}
+ }
+ o+=`<path d="${ln}" fill="none" stroke-width="1.2"/>`;
+ const g=gy+1.5,tex=(k,pal)=>GRD(k,g,106,x0,x1,seed,pal).replace(/^<rect[^>]*\/>/,'');
+ try{
+  if(kind==='brick')o+=tex('brick');else if(kind==='meadow')o+=(seed%2?tex('gflow'):tex('tuft'));else if(kind==='forest')o+=tex('tuftS')+(inSeason('aut')?tex('leaf'):'');else if(kind==='lawn')o+=tex('glawn');else if(kind==='camp')o+=tex('tuft');
+  else if(kind==='check')o+=tex('check',[S[L].c,shade(S[L].c,.93)]);
+  else if(kind==='beach'){for(let i=1;i<L;i++){const c=rgbOf(S[i].c);if(c[2]>c[0]+12)for(let y=S[i].y0+4;y<S[i].y1-2;y+=5)for(let k=0;k<E/14;k++){const x=x0+R(y*7+k)*E;o+=`<path d="M${x.toFixed(1)} ${y}q1.5-1.6 3 0t3 0" stroke="#fff" stroke-opacity=".7" stroke-width=".7" fill="none"/>`}}
+   for(let k=0;k<E/3;k++)o+=`<circle cx="${(x0+R(k+200)*E).toFixed(1)}" cy="${(g+3+R(k+300)*(100-g-5)).toFixed(1)}" r=".4" fill="${shade(S[L].c,.88)}" stroke="none"/>`}
+  else if(kind==='sill'){for(let i=1;i<=L;i++){if(S[i].y0<68)continue;for(let k=0;k<E/3;k++){const y=S[i].y0+1+R(k+i*50)*(S[i].y1-S[i].y0-2),x=x0+R(k+400+i)*E;o+=`<path d="M${x.toFixed(1)} ${y.toFixed(1)}h${(3+R(k)*5).toFixed(1)}" stroke-opacity=".3" stroke-width=".5" fill="none"/>`}for(let x=x0+R(i)*14;x<x1;x+=17+R(x)*10)o+=`<path d="M${x.toFixed(1)} ${S[i].y0}V${S[i].y1}" stroke-opacity=".28" stroke-width=".6" fill="none"/>`}}
+ }catch(e){errNote('extTex',e)}
+ return `<svg viewBox="${x0} 0 ${E} 100" preserveAspectRatio="none" filter="url(#rough2)" fill="none" stroke="#7a5f42" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden">${o}</svg>`}
+function stripOf(svgs,side,E,opt){opt=opt||{};let inner='';
+ if(opt.tile){const x0=side<0?-E:100;inner=`<svg viewBox="${x0} 0 ${E} 100" preserveAspectRatio="none" filter="url(#rough2)" fill="none" stroke="#7a5f42" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden">`+[1,2].filter(k=>k===1||E>100).map(k=>`<g transform="translate(${side<0?-100*k:100*k} 0)">${opt.tile}</g>`).join('')+'</svg>'}
+ else{const rows=sampleRows(svgs,side<0?1.5:98.5);if(!rows[0])return '';inner=extArt(opt.kind||'plain',side,E,rows,opt.seed||3)}
+ return `<div class="lsx" style="left:${side<0?-E+'%':'100%'};width:${E}%">${inner}</div>`}
 function portalHTML(a,side,to){const E=TWE(),ok=unlocked(to),g=gyOf(a),cx=side<0?-E+10:100+E-10,my=(g[0]+g[1])/2;
  return `<div class="por${ok?'':' lk'}" style="left:${cx-6}%;top:${my-30}%;width:12%;height:44%"><svg viewBox="0 0 60 100" fill="none" stroke="#7a5f42" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="30" cy="50" rx="25" ry="44" fill="${ok?'#c9bdf3':'#cfc7b6'}" fill-opacity=".6"/><ellipse cx="30" cy="50" rx="17" ry="33" fill="${ok?'#f3ecff':'#e8e2d4'}" fill-opacity=".9" class="psw"/><path d="M30 24c11 7 11 19 0 26s-11 19 0 26" stroke-width="2" stroke="${ok?'#a98fe0':'#b5ad9a'}"/><circle cx="14" cy="14" r="2" fill="#fffdf6" stroke="none"/><circle cx="48" cy="30" r="1.6" fill="#fffdf6" stroke="none"/></svg><b>${ok?'':'🔒 '}${ARN[to]}</b></div>`}
 function tilesRender(a,art){const el=$('ttiles');if(!el)return;if(!LSM()){el.innerHTML='';return}const E=TWE(),G=GRAPH[a]||{};
  const base=document.querySelector('#tart>svg');
- el.innerHTML=stripOf([base],-1,E)+stripOf([base],1,E)+(G.L?portalHTML(a,-1,G.L):'')+(G.R?portalHTML(a,1,G.R):'')}
+ const o1={kind:EXK[a]||'plain',seed:a.charCodeAt(0)};el.innerHTML=stripOf([base],-1,E,o1)+stripOf([base],1,E,Object.assign({},o1,{seed:o1.seed+4}))+(G.L?portalHTML(a,-1,G.L):'')+(G.R?portalHTML(a,1,G.R):'')}
 (function camLoop(){requestAnimationFrame(camLoop);const sc=$('tscene');if(!sc)return;if(!LSM()||SCREEN!=='town'){if(CAM||sc.style.transform){CAM=0;sc.style.transform=''}CAMD='snap';return}
  const s=sc.offsetWidth;if(!s)return;const pl=$('tpl');let px=tw().pos.x;if(pl&&pl.style.display!=='none')px=pl.offsetLeft/s*100+3.4;
- const lim=Math.max(0,(50+TWE())*s/100-innerWidth/2),tg=Math.max(-lim,Math.min(lim,(50-px)*s/100));
+ const lim=Math.max(0,(50+TWE())*s/100-VW()/2),tg=Math.max(-lim,Math.min(lim,(50-px)*s/100));
  if(CAMD==='snap')CAM=tg;CAMD=null;CAM+=(tg-CAM)*.2;if(Math.abs(tg-CAM)<.3)CAM=tg;sc.style.transform=`translateX(${CAM.toFixed(1)}px)`})();
 $('tscene').addEventListener('click',e=>{const n=e.target.closest&&e.target.closest('#ttiles');if(!n||busy()||SCREEN!=='town')return;const r=$('tscene').getBoundingClientRect();walk((e.clientX-r.left)/r.width*100,(e.clientY-r.top)/r.height*100,edgeCheck)});
+let RZT=0;addEventListener('resize',()=>{clearTimeout(RZT);RZT=setTimeout(()=>{if(SCREEN==='town')townRender()},250)});
 /* 집·정원·마당: 기존 배경을 옆으로 이어 그림 */
 let LSSIG='';
-setInterval(()=>{if(!LSM())return;const E=LSE();let host=null,svgs=[];
- try{if(SCREEN==='garden'){host=$('scene');svgs=[$('gback'),$('gframe')]}
- else if(SCREEN==='house'){host=$('hscene');svgs=[document.querySelector('#hroom>svg')]}}catch(e){return}
- if(!host)return;const sig=SCREEN+HV+(typeof curRoom==='function'?curRoom():'')+Math.floor(Date.now()/60000)+JSON.stringify([S.wall,S.rwall,S.rfloor,S.hwf&&0])+Math.round(E);let el=host.querySelector(':scope>.lsw');if(el&&el.dataset.s===sig)return;
- if(!el){el=document.createElement('div');el.className='lsw';host.insertBefore(el,host.firstChild)}el.dataset.s=sig;el.innerHTML=E>0?stripOf(svgs,-1,E)+stripOf(svgs,1,E):''},700);
+setInterval(()=>{if(!LSM())return;const E=LSE();let host=null,svgs=[],opt={};
+ try{if(SCREEN==='garden'){host=$('scene');svgs=[$('gback'),$('gframe')];opt={kind:'sill',seed:5}}
+ else if(SCREEN==='house'){host=$('hscene');if(HV==='out'){svgs=[document.querySelector('#hroom>svg')];opt={kind:'meadow',seed:6}}else{const [sky,n]=skyN([212,237,230]);opt={tile:roomBaseWF(n,sky,1)}}}}catch(e){return}
+ if(!host)return;const sig=SCREEN+HV+(typeof curRoom==='function'?curRoom():'')+Math.floor(Date.now()/60000)+JSON.stringify([S.wall,S.rwall,S.rfloor,S.hwf&&0])+Math.round(E)+(opt.tile?'t':'');let el=host.querySelector(':scope>.lsw');if(el&&el.dataset.s===sig)return;
+ if(!el){el=document.createElement('div');el.className='lsw';host.insertBefore(el,host.firstChild)}el.dataset.s=sig;el.innerHTML=E>0?stripOf(svgs,-1,E,opt)+stripOf(svgs,1,E,opt):''},700);
 
-(function(){const h=document.querySelector('h1.ttl');if(!h)return;const t=document.createElement('div');t.id='title';document.body.appendChild(t);t.appendChild(h);const b=document.createElement('button');b.id='tgo';b.textContent='시작하기';t.appendChild(b);const sm=document.createElement('small');sm.textContent='핸드폰을 가로로 돌려서 즐겨요';t.appendChild(sm);
+(function(){const h=document.querySelector('h1.ttl');if(!h)return;const t=document.createElement('div');t.id='title';document.body.appendChild(t);t.appendChild(h);const b=document.createElement('button');b.id='tgo';b.textContent='시작하기';t.appendChild(b);const sm=document.createElement('small');sm.textContent='세로로 들어도 가로 화면으로 보여요';t.appendChild(sm);
  const go=()=>{t.style.transition='opacity .35s';t.style.opacity=0;setTimeout(()=>t.remove(),380);try{sfx('pop')}catch(e){}};t.addEventListener('click',go)})();
 
 (function(){const b=document.createElement('button');b.id='gohome';b.className='hb2';b.innerHTML=icon('home',30)+'<span>집으로</span>';b.onclick=()=>{if(busy())return;sfx&&sfx('tap');HV='in';setScreen('house');render()};document.body.appendChild(b);
  setInterval(()=>{const g=SCREEN==='garden';document.body.classList.toggle('gar',g);const st=$('stage');if(!st||!LSM())return;},400)})();
 
 /* 버전 표시 */
-(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v203';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
+(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v204';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
 </script>
 </body></html>
