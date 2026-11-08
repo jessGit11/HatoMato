@@ -128,7 +128,7 @@ button:disabled{opacity:.55;cursor:default;box-shadow:none}
 #hscene{background:#f1e8d0}
 #hbox{position:absolute;top:0;height:100%;aspect-ratio:640/715;left:50%;transform:translateX(-50%)}
 .himg{position:absolute;inset:0;background-size:100% 100%;background-repeat:no-repeat}
-#hwx{position:absolute;overflow:hidden;pointer-events:none;z-index:1}#hroom>svg{position:absolute;left:0;top:0;width:100%;height:100%}#hroom>svg.hf{z-index:2}#hpets{z-index:3}#hroom,#hpets{position:absolute;inset:0;pointer-events:none}.hp{position:absolute;pointer-events:auto;animation:hwalk 6s ease-in-out infinite alternate}
+#hwx{position:absolute;overflow:hidden;pointer-events:none;z-index:1}#hroom>svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible}#hroom>svg.hf{z-index:2}#hpets{z-index:3}#hroom,#hpets{position:absolute;inset:0;pointer-events:none}.hp{position:absolute;pointer-events:auto;animation:hwalk 6s ease-in-out infinite alternate}
 @keyframes hwalk{from{transform:translateX(-35%)}to{transform:translateX(45%)}}
 .hato{position:relative;aspect-ratio:360/351;background-size:100% 100%;background-repeat:no-repeat;transform-origin:50% 100%;animation:hidle 2.8s ease-in-out infinite;cursor:pointer}
 .hato svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
@@ -817,9 +817,9 @@ const WALLS=[
 {id:'w15',name:'라벤더 다이아 벽지',p:30,c:'#e4dcef',pat:'diamond'},
 {id:'w16',name:'노랑 물방울 벽지',p:30,c:'#f6e7a8',pat:'dot'},
 {id:'w17',name:'단풍 벽지',p:40,c:'#f4e0b8',pat:'maple',lim:1}];
-const wallPat=w=>{const grid=(st,fn)=>{let o='';const y0=window.__wy0!=null?Math.floor(window.__wy0/st):0,y1=window.__wy1!=null?window.__wy1:104;for(let j=y0;j*st<=y1;j++)for(let i=0;i*st<=104;i++)o+=fn(i*st+((j%2+2)%2?st/2:0),j*st,i,j);return o},p=w.pat,Y0=window.__wy0!=null?window.__wy0:0,Y1=window.__wy1!=null?window.__wy1:100,md=(v,n)=>((v%n)+n)%n;
- if(p==='stripe')return Array.from({length:13},(_,i)=>`<rect x="${i*8-1}" y="${Y0}" width="4" height="${Y1-Y0}" fill="#7a5f42" fill-opacity=".08" stroke="none"/>`).join('');
- if(p==='hstripe')return Array.from({length:Math.ceil((Y1-Y0)/10)+2},(_,k)=>{const i=Math.floor(Y0/10)+k;return i}).map(i=>`<rect x="0" y="${i*10}" width="100" height="5" fill="#7a5f42" fill-opacity=".09" stroke="none"/>`).join('');
+const wallPat=w=>{const grid=(st,fn)=>{let o='';const y0=window.__wy0!=null?Math.floor(window.__wy0/st):0,y1=window.__wy1!=null?window.__wy1:104;for(let j=y0;j*st<=y1;j++)for(let i=Math.floor(X0/st);i*st<=X1;i++)o+=fn(i*st+((j%2+2)%2?st/2:0),j*st,i,j);return o},p=w.pat,X0=window.__wx0!=null?window.__wx0:0,X1=window.__wx1!=null?window.__wx1:104,Y0=window.__wy0!=null?window.__wy0:0,Y1=window.__wy1!=null?window.__wy1:100,md=(v,n)=>((v%n)+n)%n;
+ if(p==='stripe')return Array.from({length:Math.ceil((X1-X0)/8)+2},(_,k)=>Math.floor(X0/8)+k).map(i=>`<rect x="${i*8-1}" y="${Y0}" width="4" height="${Y1-Y0}" fill="#7a5f42" fill-opacity=".08" stroke="none"/>`).join('');
+ if(p==='hstripe')return Array.from({length:Math.ceil((Y1-Y0)/10)+2},(_,k)=>{const i=Math.floor(Y0/10)+k;return i}).map(i=>`<rect x="${X0}" y="${i*10}" width="${X1-X0}" height="5" fill="#7a5f42" fill-opacity=".09" stroke="none"/>`).join('');
  if(p==='check')return grid(10,(x,y,i,j)=>md(i+j,2)?'':`<rect x="${i*10}" y="${j*10}" width="10" height="10" fill="#7a5f42" fill-opacity=".08" stroke="none"/>`).replace(/<rect x="(\d+)" y="(\d+)"/g,'<rect x="$1" y="$2"');
  if(p==='dot')return grid(8,(x,y)=>`<circle cx="${x}" cy="${y}" r="1.5" fill="#ffffff" fill-opacity=".7" stroke="none"/>`);
  if(p==='heart')return grid(14,(x,y)=>`<path transform="translate(${x} ${y})" d="M0 3C-6 -1 -4 -5 0 -2.2 4 -5 6 -1 0 3Z" fill="#f47876" fill-opacity=".6" stroke="none"/>`);
@@ -827,11 +827,13 @@ const wallPat=w=>{const grid=(st,fn)=>{let o='';const y0=window.__wy0!=null?Math
  if(p==='flower')return grid(16,(x,y)=>[0,1,2,3,4].map(a=>`<circle cx="${(x+2*Math.cos(a*1.2566-1.57)).toFixed(1)}" cy="${(y+2*Math.sin(a*1.2566-1.57)).toFixed(1)}" r="1.6" fill="#f8f1e2" stroke="none"/>`).join('')+`<circle cx="${x}" cy="${y}" r="1.2" fill="#e8d785" stroke="none"/>`);
  if(p==='maple')return grid(18,(x,y,i,j)=>`<path d="${maple(x,y,3.4)}" fill="${['#d9843f','#c9573a','#e8b04a'][md(i+j,3)]}" fill-opacity=".5" stroke="none"/>`);
  if(p==='tomato')return grid(16,(x,y)=>`<circle cx="${x}" cy="${y}" r="3" fill="#f47876" fill-opacity=".6" stroke="none"/><path d="M${x-1.8} ${y-2.6}l1.8 1 1.8-1-.6 1.6h-2.4Z" fill="#b3de88" stroke="none"/>`);
- if(p==='wave')return Array.from({length:Math.ceil((Y1-Y0)/10)+2},(_,k)=>Math.floor(Y0/10)+k).map(j=>`<path d="M-4 ${j*10+5}`+'q4 -4 8 0 '.repeat(1)+'t8 0 '.repeat(14)+`" stroke="#ffffff" stroke-opacity=".7" stroke-width="1.3" fill="none"/>`).join('');
+ if(p==='wave')return Array.from({length:Math.ceil((Y1-Y0)/10)+2},(_,k)=>Math.floor(Y0/10)+k).map(j=>`<path d="M${Math.floor(X0/16)*16-4} ${j*10+5}`+'q4 -4 8 0 '.repeat(1)+'t8 0 '.repeat(Math.ceil((X1-X0)/8)+3)+`" stroke="#ffffff" stroke-opacity=".7" stroke-width="1.3" fill="none"/>`).join('');
  if(p==='diamond')return grid(14,(x,y)=>`<path d="M${x} ${y-4.5}l4.5 4.5-4.5 4.5-4.5-4.5Z" fill="none" stroke="#7a5f42" stroke-opacity=".18" stroke-width="1"/>`);
  return ''};
 const curWall=()=>WALLS.find(x=>x.id===S.wall)||WALLS[0];
-function applyWall(){const w=curWall(),g=$('gback');if(!g)return;g.innerHTML=`<rect width="100" height="100" fill="${w.c}" stroke="none"/>${wallPat(w)}<rect x="16" y="14" width="68" height="60" fill="#d4ede6" stroke="none"/>`;$('scene').style.background=w.c}
+function gardenWide(){let E=0;try{E=LSM()?LSE():0}catch(e){}const a=$('gback'),f=$('gframe');if(!a||!f)return E;[a,f].forEach(v=>{if(E>0){v.setAttribute('viewBox',`${-E} 0 ${100+2*E} 100`);v.style.cssText=`left:${-E}%;width:${100+2*E}%;overflow:visible`}else{v.setAttribute('viewBox','0 0 100 100');v.style.cssText=''}});const L=-E-1,R=101+E;f.innerHTML=`<path fill-rule="evenodd" d="M11 9H89V79H11Z M16 14H84V74H16Z" fill="#c99a6e"/><path d="M13 11.5H87M13 76.5H87" stroke-width="1" stroke-opacity=".4"/><path d="M${L} 79H${R}V88H${L}Z" fill="#d9ae82"/><path d="M${E>0?L+7:6} 79L${E>0?L+1:0} 85M${E>0?R-7:94} 79L${E>0?R-1:100} 85" stroke-width="1.2" stroke-opacity=".35"/><path d="M${L} 88H${R}V100H${L}Z" fill="#b58a63"/><path d="M${L} 94H${R}" stroke-width="1.2" stroke-opacity=".5"/><ellipse cx="50" cy="87" rx="14.5" ry="1.8" fill="#7a5f42" opacity=".18" stroke="none"/><ellipse cx="50" cy="62.5" rx="14.5" ry="3.5" fill="#8a6340"/>`;return E}
+function applyWall(){const w=curWall(),g=$('gback');if(!g)return;const E=gardenWide(),L=-E-1,W=102+2*E;window.__wx0=L;window.__wx1=100+E+1;let pt='';try{pt=wallPat(w)}finally{window.__wx0=window.__wx1=null}g.innerHTML=`<rect x="${L}" width="${W}" height="100" fill="${w.c}" stroke="none"/>${pt}<rect x="16" y="14" width="68" height="60" fill="#d4ede6" stroke="none"/>`;$('scene').style.background=w.c}
+addEventListener('resize',()=>{setTimeout(()=>{try{applyWall()}catch(e){}},300)});
 const rnd=(a,b)=>a+Math.random()*(b-a);const noBird=()=>{const h=kst();return h>=19.5||h<5.5};
 function spawnSky(k,fresh,frac){const now=Date.now(),sel=k==='b'?'#bd .bd':k==='c'?'#cloudG .cldg':'#bd .lf',live=[...document.querySelectorAll(sel)],minp={b:.4,c:.45,l:.35}[k];
  if(!fresh&&!live.every(e=>(now-e.__t0)/(e.__dur*1000)>minp))return;
@@ -1009,9 +1011,14 @@ const bz=(a,c,b,t)=>[0,1].map(i=>(1-t)*(1-t)*a[i]+2*(1-t)*t*c[i]+t*t*b[i]);
 const bulb=(x,y,n)=>`${n?`<circle cx="${x}" cy="${y}" r="11" fill="url(#glw)" stroke="none"/>`:`<circle cx="${x}" cy="${y}" r="4" fill="#f3e2a0" opacity=".25" stroke="none"/>`}<circle cx="${x}" cy="${y}" r="2" fill="#f0dc7a" stroke-width="1.2"/>`;
 function lightsSVG(n){const sw=[[[16,22],[30,37],[49.5,11]],[[49.5,11],[69,37],[83,22]]];
  return sw.map(([a,c,b])=>`<path d="M${a} Q${c} ${b}" stroke-width="1.3"/>`+[.3,.6,.85].map(t=>{const p=bz(a,c,b,t);return bulb(p[0].toFixed(1),(p[1]+2.5).toFixed(1),n)}).join('')).join('')+'<path d="M16 22Q9 36 8 54M83 22Q91 36 92 54" stroke-width="1.3"/>'+bulb(9.6,42,n)+bulb(90.4,42,n)+'<circle cx="16" cy="22" r="1.4" fill="#d8d2c0" stroke-width="1"/><circle cx="49.5" cy="11" r="1.4" fill="#d8d2c0" stroke-width="1"/><circle cx="83" cy="22" r="1.4" fill="#d8d2c0" stroke-width="1"/>'}
+const WEX=()=>LSM()?LSE()+8:0;
+const ALCD=()=>{const e=WEX();return e?`M${-e} 72V32H7Q7 9 49.5 9T92 32H${100+e}V72Z`:'M7 72V32Q7 9 49.5 9T92 32V72Z'};
+const FLRD=()=>{const e=WEX();return e?`M${-e} 72H${100+e}V100H${-e}Z`:'M0 72H100V100H0Z'};
+const flrLines=()=>{const e=WEX(),a=-e,b=100+e;let d=`M${a} 81H${b}M${a} 91H${b}`;for(const [y0,y1,xs] of [[72,81,[22,58,84]],[81,91,[10,40,72]],[91,100,[26,60,90]]])for(let k=-2;k<=2;k++)for(const x of xs){const X=x+100*k;if(e?(X>a&&X<b):(k===0))d+=`M${X} ${y0}V${y1}`}return d};
+function wingWins(wf){const e=WEX();if(!e)return '';let o='',k=0;for(const cx of[-28,128,-88,188]){if(cx+16<-e||cx-16>100+e)continue;o+=`<g transform="translate(${cx-49.5} 0) translate(49.5 56) scale(.62) translate(-49.5 -56)">${wf('w'+(k++))}</g>`}return o}
 function roomBase(n,sky){const c=cel(),cl=(c.s>=0?sunS(...arcp(c.s,33,66,52,19),3.3):'')+(c.m>=0?moonS(...arcp(c.m,33,66,52,19),3.6):'');const view=n?'<circle cx="38" cy="34" r="1.2" fill="#f8f1e2" stroke="none"/><circle cx="60" cy="31" r="1.2" fill="#f8f1e2" stroke="none"/><circle cx="64" cy="44" r="1" fill="#f8f1e2" stroke="none"/>':'';
- return `<rect x="-2" y="-4" width="104" height="104" fill="#8a6340" stroke="none"/><path d="M7 72V32Q7 9 49.5 9T92 32V72Z" fill="#a97e57"/><path d="M10.4 70V32.4Q10.4 12.4 49.5 12.4T88.6 32.4V70" fill="none" stroke-opacity=".45" stroke-width="1.2"/><path d="M34 14V32M68 14V30M17 40V70M83 40V70M25.5 34V44M42 26V30M58 25V28M75.5 33V40M9 52V58M91 52V58" stroke-opacity=".4" stroke-width="1.4"/><path d="M26 63V70M42 56V70M58 58V70M74 62V70" stroke-opacity=".3" stroke-width="1.2"/><path d="M0 72H100V100H0Z" fill="#b48c63" stroke="none"/><path d="M0 72H100" stroke-width="2.6"/><path d="M0 69.6H100" stroke-width="1" stroke-opacity=".5"/><path d="M0 81H100M0 91H100M22 72V81M58 72V81M84 72V81M10 81V91M40 81V91M72 81V91M26 91V100M60 91V100M90 91V100" stroke-opacity=".35" stroke-width="1.3"/><path d="M24.4 56V44A25.1 20.6 0 0 1 74.6 44V56Z" fill="#c4966c" stroke-width="1.6"/><path d="M27 54V44A22.5 18 0 0 1 72 44V54Z" fill="${sky}"/>${view}<clipPath id="wclip"><path d="M27 54V44A22.5 18 0 0 1 72 44V54Z"/></clipPath><g clip-path="url(#wclip)">${cl}</g><path d="M49.5 26V54M27 43H72"/><path d="M48 26h3M48 43h3" stroke-width="2.4"/><path d="M27 44.6A22.5 18 0 0 1 72 44.6" fill="none" stroke-width=".8" stroke-opacity=".5"/><path d="M22.4 54.6H76.6Q77.6 54.6 77.6 55.6V57.2Q77.6 58.2 76.6 58.2H22.4Q21.4 58.2 21.4 57.2V55.6Q21.4 54.6 22.4 54.6Z" fill="#b48c63" stroke-width="1.8"/><path d="M29 58.4V62L33 58.4M70 58.4V62L66 58.4" fill="#b48c63" stroke-width="1.3"/>${lightsSVG(n)}`}
-const clampPos=(f,x,y)=>{const M=window.FMAX||99;return f.ext?{x:Math.max(8,Math.min(92,x)),y:Math.max(64,Math.min(M,y))}:{x:Math.max(10,Math.min(90,x)),y:f.z==='w'?Math.max(20,Math.min(64,y)):Math.max(72,Math.min(M,y))}};
+ const _e=WEX(),_bx=_e?-_e:-2;return `<rect x="${_bx}" y="-4" width="${100-2*_bx}" height="104" fill="#8a6340" stroke="none"/><path d="${ALCD()}" fill="#a97e57"/><path d="M10.4 70V32.4Q10.4 12.4 49.5 12.4T88.6 32.4V70" fill="none" stroke-opacity=".45" stroke-width="1.2"/><path d="M34 14V32M68 14V30M17 40V70M83 40V70M25.5 34V44M42 26V30M58 25V28M75.5 33V40M9 52V58M91 52V58" stroke-opacity=".4" stroke-width="1.4"/><path d="M26 63V70M42 56V70M58 58V70M74 62V70" stroke-opacity=".3" stroke-width="1.2"/><path d="${FLRD()}" fill="#b48c63" stroke="none"/><path d="M${_e?-_e:0} 72H${_e?100+_e:100}" stroke-width="2.6"/><path d="M${_e?-_e:0} 69.6H${_e?100+_e:100}" stroke-width="1" stroke-opacity=".5"/><path d="${flrLines()}" stroke-opacity=".35" stroke-width="1.3"/>${winG("")}${wingWins(winG)}${lightsSVG(n)}`;function winG(id){return `<path d="M24.4 56V44A25.1 20.6 0 0 1 74.6 44V56Z" fill="#c4966c" stroke-width="1.6"/><path d="M27 54V44A22.5 18 0 0 1 72 44V54Z" fill="${sky}"/>${view}<clipPath id="wclip${id}"><path d="M27 54V44A22.5 18 0 0 1 72 44V54Z"/></clipPath><g clip-path="url(#wclip${id})">${cl}</g><path d="M49.5 26V54M27 43H72"/><path d="M48 26h3M48 43h3" stroke-width="2.4"/><path d="M27 44.6A22.5 18 0 0 1 72 44.6" fill="none" stroke-width=".8" stroke-opacity=".5"/><path d="M22.4 54.6H76.6Q77.6 54.6 77.6 55.6V57.2Q77.6 58.2 76.6 58.2H22.4Q21.4 58.2 21.4 57.2V55.6Q21.4 54.6 22.4 54.6Z" fill="#b48c63" stroke-width="1.8"/><path d="M29 58.4V62L33 58.4M70 58.4V62L66 58.4" fill="#b48c63" stroke-width="1.3"/>`}}
+const clampPos=(f,x,y)=>{const M=window.FMAX||99,E=LSM()?LSE():0;return f.ext?{x:Math.max(8-E,Math.min(92+E,x)),y:Math.max(64,Math.min(M,y))}:{x:Math.max(10-E,Math.min(90+E,x)),y:f.z==='w'?Math.max(20,Math.min(64,y)):Math.max(72,Math.min(M,y))}};
 const FSC={"bed0": 0.85, "bed1": 0.85, "bed2": 0.82, "b1": 1.13, "b2": 1.13, "b3": 1.13, "wd1": 1.14, "sh2": 0.92, "sh3": 1.14, "t1": 0.8, "t2": 0.92, "p1": 0.87, "p2": 1.14, "p3": 0.79, "p4": 0.83, "l1": 1.07, "pt1": 1.12, "pt2": 0.92, "pt3": 1.34, "pt4": 1.4, "pt5": 0.92, "pt6": 1.12, "wd4": 1.39, "wd5": 1.64, "p5": 1.14, "ba4": 1.2, "pt7": 1.2, "pt8": 1.15, "pt9": 1.46, "pk1": 1.15, "pk2": 0.72, "pk3": 0.8, "pk4": 0.82, "pk6": 0.85, "pk7": 1.21, "a_pumpkin": 0.79, "a_tree": 0.84, "a_acorn": 0.69};
 function tf(f,p){const b=f.box.split(' ').map(Number),py=f.z==='w'?p.y:Math.min(p.y,window.FMAX||99),ax=b[0]+b[2]/2,ay=f.z==='w'?b[1]+b[3]/2:b[1]+b[3],k=FSC[f.id]||1;return `translate(${(p.x-ax).toFixed(2)} ${(py-ay).toFixed(2)})`+(k!==1?` translate(${ax} ${ay}) scale(${k}) translate(${-ax} ${-ay})`:'')}
 const lampLit=(id,n)=>{const v=(S.lamp||{})[id];return v===undefined?n:!!v};
@@ -1052,25 +1059,24 @@ const HFLOOR=[{id:'f0',n:'나무 바닥(기본)',p:0,c:'#b48c63'},{id:'f1',n:'�
 let DWF=null;
 const hwOwn=id=>id==='w0'||id==='f0'||id==='s0'||!!(S.hwf||{})[id];
 function roomWF(){const c=curRoom();if(EDIT&&HV!=='out'&&DWF)return DWF;return {w:(S.rwall||{})[c]||'w0',f:(S.rfloor||{})[c]||'f0'}}
-function hwallPat(id){const W=HWALL.find(x=>x.id===id)||HWALL[0];if(W.id==='w0')return null;let o='';
- if(id==='w1')for(let x=8;x<92;x+=7)o+=`<rect x="${x}" y="8" width="2.8" height="64" fill="#fff" fill-opacity=".3"/>`;
- if(id==='w2')for(let y=14,i=0;y<72;y+=7,i++)for(let x=10+(i%2)*4.5;x<92;x+=9)o+=`<circle cx="${x}" cy="${y}" r="1.2" fill="#fff" fill-opacity=".5"/>`;
- if(id==='w3')for(let y=15,i=0;y<72;y+=9,i++)for(let x=11+(i%2)*6;x<92;x+=12)o+=`<path d="M${x} ${y+1.4}l-1.7-1.7a1.1 1.1 0 0 1 1.7-1.3a1.1 1.1 0 0 1 1.7 1.3Z" fill="#f47876" fill-opacity=".6"/>`;
- if(id==='w5')for(let y=15,i=0;y<72;y+=9,i++)for(let x=11+(i%2)*6;x<92;x+=12)o+=`<g fill="#f4a79b" fill-opacity=".75">${[0,72,144,216,288].map(a=>`<circle cx="${(x+Math.cos(a*Math.PI/180)*1.2).toFixed(2)}" cy="${(y+Math.sin(a*Math.PI/180)*1.2).toFixed(2)}" r=".8"/>`).join('')}</g><circle cx="${x}" cy="${y}" r=".6" fill="#f3dc86"/>`;
- if(id==='w6')for(let y=9,i=0;y<72;y+=5,i++)for(let x=6-(i%2)*5;x<94;x+=10)o+=`<rect x="${x+.4}" y="${y+.4}" width="9.2" height="4.2" rx="1" fill="#d99a78" stroke="#7a5f42" stroke-opacity=".4" stroke-width=".6"/>`;
- if(id==='w4')for(let y=13,i=0;y<72;y+=8,i++)for(let x=10+(i%3)*3;x<92;x+=11)o+=(i+x)%3?`<circle cx="${x}" cy="${y}" r=".6" fill="#fff6c2"/>`:`<path d="M${x} ${y-1.6}l.5 1.1 1.2.1-.9.8.3 1.2-1.1-.6-1.1.6.3-1.2-.9-.8 1.2-.1Z" fill="#f3dc86"/>`;
- return `<path d="M7 72V32Q7 9 49.5 9T92 32V72Z" fill="${W.c}"/><clipPath id="hwc"><path d="M7 72V32Q7 9 49.5 9T92 32V72Z"/></clipPath><g clip-path="url(#hwc)" stroke="none">${o}</g><path d="M10.4 70V32.4Q10.4 12.4 49.5 12.4T88.6 32.4V70" fill="none" stroke-opacity=".3" stroke-width="1.2"/>`}
-function floorPat(id,y0,y1){const F=HFLOOR.find(x=>x.id===id)||HFLOOR[0];if(F.id==='f0')return null;let o=`<rect x="0" y="${y0}" width="100" height="${y1-y0}" fill="${F.c}" stroke="none"/>`,d='';
- if(id==='f1'){for(let y=y0,r=0;y<y1;y+=6,r++)for(let x=(r%2)*6;x<100;x+=12)o+=`<rect x="${x}" y="${y}" width="6" height="6" fill="#e3c39c" stroke="none"/>`}
- if(id==='f5'){for(let y=y0+3,r=0;y<y1;y+=5,r++)for(let x=3+(r%2)*4;x<100;x+=8)d+=`M${x-1} ${y}l1-1.8l1 1.8`;o+=`<path d="${d}" stroke="#6f9a52" stroke-width=".7" stroke-opacity=".7"/>`}
- if(id==='f2'){for(let y=y0+3,r=0;y<y1;y+=5,r++)for(let x=3+(r%2)*3;x<100;x+=6)o+=`<circle cx="${x}" cy="${y}" r=".5" fill="#fff" fill-opacity=".55" stroke="none"/>`}
- if(id==='f4'){for(let y=y0,r=0;y<y1;y+=5,r++){d+=`M0 ${y}H100`;for(let x=0;x<100;x+=6)d+=`M${x} ${y}l3 5M${x+3} ${y+5}l3-5`}o+=`<path d="${d}" stroke-opacity=".3" stroke-width=".8"/>`}
- if(id==='f3'){for(let y=y0,r=0;y<y1;y+=10,r++){d+=`M0 ${y}H100`;for(let x=(r%2)*10;x<100;x+=20)d+=`M${x} ${y}V${y+10}`}o+=`<path d="${d}" stroke-opacity=".22" stroke-width=".7"/>`;for(let y=y0+2;y<y1;y+=10)for(let x=4;x<100;x+=23)o+=`<path d="M${x} ${y}q3 2 2 5t3 3" stroke="#b9b2a6" stroke-width=".5" stroke-opacity=".7"/>`}
+function hwallPat(id){const W=HWALL.find(x=>x.id===id)||HWALL[0];if(W.id==='w0')return null;let o='';const ex=WEX(),sh=p=>p*Math.ceil(ex/p);
+ if(id==='w1')for(let x=8-sh(7);x<92+ex;x+=7)o+=`<rect x="${x}" y="8" width="2.8" height="64" fill="#fff" fill-opacity=".3"/>`;
+ if(id==='w2')for(let y=14,i=0;y<72;y+=7,i++)for(let x=10+(i%2)*4.5-sh(9);x<92+ex;x+=9)o+=`<circle cx="${x}" cy="${y}" r="1.2" fill="#fff" fill-opacity=".5"/>`;
+ if(id==='w3')for(let y=15,i=0;y<72;y+=9,i++)for(let x=11+(i%2)*6-sh(12);x<92+ex;x+=12)o+=`<path d="M${x} ${y+1.4}l-1.7-1.7a1.1 1.1 0 0 1 1.7-1.3a1.1 1.1 0 0 1 1.7 1.3Z" fill="#f47876" fill-opacity=".6"/>`;
+ if(id==='w5')for(let y=15,i=0;y<72;y+=9,i++)for(let x=11+(i%2)*6-sh(12);x<92+ex;x+=12)o+=`<g fill="#f4a79b" fill-opacity=".75">${[0,72,144,216,288].map(a=>`<circle cx="${(x+Math.cos(a*Math.PI/180)*1.2).toFixed(2)}" cy="${(y+Math.sin(a*Math.PI/180)*1.2).toFixed(2)}" r=".8"/>`).join('')}</g><circle cx="${x}" cy="${y}" r=".6" fill="#f3dc86"/>`;
+ if(id==='w6')for(let y=9,i=0;y<72;y+=5,i++)for(let x=6-(i%2)*5-sh(10);x<94+ex;x+=10)o+=`<rect x="${x+.4}" y="${y+.4}" width="9.2" height="4.2" rx="1" fill="#d99a78" stroke="#7a5f42" stroke-opacity=".4" stroke-width=".6"/>`;
+ if(id==='w4')for(let y=13,i=0;y<72;y+=8,i++)for(let x=10+(i%3)*3-sh(11);x<92+ex;x+=11)o+=(i+x)%3?`<circle cx="${x}" cy="${y}" r=".6" fill="#fff6c2"/>`:`<path d="M${x} ${y-1.6}l.5 1.1 1.2.1-.9.8.3 1.2-1.1-.6-1.1.6.3-1.2-.9-.8 1.2-.1Z" fill="#f3dc86"/>`;
+ return `<path d="${ALCD()}" fill="${W.c}"/><clipPath id="hwc"><path d="${ALCD()}"/></clipPath><g clip-path="url(#hwc)" stroke="none">${o}</g><path d="M10.4 70V32.4Q10.4 12.4 49.5 12.4T88.6 32.4V70" fill="none" stroke-opacity=".3" stroke-width="1.2"/>`}
+function floorPat(id,y0,y1){const F=HFLOOR.find(x=>x.id===id)||HFLOOR[0];if(F.id==='f0')return null;const ex=WEX(),sh=p=>p*Math.ceil(ex/p);let o=`<rect x="${-ex}" y="${y0}" width="${100+2*ex}" height="${y1-y0}" fill="${F.c}" stroke="none"/>`,d='';
+ if(id==='f1'){for(let y=y0,r=0;y<y1;y+=6,r++)for(let x=(r%2)*6-sh(12);x<100+ex;x+=12)o+=`<rect x="${x}" y="${y}" width="6" height="6" fill="#e3c39c" stroke="none"/>`}
+ if(id==='f5'){for(let y=y0+3,r=0;y<y1;y+=5,r++)for(let x=3+(r%2)*4-sh(8);x<100+ex;x+=8)d+=`M${x-1} ${y}l1-1.8l1 1.8`;o+=`<path d="${d}" stroke="#6f9a52" stroke-width=".7" stroke-opacity=".7"/>`}
+ if(id==='f2'){for(let y=y0+3,r=0;y<y1;y+=5,r++)for(let x=3+(r%2)*3-sh(6);x<100+ex;x+=6)o+=`<circle cx="${x}" cy="${y}" r=".5" fill="#fff" fill-opacity=".55" stroke="none"/>`}
+ if(id==='f4'){for(let y=y0,r=0;y<y1;y+=5,r++){d+=`M${-ex} ${y}H${100+ex}`;for(let x=-sh(6);x<100+ex;x+=6)d+=`M${x} ${y}l3 5M${x+3} ${y+5}l3-5`}o+=`<path d="${d}" stroke-opacity=".3" stroke-width=".8"/>`}
+ if(id==='f3'){for(let y=y0,r=0;y<y1;y+=10,r++){d+=`M${-ex} ${y}H${100+ex}`;for(let x=(r%2)*10-sh(20);x<100+ex;x+=20)d+=`M${x} ${y}V${y+10}`}o+=`<path d="${d}" stroke-opacity=".22" stroke-width=".7"/>`;for(let y=y0+2;y<y1;y+=10)for(let x=4-sh(23);x<100+ex;x+=23)o+=`<path d="M${x} ${y}q3 2 2 5t3 3" stroke="#b9b2a6" stroke-width=".5" stroke-opacity=".7"/>`}
  return o}
 function roomBaseWF(n,sky,nonav){let s=roomBase(n,sky);const wf=roomWF(),wp=hwallPat(wf.w),fp=floorPat(wf.f,72,100);
- if(wp){const a='<path d="M7 72V32Q7 9 49.5 9T92 32V72Z" fill="#a97e57"/>',i=s.indexOf(a),j=s.indexOf('<path d="M0 72H100V100H0Z"');if(i>=0&&j>i)s=s.slice(0,i)+wp+s.slice(j)}
- if(fp){const a='<path d="M0 72H100V100H0Z" fill="#b48c63" stroke="none"/>';s=s.replace(a,fp);s=s.replace(/<path d="M0 81H100M0 91H100[^"]*" stroke-opacity="\.35" stroke-width="1\.3"\/>/,'')}
- if(LSM())s=s.replace(/M0 72H100V100H0Z/g,'M-6 72H106V100H-6Z');
+ if(wp){const a=`<path d="${ALCD()}" fill="#a97e57"/>`,i=s.indexOf(a),j=s.indexOf(`<path d="${FLRD()}"`);if(i>=0&&j>i)s=s.slice(0,i)+wp+s.slice(j)}
+ if(fp){const a=`<path d="${FLRD()}" fill="#b48c63" stroke="none"/>`;s=s.replace(a,fp);s=s.replace(/<path d="M-?[\d.]+ 81H[^"]*" stroke-opacity="\.35" stroke-width="1\.3"\/>/,'')}
  return nonav?s:s+roomNav(curRoom(),n)}
 function hwfBuy(kind,id){const L=kind==='w'?HWALL:kind==='s'?HSTAIR:HFLOOR,x=L.find(t=>t.id===id);if(!x)return;S.hwf=S.hwf||{};if(!hwOwn(id)){if(S.money<x.p)return;S.money-=x.p;S.hwf[id]=1;sfx('coin')}const c=curRoom();if(kind==='s'){S.stair=id;msg=`집 계단을 ${x.n}${jo(x.n,'으로')} 바꿨어요!`}else{if(kind==='w'){S.rwall=S.rwall||{};S.rwall[c]=id}else{S.rfloor=S.rfloor||{};S.rfloor[c]=id}msg=`${ROOMS[c].n}에 ${x.n}${jo(x.n,'을','를')} 썼어요!`}save();render()}
 function hwfPv(kind,id,w){if(kind==='s'){const x=HSTAIR.find(t=>t.id===id)||HSTAIR[0];return `<svg viewBox="66 28 36 46" width="${w}" height="${Math.round(w*.75)}" preserveAspectRatio="xMidYMid slice" fill="none" stroke="#7a5f42" stroke-width="1.2" stroke-linejoin="round" style="border:2px solid #7a5f42;border-radius:8px;background:#a97e57;flex:none">${stairUp(x)}</svg>`}const x=(kind==='w'?HWALL:HFLOOR).find(t=>t.id===id);const inner=kind==='w'?(hwallPat(id)||'<path d="M7 72V32Q7 9 49.5 9T92 32V72Z" fill="#a97e57"/><path d="M34 14V32M68 14V30M17 40V70M83 40V70" stroke-opacity=".4" stroke-width="1.4"/>'):(floorPat(id,72,100)||'<path d="M0 72H100V100H0Z" fill="#b48c63" stroke="none"/><path d="M0 81H100M0 91H100M22 72V81M58 72V81M84 72V81M10 81V91M40 81V91M72 81V91M26 91V100M60 91V100M90 91V100" stroke-opacity=".35" stroke-width="1.3"/>');
@@ -1108,7 +1114,7 @@ function roomSVG(pos,split){pos=pos||(EDIT?DRAFT:S.pos);const [sky,n]=skyN([212,
 const pvroom=()=>`<div class="pvi">${roomSVG(S.pos)}</div>`;
 function extBase(){const [sky,n]=skyN([212,237,230],'o'),win=n?'#ffe58a':'#d4ede6';const _c=cel(),cs=(_c.s>=0?sunS(...arcp(_c.s,10,90,54,40),6):'')+(_c.m>=0?moonS(...arcp(_c.m,10,90,54,40),5.5):'');
  const st=n?'<circle cx="14" cy="14" r="1.2" fill="#f8f1e2" stroke="none"/><circle cx="36" cy="8" r="1.2" fill="#f8f1e2" stroke="none"/><circle cx="62" cy="14" r="1" fill="#f8f1e2" stroke="none"/><circle cx="90" cy="22" r="1.2" fill="#f8f1e2" stroke="none"/>':`<ellipse cx="18" cy="14" rx="10" ry="3.6" fill="${cloudFill()}" stroke="none"/><ellipse cx="82" cy="10" rx="8" ry="3" fill="${cloudFill()}" stroke="none"/>${WX==='rain'||WX==='cloud'?`<ellipse cx="50" cy="8" rx="12" ry="3.4" fill="${cloudFill()}" stroke="none"/>`:''}`;
- return `<rect width="100" height="100" fill="${sky}" stroke="none"/>${st}${cs}<rect y="60" width="100" height="40" fill="#b08565" stroke="none"/><path d="M0 60H100" stroke-width="2.6"/>
+ return `<rect width="100" height="100" fill="${sky}" stroke="none"/>${st}${cs}<rect y="60" width="100" height="40" fill="#b08565" stroke="none"/><path d="M0 60H100" stroke-width="1.2"/>
 <path d="M66 47Q73 45 76 35" stroke="#7a5f42" stroke-width="6.4"/><path d="M66 47Q73 45 76 35" stroke="#b58a63" stroke-width="3"/><ellipse cx="76.6" cy="34" rx="3" ry="2.1" transform="rotate(-30 76.6 34)" fill="#d9ae82"/>
 <path d="M27 30Q25 44 24.5 56Q22.5 62 15 67Q24 69 33 66Q44 69 55 66Q62 69 69 67Q66 62 67 56Q69.5 44 71 32Z" fill="#b58a63"/>
 <path d="M36 33Q40 40 36 47M60 33Q57 40 61 47M32 52Q36 58 33 64M64 52Q61 58 64 63M44 56Q42 61 45 65" stroke-width="1.7"/>
@@ -1264,7 +1270,7 @@ function bringIn(){tickPets();const s=S.hs[SEL];if(!s||s.o!==1)return;const n=SE
  if(ins.length>=3){setSay('집 안은 3마리까지예요. 먼저 한 마리를 밖으로 내보내요.');return}
  s.o=0;save();renderHouse();setSay(t+`${nameOf(SEL)}${ga(nameOf(SEL))} 집 안으로 들어왔당!`)}
 function renderHouse(){const out=HV==='out';tickPets();const list=EDIT?[]:hlist(out);if(list.length&&!list.includes(SEL))SEL=list[0];const n=(out?'o':'i')+list.join(',')+curRoom()+JSON.stringify(out?{}:HPP);
- const _w=$('hwx');$('hroom').innerHTML=out?exterior():roomSVG(null,1);if(!out){const r=$('hroom');r.insertBefore(_w,r.children[1])}else $('hscene').insertBefore(_w,$('hpets'));$('hwx').style.cssText=out?'left:0;top:0;width:100%;height:100%':'left:27%;top:26%;width:45%;height:28%;border-radius:50% 50% 0 0/64% 64% 0 0';if(!out&&curRoom()==='b')$('hwx').style.display='none';
+ const _w=$('hwx');$('hroom').innerHTML=out?exterior():roomSVG(null,1);if(!out&&LSM()){const e=WEX();$('hroom').querySelectorAll(':scope>svg').forEach(sv=>{sv.setAttribute('viewBox',`${-e} 0 ${100+2*e} 100`);sv.style.cssText=`left:${-e}%;width:${100+2*e}%`})};if(!out){const r=$('hroom');r.insertBefore(_w,r.children[1])}else $('hscene').insertBefore(_w,$('hpets'));$('hwx').style.cssText=out?'left:0;top:0;width:100%;height:100%':'left:27%;top:26%;width:45%;height:28%;border-radius:50% 50% 0 0/64% 64% 0 0';if(!out&&curRoom()==='b')$('hwx').style.display='none';
  if($('hpets').dataset.n!==String(n)){$('hpets').dataset.n=n;$('hpets').innerHTML=petsHTML(list)}meRender();
  $('hscore').textContent=(out?'밭 소품 '+Object.keys(S.xpos).length:'가구 '+score())+'개';$('hview').textContent=out?'안으로 들어가기':'밖에서 보기';$('hview').style.display=EDIT?'none':'';careRender();
  $('hedit').hidden=EDIT;$('hshop').hidden=EDIT;$('hsave').hidden=$('hcancel').hidden=!EDIT;hsheetUI();$('hscene').classList.toggle('ed',EDIT);
@@ -1759,15 +1765,15 @@ let MEP=null;
 let MEPV=HV;function meHTML(){if(!S.me||EDIT)return '';if(MEPV!==HV){MEPV=HV;MEP=null}const p=MEP||(MEP=HV==='out'?{x:30,y:92}:{x:50,y:93});return `<div class="mev" id="mev" style="left:${p.x}%;top:${p.y}%">${meSvg(S.me)}<span class="tag">${esc(S.me.nm)}</span></div>`}
 function meRender(){const hp=$('hpets');if(!hp)return;let e=$('mev');const h=meHTML();if(!h){if(e)e.remove();return}if(!e){hp.insertAdjacentHTML('beforeend',h);return}if(e.dataset.k!==JSON.stringify(S.me)){e.dataset.k=JSON.stringify(S.me);e.querySelector('svg').outerHTML=meSvg(S.me);e.querySelector('.tag').textContent=S.me.nm}}
 let MEW=null;
-function meWalk(x,y,cb){const e=$('mev');if(!e)return;clearTimeout(MEW);const p=MEP||{x:50,y:93};x=Math.max(2,Math.min(98,x));y=HV==='out'?Math.max(66,Math.min(98,y)):Math.max(76,Math.min(97,y));const d=Math.hypot(x-p.x,(y-p.y)*.7),t=Math.max(.25,d/40);
+function meWalk(x,y,cb){const e=$('mev');if(!e)return;clearTimeout(MEW);const p=MEP||{x:50,y:93};{const E=LSM()?LSE():0;x=Math.max(2-E,Math.min(98+E,x))}y=HV==='out'?Math.max(66,Math.min(98,y)):Math.max(76,Math.min(97,y));const d=Math.hypot(x-p.x,(y-p.y)*.7),t=Math.max(.25,d/40);
  const sv=e.querySelector('svg');if(Math.abs(x-p.x)>.5)sv.style.transform=x<p.x?'scaleX(-1)':'';e.classList.add('cwalk');e.style.transition=`left ${t}s linear,top ${t}s linear`;e.style.left=x+'%';e.style.top=y+'%';MEP={x:x,y:y};
  MEW=setTimeout(()=>{e.classList.remove('cwalk');cb&&cb()},t*1000)}
 function meGo(to,ex){if(!(to==='m'||(S.rx&&S.rx[to]))){setSay('아직 갈 수 없는 곳이에요.');sfx('bad');return}MEP={x:ex,y:93};goRoom(to)}
-function meTap(x,y){if(HV==='out'){meWalk(x,y);return}const c=curRoom(),N=RNB[c]||{};
- if(N.U&&x>73&&y<72){meWalk(76,92,()=>{meWalk(90,80,()=>meGo(N.U,c==='b'?66:70))});return}
- if(N.D&&x>76&&y>=72){meWalk(80,90,()=>{meWalk(92,97,()=>meGo(N.D,c==='u'?66:62))});return}
- if(N.L&&x<7){meWalk(2,y,()=>meGo(N.L,84));return}
- if(N.R&&x>93){meWalk(98,y,()=>meGo(N.R,18));return}
+function meTap(x,y){if(HV==='out'){meWalk(x,y);return}const c=curRoom(),N=RNB[c]||{},E=LSM()?LSE():0;
+ if(N.U&&x>73&&x<=100&&y<72){meWalk(76,92,()=>{meWalk(90,80,()=>meGo(N.U,c==='b'?66:70))});return}
+ if(N.D&&x>76&&x<=100&&y>=72){meWalk(80,90,()=>{meWalk(92,97,()=>meGo(N.D,c==='u'?66:62))});return}
+ if(N.L&&x<7-E){meWalk(2-E,y,()=>meGo(N.L,84+E));return}
+ if(N.R&&x>93+E){meWalk(98+E,y,()=>meGo(N.R,18-E));return}
  meWalk(x,y)}
 
 
@@ -2603,8 +2609,9 @@ render=window.render;setScreen=window.setScreen;renderHouse=window.renderHouse;s
 
 (function(){const hs=$('hscene');if(!hs)return;hs.addEventListener('click',e=>{if(SCREEN!=='house'||EDIT||busy()||!S.me)return;if(e.target.closest('button,.hp,#care,.hbtn,#hsheet,#busst,[data-t]'))return;if(e.target.closest('.fu.flmp')&&!(e.target.tagName==='rect'&&e.target.getAttribute('fill-opacity')==='0'))return;if(e.target.closest('.fu.fwd')){e.stopPropagation();sfx('tap');meOpen(false,'wear');return}
  if(e.target.closest('.mev')){e.stopPropagation();return}
- const r=$('hpets').getBoundingClientRect();if(!r.width)return;const x=(e.clientX-r.left)/r.width*100,y=(e.clientY-r.top)/r.height*100;if(x<-2||x>102||y<0||y>104)return;e.stopPropagation();meTap(x,y)},true);
+ const r=$('hpets').getBoundingClientRect();if(!r.width)return;const x=(e.clientX-r.left)/r.width*100,y=(e.clientY-r.top)/r.height*100;const _E=LSM()?LSE():0;if(x<-2-_E||x>102+_E||y<0||y>104)return;e.stopPropagation();meTap(x,y)},true);
  const chk=()=>{if(!S.me&&!$('mkme')?.offsetParent)meOpen(true)};setTimeout(chk,400)})();
+(function(){const st=$('stage');if(!st)return;st.addEventListener('click',e=>{if(e.target.id!=='stage'||SCREEN!=='house'||EDIT||busy()||!S.me||!LSM())return;const r=$('hpets').getBoundingClientRect();if(!r.width)return;const x=(e.clientX-r.left)/r.width*100,y=(e.clientY-r.top)/r.height*100,E=LSE();if(x<-2-E||x>102+E||y<0||y>104)return;e.stopPropagation();meTap(x,y)},true)})();
 /* ===== 하토 시티 (멀티플레이 도시 광장 · 쪽지) ===== */
 const CITY={room:null,db:null,id:null,joining:0,off:0,sent:{},bb:{},notes:[],players:[],lastSend:0,seen:0,peerEls:{}};
 ICONS.mail='<rect x="8" y="16" width="48" height="34" rx="6" fill="#fffdf6"/><path d="M10 21L32 38L54 21"/>';
@@ -2728,7 +2735,7 @@ function extArt(kind,side,E,rows,seed,ov=0){
   if(i===0&&night){for(let k=0;k<E/6;k++)o+=`<circle cx="${(x0+R(k+30)*E).toFixed(1)}" cy="${(3+R(k+60)*Math.max(8,(S[1]?S[1].y0:40)-14)).toFixed(1)}" r="1.1" fill="#f8f1e2" stroke="none"/>`}
  }
  o+=`<path d="${ln}" fill="none" stroke-width="1.2"/>`;
- const g=gy+1.5,tex=(k,pal)=>GRD(k,g,106,x0,x1,seed,pal).replace(/^<rect[^>]*\/>/,'');
+ const g=gy+1.5,tex=(k,pal)=>{const sc=['tuft','gflow','tuftS','leaf','glawn'].includes(k),a0=sc&&side>0?x0+ov+12:x0,a1=sc&&side<0?x1-ov-12:x1;return GRD(k,g,106,a0,a1,seed,pal).replace(/^<rect[^>]*\/>/,'')};
  try{
   if(kind==='brick')o+=tex('brick');else if(kind==='meadow')o+=(seed%2?tex('gflow'):tex('tuft'));else if(kind==='forest')o+=tex('tuftS')+(inSeason('aut')?tex('leaf'):'');else if(kind==='lawn')o+=tex('glawn');else if(kind==='camp')o+=tex('tuft');
   else if(kind==='check')o+=tex('check',[S[L].c,shade(S[L].c,.93)]);
@@ -2818,8 +2825,8 @@ let RZT=0;addEventListener('resize',()=>{clearTimeout(RZT);RZT=setTimeout(()=>{i
 /* 집·정원·마당: 기존 배경을 옆으로 이어 그림 */
 let LSSIG='';
 setInterval(()=>{if(!LSM())return;const E=LSE();let host=null,svgs=[],opt={};
- try{if(SCREEN==='garden'){host=$('scene');svgs=[$('gback'),$('gframe')];opt={kind:'sill',seed:5};const gb=$('gback'),gf=$('gframe'),vc=document.querySelector('#view>svg.vc'),sp=h=>h.replace(/ id="[^"]*"/g,'');if(gb&&gf)opt={tile:sp(gb.innerHTML)+(vc?`<g clip-path="none">${sp(vc.innerHTML)}</g>`:'')+sp(gf.innerHTML)}}
- else if(SCREEN==='house'){host=$('hscene');if(HV==='out'){svgs=[document.querySelector('#hroom>svg')];opt={kind:'meadow',seed:6}}else{const [sky,n]=skyN([212,237,230]);opt={tile:roomBaseWF(n,sky,1)}}}}catch(e){return}
+ try{if(SCREEN==='garden'){const o=$('scene').querySelector(':scope>.lsw');if(o)o.remove();return}
+ else if(SCREEN==='house'){host=$('hscene');if(HV==='out'){svgs=[document.querySelector('#hroom>svg')];opt={kind:'meadow',seed:6}}else{host=null;const old=$('hscene').querySelector(':scope>.lsw');if(old)old.remove();return}}}catch(e){return}
  if(!host)return;const sig=SCREEN+HV+(typeof curRoom==='function'?curRoom():'')+Math.floor(Date.now()/60000)+JSON.stringify([S.wall,S.rwall,S.rfloor,S.hwf&&0])+Math.round(E)+(opt.tile?'t':'');let el=host.querySelector(':scope>.lsw');if(el&&el.dataset.s===sig)return;
  if(!el){el=document.createElement('div');el.className='lsw';host.insertBefore(el,host.firstChild)}el.dataset.s=sig;el.innerHTML=E>0?stripOf(svgs,-1,E,opt)+stripOf(svgs,1,E,opt):''},700);
 
@@ -2830,6 +2837,6 @@ setInterval(()=>{if(!LSM())return;const E=LSE();let host=null,svgs=[],opt={};
  setInterval(()=>{const g=SCREEN==='garden';document.body.classList.toggle('gar',g);const st=$('stage');if(!st||!LSM())return;},400)})();
 
 /* 버전 표시 */
-(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v212';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
+(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v215';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
 </script>
 </body></html>
