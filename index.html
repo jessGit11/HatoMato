@@ -2279,7 +2279,7 @@ function sayAt(x,y,t){const b=$('tsp');if(!b)return;b.textContent=t;b.style.left
 function goArea(a,side,from){const T=tw(),ar=ARR[from+'>'+a],hz=LSM()&&(side==='L'||side==='R')&&!(ar&&ar.y),x=hz?(side==='R'?-TWE()+22:100+TWE()-22):ar?ar.x:side==='L'?90:side==='R'?10:50,px0=T.pos?T.pos.x:50;T.area=a;T.pos={x:x,y:clampG(a,x,ar&&ar.y?ar.y:(T.pos&&T.pos.y)||80)};if(LSM())camJump('snap');save();const t=$('tart');t.classList.remove('fadein');void t.offsetWidth;townRender();t.classList.add('fadein');sfx('pop')}
 const exList=()=>(S.hs||[]).map((s,i)=>i).filter(i=>S.hs[i].ex);
 function townExtra(a){return gatherLayer(a)+lyr(zf(4),festDeco(a)+fireworks(a))+treasureLayer(a)+marketLayer(a)}
-let TLA='';function townRender(){const el=$('tscene');if(!el||SCREEN!=='town')return;const T=tw();if(!routes().includes(T.area))T.area='v';const ta=$('tart'),keep=TLA===T.area?(()=>{const q={};ta.getAnimations({subtree:true}).forEach(a=>{const n=a.animationName;if(n)(q[n]=q[n]||[]).push(a.currentTime)});return q})():null;if(TLA!==T.area)sayClear();TLA=T.area;const sf=(n,f)=>{try{return f()}catch(e){errNote(n+' '+T.area,e);return ''}};const _art=townSVG();ta.innerHTML=_art+sf('extra',()=>townExtra(T.area))+sf('fx',()=>townFX());sf('tiles',()=>tilesRender(T.area,_art));sf('npcZ',()=>npcZ());if(keep)sf('anim',()=>ta.getAnimations({subtree:true}).forEach(a=>{const l=keep[a.animationName];if(l&&l.length)a.currentTime=l.shift()}));sf('pl',()=>plRender());sf('bk',()=>{if(typeof bkDraw==='function'){bkDraw();bkHold()}});
+let TLA='';function townRender(){const el=$('tscene');if(!el||SCREEN!=='town')return;const T=tw();if(!routes().includes(T.area))T.area='v';const ta=$('tart'),keep=TLA===T.area?(()=>{const q={};ta.getAnimations({subtree:true}).forEach(a=>{const n=a.animationName;if(n)(q[n]=q[n]||[]).push(a.currentTime)});return q})():null;if(TLA!==T.area)sayClear();TLA=T.area;const sf=(n,f)=>{try{return f()}catch(e){errNote(n+' '+T.area,e);return ''}};const _art=wideArt(townSVG(),T.area,LSM()?TWE():0);ta.innerHTML=_art+sf('extra',()=>townExtra(T.area))+sf('fx',()=>townFX());sf('tiles',()=>tilesRender(T.area,_art));sf('npcZ',()=>npcZ());if(keep)sf('anim',()=>ta.getAnimations({subtree:true}).forEach(a=>{const l=keep[a.animationName];if(l&&l.length)a.currentTime=l.shift()}));sf('pl',()=>plRender());sf('bk',()=>{if(typeof bkDraw==='function'){bkDraw();bkHold()}});
  const tt=$('ttint');tt.style.background=SLP?'rgb(70,78,132)':`rgb(${lerp(kh())})`;
  if(SLP){const L=[],hole=(x,y,a,b)=>`radial-gradient(circle at ${x}% ${y}%,#0000 ${a}%,#000 ${b}%)`;[[14,10],[36,6],[62,10],[90,16],[24,24],[76,26]].forEach(p=>L.push(hole(p[0],p[1],1,4.5)));const c=cel();if(c.m>=0){const q=arcp(c.m,10,90,50,34);L.push(hole(q[0],q[1],3,9))}if(T.area==='v'&&T.build.lamp){L.push(hole(31,65,3,14));L.push(hole(77,65,3,14))}adopted().filter(i=>HAREA[i]===T.area).forEach(i=>{const p=HP(i);L.push(hole(p.x+4.7,p.y+9.6,2,8))})
   tt.style.webkitMaskImage=tt.style.maskImage=L.join(',');tt.style.webkitMaskComposite='source-in';tt.style.maskComposite='intersect'}else{tt.style.webkitMaskImage=tt.style.maskImage=''}}
@@ -2740,16 +2740,45 @@ function stripOf(svgs,side,E,opt){opt=opt||{};let inner='';
  if(opt.tile){const x0=side<0?-E:100;inner=`<svg viewBox="${x0} 0 ${E} 100" preserveAspectRatio="none" filter="url(#rough2)" fill="none" stroke="#7a5f42" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden">`+[1,2].filter(k=>k===1||E>100).map(k=>`<g transform="translate(${side<0?-100*k:100*k} 0)">${opt.tile}</g>`).join('')+'</svg>'}
  else{const rows=sampleRows(svgs,side<0?1.5:98.5);if(!rows[0])return '';inner=extArt(opt.kind||'plain',side,E,rows,opt.seed||3)}
  return `<div class="lsx" style="left:${side<0?-E+'%':'100%'};width:${E}%">${inner}</div>`}
+/* ===== 한 장짜리 넓은 맵: 원래 그림의 도형 자체를 양옆으로 이어 그림 ===== */
+const WIDE_OK=new Set(['v']);
+const f1=x=>+(+x).toFixed(2);
+function herm(P,sa,sb){const n=P.length,T=[];for(let i=0;i<n;i++)T[i]=i===0?sa:i===n-1?sb:Math.max(-1,Math.min(1,(P[i+1][1]-P[i-1][1])/(P[i+1][0]-P[i-1][0])));
+ let d='';for(let i=0;i<n-1;i++){const dx=(P[i+1][0]-P[i][0])/3;d+=`C${f1(P[i][0]+dx)} ${f1(P[i][1]+T[i]*dx)} ${f1(P[i+1][0]-dx)} ${f1(P[i+1][1]-T[i+1]*dx)} ${f1(P[i+1][0])} ${f1(P[i+1][1])}`}return d}
+function hillWide(d,E,sd,lo,hi){
+ const m=d.match(/^M0 ([\d.]+)(Q[\d.]+ [\d.]+ [\d.]+ [\d.]+)T100 ([\d.]+)V([\d.]+)H0Z$/);if(!m)return d;
+ const a=+m[1],q=m[2].match(/[\d.]+/g).map(Number),y2=+m[3],t=m[4],sL=(q[1]-a)/q[0],sR=(y2-(2*q[3]-q[1]))/(100-(2*q[2]-q[0])),R=k=>sr(sd,k);
+ const n=Math.max(2,Math.round(E/20)),st=E/n,crest=k=>lo+(hi-lo)*.3*R(k),vall=k=>lo+(hi-lo)*(.68+.32*R(k));
+ const L=[];for(let i=0;i<n;i++){const j=n-i,c=((sL<0?1:0)+j)%2===0;L.push([-E+i*st,c?crest(i):vall(i)])}L.push([0,a]);
+ const Rr=[[100,y2]];for(let i=1;i<=n;i++){const c=((sR<0?0:1)+i)%2===1;Rr.push([100+i*st,c?crest(i+50):vall(i+50)])}
+ return `M${-E} ${f1(L[0][1])}${herm(L,0,sL)}${m[2]}T100 ${y2}${herm(Rr,sR,0)}V${t}H${-E}Z`}
+function brickExt(E,y0,y1){let dl='',dr='',r=0;for(let y=y0;y<y1;y+=4.6,r++){const ys=y.toFixed(1),h=Math.min(4.6,y1-y).toFixed(1);dl+=`M${-E} ${ys}H0`;dr+=`M100 ${ys}H${100+E}`;
+  for(let x=(r%2?-4:-8);x>=-E;x-=8)dl+=`M${x} ${ys}v${h}`;for(let x=(r%2?100:104);x<=100+E;x+=8)dr+=`M${x} ${ys}v${h}`}
+ return `<path d="${dl+dr}" stroke-width=".35" stroke-opacity=".5"/>`}
+function wideArt(art,a,E){
+ if(!E||!WIDE_OK.has(a)||!art)return art;
+ try{const sd=a.charCodeAt(0),W=100+2*E,night=nightF(kh())>.5;let hi=0;
+  let s=art.replace('viewBox="0 0 100 100"',`viewBox="${-E} 0 ${W} 100"`).replace('style="overflow:visible"',`style="overflow:visible;position:absolute;left:${-E}%;top:0;width:${W}%;height:100%"`);
+  s=s.replace('<rect x="-2" y="-6" width="104" height="30"',`<rect x="${-E-2}" y="-6" width="${104+2*E}" height="30"`).replace('<rect width="100" height="100" fill="rgb(',`<rect x="${-E}" width="${W}" height="100" fill="rgb(`);
+  s=s.replace(/<path d="(M0 [\d.]+Q[^"]*?V[\d.]+H0Z)"/g,(m0,d)=>{const k=hi++;return `<path d="${hillWide(d,E,sd+k*11,k?43:28,k?58:50)}"`});
+  s=s.replace(/<rect x="0" y="62" width="100" height="38"/,`<rect x="${-E}" y="62" width="${W}" height="38"`);
+  const ed='<path d="M0 62Q50 59 100 62" stroke-width=".9"/>',R=k=>sr(sd,k);
+  if(!s.includes(ed))return art;
+  const gp=(sgn)=>{const n=Math.max(2,Math.round(E/25)),P=[];for(let i=0;i<=n;i++)P.push([sgn<0?-E+i*E/n:100+i*E/n,62+(i===(sgn<0?n:0)?0:(R(i+(sgn<0?0:20))-.5)*1.4)]);return P};
+  const GL=gp(-1),GR=gp(1),edge=`<path d="M${-E} ${f1(GL[0][1])}${herm(GL,0,-.06)}Q50 59 100 62${herm(GR,.06,0)}" stroke-width=".9"/>`;
+  let trees='';{const gap=26;for(const side of[-1,1]){let d=16+R(1)*gap*.5,k=0;while(d<E-2){const x=side<0?-d:100+d,v=k%2?4:1,sc=.58+.3*R(k+5);trees+=dsG(DSN.tree[v],x,63.2,sc,22,37);d+=gap*(.7+.6*R(k+9)+(side>0?.05:0));k++}}}
+  let stars='';if(night)for(const side of[-1,1])for(let k=0;k<E/6;k++)stars+=`<circle cx="${f1(side<0?-E+R(k+30)*E:100+R(k+60)*E)}" cy="${f1(3+R(k+90+(side>0?7:0))*30)}" r="1.1" fill="#f8f1e2" stroke="none"/>`;
+  return s.replace(ed,stars+brickExt(E,62,100)+edge+trees)}catch(e){errNote('wideArt',e);return art}}
 function portalHTML(a,side,to){const E=TWE(),ok=unlocked(to),g=gyOf(a),cx=side<0?-E+10:100+E-10,my=(g[0]+g[1])/2;
  return `<div class="por${ok?'':' lk'}" style="left:${cx-6}%;top:${my-30}%;width:12%;height:44%"><svg viewBox="0 0 60 100" fill="none" stroke="#7a5f42" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="30" cy="50" rx="25" ry="44" fill="${ok?'#c9bdf3':'#cfc7b6'}" fill-opacity=".6"/><ellipse cx="30" cy="50" rx="17" ry="33" fill="${ok?'#f3ecff':'#e8e2d4'}" fill-opacity=".9" class="psw"/><path d="M30 24c11 7 11 19 0 26s-11 19 0 26" stroke-width="2" stroke="${ok?'#a98fe0':'#b5ad9a'}"/><circle cx="14" cy="14" r="2" fill="#fffdf6" stroke="none"/><circle cx="48" cy="30" r="1.6" fill="#fffdf6" stroke="none"/></svg><b>${ok?'':'🔒 '}${ARN[to]}</b></div>`}
 function tilesRender(a,art){const el=$('ttiles');if(!el)return;if(!LSM()){el.innerHTML='';return}const E=TWE(),G=GRAPH[a]||{};
  const base=document.querySelector('#tart>svg');
- const o1={kind:EXK[a]||'plain',seed:a.charCodeAt(0)};el.innerHTML=stripOf([base],-1,E,o1)+stripOf([base],1,E,Object.assign({},o1,{seed:o1.seed+4}))+(G.L?portalHTML(a,-1,G.L):'')+(G.R?portalHTML(a,1,G.R):'')}
+ const o1={kind:EXK[a]||'plain',seed:a.charCodeAt(0)};el.innerHTML=(WIDE_OK.has(a)?'':stripOf([base],-1,E,o1)+stripOf([base],1,E,Object.assign({},o1,{seed:o1.seed+4})))+(G.L?portalHTML(a,-1,G.L):'')+(G.R?portalHTML(a,1,G.R):'')}
 (function camLoop(){requestAnimationFrame(camLoop);const sc=$('tscene');if(!sc)return;if(!LSM()||SCREEN!=='town'){if(CAM||sc.style.transform){CAM=0;sc.style.transform=''}CAMD='snap';return}
  const s=sc.offsetWidth;if(!s)return;const pl=$('tpl');let px=tw().pos.x;if(pl&&pl.style.display!=='none')px=pl.offsetLeft/s*100+3.4;
  const lim=Math.max(0,(50+TWE())*s/100-VW()/2),tg=Math.max(-lim,Math.min(lim,(50-px)*s/100));
  if(CAMD==='snap')CAM=tg;CAMD=null;CAM+=(tg-CAM)*.2;if(Math.abs(tg-CAM)<.3)CAM=tg;sc.style.transform=`translateX(${CAM.toFixed(1)}px)`})();
-$('tscene').addEventListener('click',e=>{const n=e.target.closest&&e.target.closest('#ttiles');if(!n||busy()||SCREEN!=='town')return;const r=$('tscene').getBoundingClientRect();walk((e.clientX-r.left)/r.width*100,(e.clientY-r.top)/r.height*100,edgeCheck)});
+$('tscene').addEventListener('click',e=>{if(busy()||SCREEN!=='town')return;const r=$('tscene').getBoundingClientRect(),px=(e.clientX-r.left)/r.width*100,py=(e.clientY-r.top)/r.height*100,n=e.target.closest&&e.target.closest('#ttiles');if(!n&&!((px<0||px>100)&&e.target.closest&&e.target.closest('#tart')&&!e.target.closest('[data-t]')))return;walk(px,py,edgeCheck)});
 let RZT=0;addEventListener('resize',()=>{clearTimeout(RZT);RZT=setTimeout(()=>{if(SCREEN==='town')townRender()},250)});
 /* 집·정원·마당: 기존 배경을 옆으로 이어 그림 */
 let LSSIG='';
@@ -2766,6 +2795,6 @@ setInterval(()=>{if(!LSM())return;const E=LSE();let host=null,svgs=[],opt={};
  setInterval(()=>{const g=SCREEN==='garden';document.body.classList.toggle('gar',g);const st=$('stage');if(!st||!LSM())return;},400)})();
 
 /* 버전 표시 */
-(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v204';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
+(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v205';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
 </script>
 </body></html>
