@@ -322,6 +322,13 @@ body.ls .say:empty{display:none}
 #ttiles{position:absolute;inset:0;display:none}body.ls #ttiles{display:block}
 .nbt{position:absolute;top:0;width:100%;height:100%}.nbt>svg{display:block;width:100%;height:100%}.nbt *{pointer-events:none}
 body.ls #ttint{left:-400%;right:-400%}
+body.ls #panel{left:auto;width:min(54vw,580px);border-left:4px solid var(--ink);border-radius:18px 0 0 18px;animation:psl .28s ease-out}
+@keyframes psl{from{transform:translateX(40%);opacity:.3}}
+body.ls #md .mb{width:min(72vw,600px);max-height:96%}
+body.ls #adopt,body.ls #game{overflow:auto;justify-content:flex-start}body.ls #adopt>:first-child,body.ls #game>:first-child{margin-top:auto}body.ls #adopt>:last-child,body.ls #game>:last-child{margin-bottom:auto}
+body.ls #care{position:fixed;right:12px;top:54px}
+#gohome{display:none;position:fixed;bottom:8px;z-index:6;flex-direction:column;align-items:center;gap:1px;width:min(70px,19vw);padding:4px 0 3px;border-radius:16px;font-size:14px;line-height:1.1;left:50%;transform:translateX(-50%)}
+body.ls.gar #gohome{display:flex}
 #game{z-index:25!important}#panel{z-index:22!important}#adopt{z-index:23!important}
 #hshop{display:none!important}
 #hscene:not(.ed) #hroom .fu.flmp,#hscene:not(.ed) #hroom .fu.fwd{pointer-events:auto;cursor:pointer}
@@ -2690,6 +2697,9 @@ $('tscene').addEventListener('click',e=>{const n=e.target.closest&&e.target.clos
 
 (function(){const h=document.querySelector('h1.ttl');if(!h)return;const t=document.createElement('div');t.id='title';document.body.appendChild(t);t.appendChild(h);const b=document.createElement('button');b.id='tgo';b.textContent='시작하기';t.appendChild(b);const sm=document.createElement('small');sm.textContent='핸드폰을 가로로 돌려서 즐겨요';t.appendChild(sm);
  const go=()=>{t.style.transition='opacity .35s';t.style.opacity=0;setTimeout(()=>t.remove(),380);try{sfx('pop')}catch(e){}};t.addEventListener('click',go)})();
+
+(function(){const b=document.createElement('button');b.id='gohome';b.className='hb2';b.innerHTML=icon('home',30)+'<span>집으로</span>';b.onclick=()=>{if(busy())return;sfx&&sfx('tap');HV='in';setScreen('house');render()};document.body.appendChild(b);
+ setInterval(()=>{const g=SCREEN==='garden';document.body.classList.toggle('gar',g);const st=$('stage');if(!st||!LSM())return;let bg='#f1e8d0';try{if(g)bg='linear-gradient(#f3e9cf 0 77%,#b08565 77%)';else if(SCREEN==='house')bg=HV==='out'?`linear-gradient(rgb(${skyBase('o')}) 0 69%,#a07757 69%)`:'#8a6340'}catch(e){}if(st.style.background!==bg)st.style.background=bg},400)})();
 
 </script>
 </body></html>
