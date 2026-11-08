@@ -324,10 +324,10 @@ body.ls .say:empty{display:none}
 #ttiles .lsx{pointer-events:auto}#ttiles .lsx *{pointer-events:none}
 .lsw{position:absolute;inset:0;pointer-events:none;z-index:0}.lsw .lsx{pointer-events:none}
 body.ls #scene{overflow:visible}
-body.ls #tint,body.ls #htint{left:-400%;right:-400%}
+body.ls #tint,body.ls #htint{left:calc(-1*var(--sl,0px));right:calc(-1*var(--sl,0px))}
 .por{position:absolute;pointer-events:none;z-index:40;display:flex;flex-direction:column;align-items:center;animation:porb 2.4s ease-in-out infinite}.por svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 6px #c9bdf3)}.por .psw{animation:psw 2.4s ease-in-out infinite;transform-origin:30px 50px}.por b{position:absolute;bottom:-6%;white-space:nowrap;background:#fffdf6;border:2px solid #7a5f42;border-radius:99px;padding:0 7px;font-size:12px;line-height:1.3;color:#7a5f42}.por.lk svg{filter:grayscale(.8)}
 @keyframes porb{50%{transform:translateY(-2%)}}@keyframes psw{50%{transform:scale(.9);opacity:.75}}
-body.ls #ttint{left:-400%;right:-400%}
+body.ls #ttint{left:calc(-1*var(--sl,0px) - 30%);right:calc(-1*var(--sl,0px) - 30%)}
 body.ls #panel{left:auto;width:min(54vw,580px);border-left:4px solid var(--ink);border-radius:18px 0 0 18px;animation:psl .28s ease-out}
 @keyframes psl{from{transform:translateX(40%);opacity:.3}}
 body.ls #md .mb{width:min(72vw,600px);max-height:96%}
@@ -2691,16 +2691,20 @@ let CAM=0,CAMD='snap';
 function camJump(d){CAMD=d}
 const LSE=()=>{const s=Math.min(innerWidth,innerHeight);return Math.max(0,(innerWidth/s*100-100)/2)};
 function TWE(){return Math.round((LSE()+28)*10)/10}
-function tileURL(h,side){const t=document.createElement('div');t.innerHTML=h;const sv=t.querySelector('svg');if(!sv)return '';const d=.6,x0=side<0?1:100-1-d;
- ['id','filter','style'].forEach(k=>sv.removeAttribute(k));sv.setAttribute('viewBox',`${x0} 0 ${d} 100`);sv.setAttribute('preserveAspectRatio','none');sv.setAttribute('width','100%');sv.setAttribute('height','100%');
- const out=sv.outerHTML.replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" ');
- return `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(out).replace(/'/g,'%27')}")`}
-function stripOf(svgs,side,E){const w=document.createElement('div');w.className='lsx';w.style.left=side<0?-E+'%':'100%';w.style.width=E+'%';const im=svgs.map(h=>tileURL(h,side)).filter(Boolean);if(!im.length)return '';w.style.backgroundImage=im.join(',');w.style.backgroundSize='100% 100%';w.style.backgroundRepeat='no-repeat';return w.outerHTML}
+function sampleRows(svgs,ux){const rows=new Array(100).fill(null);
+ for(const sv of svgs){if(!sv)continue;for(const e of sv.querySelectorAll('path,rect,ellipse,circle,polygon')){
+  if(e.hasAttribute('transform')||e.closest('[data-t],.fu,defs,clipPath,mask,pattern,filter,[transform]'))continue;let bb;try{bb=e.getBBox()}catch(_){continue}
+  if(bb.width<45||ux<bb.x||ux>bb.x+bb.width)continue;const cs=getComputedStyle(e),f=cs.fill;if(!f||f==='none'||f.startsWith('url')||parseFloat(cs.fillOpacity)<.9||parseFloat(cs.opacity)<.9)continue;
+  const y0=Math.max(0,Math.floor(bb.y)),y1=Math.min(99,Math.ceil(bb.y+bb.height));for(let y=y0;y<=y1;y++){let hit=false;try{hit=e.isPointInFill(new DOMPoint(ux,y+.5))}catch(_){}if(hit)rows[y]=f}}}
+ let last=null;for(let y=0;y<100;y++){if(rows[y])last=rows[y];else if(last)rows[y]=last}last=null;for(let y=99;y>=0;y--){if(rows[y])last=rows[y];else if(last)rows[y]=last}return rows}
+function stripOf(svgs,side,E){const rows=sampleRows(svgs,side<0?1.5:98.5);if(!rows[0])return '';let o='',ln='',y0=0;
+ for(let y=1;y<=100;y++){if(y===100||rows[y]!==rows[y0]){o+=`<rect x="0" y="${y0===0?-8:y0-.3}" width="100" height="${y-y0+(y0===0?8:.3)+(y===100?8:0)}" fill="${rows[y0]}" stroke="none"/>`;if(y<100)ln+=`M0 ${y}H100`;y0=y}}
+ return `<div class="lsx" style="left:${side<0?-E+'%':'100%'};width:${E}%"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden">${o}<path d="${ln}" fill="none" stroke="#7a5f42" stroke-width="1.1" stroke-linecap="round"/></svg></div>`}
 function portalHTML(a,side,to){const E=TWE(),ok=unlocked(to),g=gyOf(a),cx=side<0?-E+10:100+E-10,my=(g[0]+g[1])/2;
  return `<div class="por${ok?'':' lk'}" style="left:${cx-6}%;top:${my-30}%;width:12%;height:44%"><svg viewBox="0 0 60 100" fill="none" stroke="#7a5f42" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="30" cy="50" rx="25" ry="44" fill="${ok?'#c9bdf3':'#cfc7b6'}" fill-opacity=".6"/><ellipse cx="30" cy="50" rx="17" ry="33" fill="${ok?'#f3ecff':'#e8e2d4'}" fill-opacity=".9" class="psw"/><path d="M30 24c11 7 11 19 0 26s-11 19 0 26" stroke-width="2" stroke="${ok?'#a98fe0':'#b5ad9a'}"/><circle cx="14" cy="14" r="2" fill="#fffdf6" stroke="none"/><circle cx="48" cy="30" r="1.6" fill="#fffdf6" stroke="none"/></svg><b>${ok?'':'🔒 '}${ARN[to]}</b></div>`}
 function tilesRender(a,art){const el=$('ttiles');if(!el)return;if(!LSM()){el.innerHTML='';return}const E=TWE(),G=GRAPH[a]||{};
- const t=document.createElement('div');t.innerHTML=art||'';const sv=t.querySelector('svg'),h=sv?sv.outerHTML:'';
- el.innerHTML=stripOf([h],-1,E)+stripOf([h],1,E)+(G.L?portalHTML(a,-1,G.L):'')+(G.R?portalHTML(a,1,G.R):'')}
+ const base=document.querySelector('#tart>svg');
+ el.innerHTML=stripOf([base],-1,E)+stripOf([base],1,E)+(G.L?portalHTML(a,-1,G.L):'')+(G.R?portalHTML(a,1,G.R):'')}
 (function camLoop(){requestAnimationFrame(camLoop);const sc=$('tscene');if(!sc)return;if(!LSM()||SCREEN!=='town'){if(CAM||sc.style.transform){CAM=0;sc.style.transform=''}CAMD='snap';return}
  const s=sc.offsetWidth;if(!s)return;const pl=$('tpl');let px=tw().pos.x;if(pl&&pl.style.display!=='none')px=pl.offsetLeft/s*100+3.4;
  const lim=Math.max(0,(50+TWE())*s/100-innerWidth/2),tg=Math.max(-lim,Math.min(lim,(50-px)*s/100));
@@ -2709,8 +2713,8 @@ $('tscene').addEventListener('click',e=>{const n=e.target.closest&&e.target.clos
 /* 집·정원·마당: 기존 배경을 옆으로 이어 그림 */
 let LSSIG='';
 setInterval(()=>{if(!LSM())return;const E=LSE();let host=null,svgs=[];
- try{if(SCREEN==='garden'){host=$('scene');svgs=['gframe','gback'].map(i=>$(i)?$(i).outerHTML:'')}
- else if(SCREEN==='house'){host=$('hscene');const [sky,n]=skyN([212,237,230]);svgs=[HV==='out'?SVGH+extBase()+'</svg>':SVGH+roomBaseWF(n,sky,1)+'</svg>']}}catch(e){return}
+ try{if(SCREEN==='garden'){host=$('scene');svgs=[$('gback'),$('gframe')]}
+ else if(SCREEN==='house'){host=$('hscene');svgs=[document.querySelector('#hroom>svg')]}}catch(e){return}
  if(!host)return;const sig=SCREEN+HV+(typeof curRoom==='function'?curRoom():'')+Math.floor(Date.now()/60000)+JSON.stringify([S.wall,S.rwall,S.rfloor,S.hwf&&0])+Math.round(E);let el=host.querySelector(':scope>.lsw');if(el&&el.dataset.s===sig)return;
  if(!el){el=document.createElement('div');el.className='lsw';host.insertBefore(el,host.firstChild)}el.dataset.s=sig;el.innerHTML=E>0?stripOf(svgs,-1,E)+stripOf(svgs,1,E):''},700);
 
@@ -2720,10 +2724,7 @@ setInterval(()=>{if(!LSM())return;const E=LSE();let host=null,svgs=[];
 (function(){const b=document.createElement('button');b.id='gohome';b.className='hb2';b.innerHTML=icon('home',30)+'<span>집으로</span>';b.onclick=()=>{if(busy())return;sfx&&sfx('tap');HV='in';setScreen('house');render()};document.body.appendChild(b);
  setInterval(()=>{const g=SCREEN==='garden';document.body.classList.toggle('gar',g);const st=$('stage');if(!st||!LSM())return;},400)})();
 
-/* 진단 표시(임시): 버전 + 옆 배경 이미지 불러오기 확인 */
-(function(){const d=document.createElement('div');d.id='dbg';d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v202 · 이미지 확인중';document.body.appendChild(d);
- const im=new Image();im.onload=()=>{d.textContent='v202 · 이미지 OK'};im.onerror=()=>{d.textContent='v202 · 이미지 막힘'};im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 1 1" preserveAspectRatio="none"><rect width="1" height="1" fill="#c33"/></svg>');
- setInterval(()=>{const e=document.querySelector('#ttiles>.lsx');if(!e||getComputedStyle(e).display==='none'||!LSM())return;const m=/url\("?(data:[^")]+)/.exec(getComputedStyle(e).backgroundImage);if(!m){d.textContent='v202 · 배경 없음(스타일 제거됨)';return}const t=new Image();t.onload=()=>{d.dataset.t='ok'};t.onerror=()=>{d.textContent='v202 · 맵 배경 이미지 실패'};t.src=m[1]},3000)})();
-
+/* 버전 표시 */
+(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v203';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
 </script>
 </body></html>
