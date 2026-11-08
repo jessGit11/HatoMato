@@ -159,7 +159,7 @@ body.slp .hato.yw{animation:hyawn 1.8s ease-in-out!important}@keyframes hyawn{0%
 @keyframes ffm{to{transform:translate(var(--x),var(--y))}}@keyframes fft{0%,100%{opacity:0}50%{opacity:.95}}
 #slpq{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:7;background:#f8f1e2;border:3px solid var(--ink);border-radius:18px;padding:8px 14px;text-align:center;display:none;font-size:18px;max-width:92%}#slpq .qr{display:flex;gap:8px;justify-content:center;margin-top:6px}#slpq button{width:auto;flex:none;white-space:nowrap;font-size:18px;padding:3px 14px;margin:0}
 @media (prefers-reduced-motion:reduce){.ffl,.zq{animation:none}}
-#tscene{display:none;background:#cfe8e0;touch-action:none}#tpl,#tpl *{touch-action:none}#tart{position:absolute;inset:0}#tart svg{display:block}#tart [data-t]{cursor:pointer}#ttint{position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;z-index:90;transition:background-color 3s}
+#tscene{display:none;background:#cfe8e0;touch-action:none}#tpl,#tpl *{touch-action:none}#tart{position:absolute;inset:0}#tart svg{display:block}body.ls #tart svg{overflow:visible}#tart [data-t]{cursor:pointer}#ttint{position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;z-index:90;transition:background-color 3s}
 .tbtn{position:absolute;left:10px;right:10px;bottom:8px;z-index:95;display:flex;gap:6px;justify-content:space-between}.tbtn button{font-size:clamp(13px,3.6vw,17px);padding:3px 10px;box-shadow:0 3px 0 var(--ink);border-width:3px;border-radius:14px}
 #busst{position:absolute;left:3%;bottom:15%;width:19%;z-index:2;cursor:pointer;display:none}#busst svg{display:block;width:100%;height:auto}
 #busv{position:absolute;inset:0;z-index:40;pointer-events:none;display:none;overflow:hidden}#busv.on{display:block}#busv::before{content:'';position:absolute;inset:0;background:#f8f1e2;opacity:0}#busv.run::before{animation:busfade 2.3s ease-in-out}
@@ -2741,13 +2741,15 @@ function stripOf(svgs,side,E,opt){opt=opt||{};let inner='';
  else{const rows=sampleRows(svgs,side<0?1.5:98.5);if(!rows[0])return '';inner=extArt(opt.kind||'plain',side,E,rows,opt.seed||3)}
  return `<div class="lsx" style="left:${side<0?-E+'%':'100%'};width:${E}%">${inner}</div>`}
 /* ===== 한 장짜리 넓은 맵: 원래 그림의 도형 자체를 양옆으로 이어 그림 ===== */
-var WIDE_OK=new Set(['v']);const WDE=a=>(typeof WIDE_OK!=='undefined'&&WIDE_OK.has(a)&&LSM())?TWE():0;
+const WCF={v:{k:'brick',gy:62,tr:26},n:{k:'meadow',gy:62,tr:17},f:{k:'forest',gy:62,tr:9},h:{k:'meadow',gy:70,tr:0},k:{k:'lawn',gy:62,tr:24},c:{k:'camp',gy:62,tr:12},t:{k:'plank',gy:62.4,tr:0},r:{k:'check',gy:52,tr:0,pal:['#efe4cb','#e2d3b0']},s:{k:'check',gy:62.4,tr:0},b:{k:'beach',gy:58,tr:0},s2:{k:'check',gy:62.4,tr:0,int:1},p:{k:'check',gy:70,tr:0,int:1},y:{k:'none',gy:62,tr:0,city:1}};
+var WIDE_OK=new Set(Object.keys(WCF));const WDE=a=>(typeof WIDE_OK!=='undefined'&&WIDE_OK.has(a)&&LSM())?TWE():0;
 const f1=x=>+(+x).toFixed(2);
 function herm(P,sa,sb){const n=P.length,T=[];for(let i=0;i<n;i++)T[i]=i===0?sa:i===n-1?sb:Math.max(-1,Math.min(1,(P[i+1][1]-P[i-1][1])/(P[i+1][0]-P[i-1][0])));
  let d='';for(let i=0;i<n-1;i++){const dx=(P[i+1][0]-P[i][0])/3;d+=`C${f1(P[i][0]+dx)} ${f1(P[i][1]+T[i]*dx)} ${f1(P[i+1][0]-dx)} ${f1(P[i+1][1]-T[i+1]*dx)} ${f1(P[i+1][0])} ${f1(P[i+1][1])}`}return d}
-function hillWide(d,E,sd,lo,hi){
+function hillWide(d,E,sd){
  const m=d.match(/^M0 ([\d.]+)(Q[\d.]+ [\d.]+ [\d.]+ [\d.]+)T100 ([\d.]+)V([\d.]+)H0Z$/);if(!m)return d;
- const a=+m[1],q=m[2].match(/[\d.]+/g).map(Number),y2=+m[3],t=m[4],sL=(q[1]-a)/q[0],sR=(y2-(2*q[3]-q[1]))/(100-(2*q[2]-q[0])),R=k=>sr(sd,k);
+ const a=+m[1],q=m[2].match(/[\d.]+/g).map(Number),y2=+m[3],t=+m[4],sL=(q[1]-a)/q[0],sR=(y2-(2*q[3]-q[1]))/(100-(2*q[2]-q[0])),R=k=>sr(sd,k);
+ const lo=Math.min(a,q[1],q[3],y2)-4,hi=Math.min(t-3,Math.max(a,q[3],y2)+7);
  const n=Math.max(2,Math.round(E/20)),st=E/n,crest=k=>lo+(hi-lo)*.3*R(k),vall=k=>lo+(hi-lo)*(.68+.32*R(k));
  const L=[];for(let i=0;i<n;i++){const j=n-i,c=((sL<0?1:0)+j)%2===0;L.push([-E+i*st,c?crest(i):vall(i)])}L.push([0,a]);
  const Rr=[[100,y2]];for(let i=1;i<=n;i++){const c=((sR<0?0:1)+i)%2===1;Rr.push([100+i*st,c?crest(i+50):vall(i+50)])}
@@ -2755,24 +2757,52 @@ function hillWide(d,E,sd,lo,hi){
 function brickExt(E,y0,y1){let dl='',dr='',r=0;for(let y=y0;y<y1;y+=4.6,r++){const ys=y.toFixed(1),h=Math.min(4.6,y1-y).toFixed(1);dl+=`M${-E} ${ys}H0`;dr+=`M100 ${ys}H${100+E}`;
   for(let x=(r%2?-4:-8);x>=-E;x-=8)dl+=`M${x} ${ys}v${h}`;for(let x=(r%2?100:104);x<=100+E;x+=8)dr+=`M${x} ${ys}v${h}`}
  return `<path d="${dl+dr}" stroke-width=".35" stroke-opacity=".5"/>`}
+function checkExt(E,y0,y1,pal){let d='',r=0;const C=5.2;for(let y=y0;y<y1;y+=C,r++){const h=Math.min(C,y1-y);
+  for(let c=-1;c*C>=-E-C;c--)if(((r+c)%2+2)%2){const x=c*C,w=Math.min(C,E+x+C>C?C:E+x+C);d+=`M${f1(x)} ${f1(y)}h${C}v${f1(h)}h-${C}Z`}
+  for(let c=19;c*C<100+E;c++)if((r+c)%2){const x=c*C,xs=Math.max(100,x);d+=`M${f1(xs)} ${f1(y)}h${f1(x+C-xs)}v${f1(h)}h-${f1(x+C-xs)}Z`}}
+ return `<path d="${d}" fill="${pal[1]}" stroke-width=".3" stroke-opacity=".4"/>`}
+function plankExt(E,y0,y1){let d='',o='';for(let k=1;-5*k>=-E-5;k++){const x=-5*k;d+=`M${x} ${y0}V${y1}M${x+2.5} ${f1(y0+3+(k%3)*6)}v2`;o+=`<circle cx="${f1(x+1.2)}" cy="${f1(y0+2+(k%2)*(y1-y0-4))}" r=".35" fill="#a97f56" stroke="none"/>`}
+ for(let k=0,x=100;x<100+E+5;x+=5,k++){d+=`M${x} ${y0}V${y1}M${x+2.5} ${f1(y0+3+(k%3)*6)}v2`;o+=`<circle cx="${f1(x+1.2)}" cy="${f1(y0+2+(k%2)*(y1-y0-4))}" r=".35" fill="#a97f56" stroke="none"/>`}
+ return o+`<path d="${d}" stroke-width=".4" stroke-opacity=".6"/>`}
 function wideArt(art,a,E){
- if(!E||!WIDE_OK.has(a)||!art)return art;
- try{const sd=a.charCodeAt(0),W=100+2*E,night=nightF(kh())>.5;let hi=0;
-  let s=art.replace('viewBox="0 0 100 100"',`viewBox="${-E} 0 ${W} 100"`).replace('style="overflow:visible"',`style="overflow:visible;position:absolute;left:${-E}%;top:0;width:${W}%;height:100%"`);
-  s=s.replace('<rect x="-2" y="-6" width="104" height="30"',`<rect x="${-E-2}" y="-6" width="${104+2*E}" height="30"`).replace('<rect width="100" height="100" fill="rgb(',`<rect x="${-E}" width="${W}" height="100" fill="rgb(`);
-  s=s.replace(/<path d="(M0 [\d.]+Q[^"]*?V[\d.]+H0Z)"/g,(m0,d)=>{const k=hi++;return `<path d="${hillWide(d,E,sd+k*11,k?43:28,k?58:50)}"`});
-  s=s.replace(/<rect x="0" y="62" width="100" height="38"/,`<rect x="${-E}" y="62" width="${W}" height="38"`);
-  const ed='<path d="M0 62Q50 59 100 62" stroke-width=".9"/>',R=k=>sr(sd,k);
-  if(!s.includes(ed))return art;
-  const gp=(sgn)=>{const n=Math.max(2,Math.round(E/25)),P=[];for(let i=0;i<=n;i++)P.push([sgn<0?-E+i*E/n:100+i*E/n,62+(i===(sgn<0?n:0)?0:(R(i+(sgn<0?0:20))-.5)*1.4)]);return P};
-  const GL=gp(-1),GR=gp(1),edge=`<path d="M${-E} ${f1(GL[0][1])}${herm(GL,0,-.06)}Q50 59 100 62${herm(GR,.06,0)}" stroke-width=".9"/>`;
-  let trees='';{const gap=26;for(const side of[-1,1]){let d=16+R(1)*gap*.5,k=0;while(d<E-2){const x=side<0?-d:100+d,v=k%2?4:1,sc=.58+.3*R(k+5);trees+=dsG(DSN.tree[v],x,63.2,sc,22,37);d+=gap*(.7+.6*R(k+9)+(side>0?.05:0));k++}}}
-  let stars='';if(night)for(const side of[-1,1])for(let k=0;k<E/6;k++)stars+=`<circle cx="${f1(side<0?-E+R(k+30)*E:100+R(k+60)*E)}" cy="${f1(3+R(k+90+(side>0?7:0))*30)}" r="1.1" fill="#f8f1e2" stroke="none"/>`;
+ const C=WCF[a];if(!E||!C||!art)return art;
+ try{const sd=a.charCodeAt(0),W=100+2*E,night=nightF(kh())>.5,R=k=>sr(sd,k),gy=C.gy;let hi=0,ext2='';
+  const wst=`style="overflow:visible;position:absolute;left:${-E}%;top:0;width:${W}%;height:100%"`;let s=art.replace('viewBox="0 0 100 100"',`viewBox="${-E} 0 ${W} 100"`);s=s.includes('style="overflow:visible"')?s.replace('style="overflow:visible"',wst):s.replace(/^<svg /,'<svg '+wst+' ');
+  s=s.replace('<rect x="-2" y="-6" width="104" height="30"',`<rect x="${-E-2}" y="-6" width="${104+2*E}" height="30"`).replace(/<rect width="100" height="100" fill="/,`<rect x="${-E}" width="${W}" height="100" fill="`);
+  s=s.replace(/<path d="(M0 [\d.]+Q[^"]*?V[\d.]+H0Z)"/g,(m0,d)=>`<path d="${hillWide(d,E,sd+(hi++)*11)}"`);
+  s=s.replace(/<rect x="-1" y="([\d.]+)" width="102"/g,(m0,y)=>`<rect x="${-E}" y="${y}" width="${W}"`);s=s.replace(/<rect x="0" y="([\d.]+)" width="100" height="([\d.]+)"/g,(m0,y,h)=>`<rect x="${-E}" y="${y}" width="${W}" height="${h}"`);
+  s=s.replace(/M0 ([\d.]+)H100(?=M0 [\d.]+H100|")/g,(m0,y)=>`M${-E} ${y}H${100+E}`);
+  s=s.replace(/M-40 ([\d.]+)q5 (-?[\d.]+) 10 0((?:t10 0)+)/g,(m0,y,am)=>{const X0=10*Math.ceil((E+10)/10);return `M-${X0} ${y}q5 ${am} 10 0`+'t10 0'.repeat((2*X0+100)/10-1)}).replace(/H-40Z/g,()=>`H-${10*Math.ceil((E+10)/10)}Z`);
+  if(a==='c')s=s.replace(/<path d="(M-2 50L[^"]*?L104 50)V64H-2Z"/,(m0,d)=>{let L='',Rr='';const n=Math.ceil(E/14);for(let i=1;i<=n;i++){L=`L${-2-i*14} ${i%2?(30+R(i)*12).toFixed(1):(40+R(i+9)*8).toFixed(1)}`+L;Rr+=`L${104+i*14} ${i%2?(28+R(i+20)*12).toFixed(1):(40+R(i+30)*8).toFixed(1)}`}return `<path d="M${-2-n*14-6} 50${L.replace(/^L/,'L')}L-2 50${d.slice(d.indexOf('L'))}${Rr}L${104+n*14+6} 50V64H${-2-n*14-6}Z"`});
+  let m=null;for(const mm of s.matchAll(new RegExp(`<rect x="${-E}" y="([\\d.]+)" width="${W}" height="([\\d.]+)"[^>]*>`,'g')))if(Math.abs(+mm[1]-gy)<.6){m=mm;break}let ext='';const g2=gy+1.5;
+  const tex=(k,pal,x0,x1,seed)=>GRD(k,g2,100,x0,x1,seed,pal).replace(/^<rect[^>]*\/>/,'');
+  const both=(k,pal)=>tex(k,pal,-E,0,sd)+tex(k,pal,100,100+E,sd+4);
+  try{const k=C.k;
+   if(k==='brick')ext=brickExt(E,gy,100);
+   else if(k==='check'){let pal=C.pal;if(!pal&&m){const f0=(m[0].match(/fill="([^"]+)"/)||[])[1],f1b=(s.slice(s.indexOf(m[0])).match(/<path d="M[\d.]+ [\d.]+h5\.2v5\.2h-5\.2Z[^"]*" fill="([^"]+)"/)||[])[1];pal=[f0,f1b||f0]}ext=checkExt(E,gy,100.5,pal||['#f6e8d0','#e8bf9f'])}
+   else if(k==='plank')ext=plankExt(E,gy,100);
+   else if(k==='meadow')ext=both(sd%2?'gflow':'tuft');
+   else if(k==='camp')ext=both('tuft');
+   else if(k==='forest')ext=both('tuftS')+(inSeason('aut')?both('leaf'):'');
+   else if(k==='lawn'){ext=both('glawn').replace(/<path d="M-?[\d.]+ [\d.]+h5v[\d.]+h-5Z" fill="#b3d48b" stroke="none"\/>/g,'');let st='';const y0=gy,H=100-gy;for(let x=-10*Math.ceil(E/10);x<100+E;x+=10){if(x>=0&&x<100)continue;st+=`M${x} ${y0}h5v${H}h-5Z`}ext=`<path d="${st}" fill="#b3d48b" stroke="none"/>`+ext}
+   else if(k==='beach'){for(let q=0;q<E/1.6;q++)for(const sd2 of[-1,1]){const x=sd2<0?-R(q+200)*E:100+R(q+300)*E;ext+=`<circle cx="${f1(x)}" cy="${f1(gy+4+R(q+400+(sd2>0?9:0))*(100-gy-6))}" r=".4" fill="#d9c27e" stroke="none"/>`}}
+  }catch(e){errNote('wideTex',e)}
+  let trees='';if(C.tr){const gap=C.tr,by=gy+1.2,fs=C.k==='forest'?1.15:1;for(const side of[-1,1]){let d=16+R(1)*gap*.5,k=0;while(d<E-2){const x=side<0?-d:100+d,v=(k%2||C.k==='camp')?4:1,sc=(.58+.3*R(k+5))*fs;trees+=dsG(DSN.tree[v],x,by,sc,22,37);d+=gap*(.7+.6*R(k+9)+(side>0?.05:0));k++}}}
+  const ed=/<path d="M0 62Q50 59 100 62"([^>]*)\/>/;
+  if(ed.test(s)){const gp=sgn=>{const n=Math.max(2,Math.round(E/25)),P=[];for(let i=0;i<=n;i++)P.push([sgn<0?-E+i*E/n:100+i*E/n,62+(i===(sgn<0?n:0)?0:(R(i+(sgn<0?0:20))-.5)*1.4)]);return P};
+   const GL=gp(-1),GR=gp(1);s=s.replace(m[0],m[0]+ext).replace(ed,(m0,at)=>`<path d="M${-E} ${f1(GL[0][1])}${herm(GL,0,-.06)}Q50 59 100 62${herm(GR,.06,0)}"${at}/>`+trees)}
+  else s=s.replace(m[0],m[0]+ext+trees);
+  let sky='';if(night&&!C.int)for(const side of[-1,1])for(let k=0;k<E/6;k++)sky+=`<circle cx="${f1(side<0?-E+R(k+30)*E:100+R(k+60)*E)}" cy="${f1(3+R(k+90+(side>0?7:0))*30)}" r="1.1" fill="#f8f1e2" stroke="none"/>`;
+  if(a==='r'){const bd=[[0,40,12,10],[14,37,10,13],[26,41,14,9],[42,35,9,15],[52,40,12,10],[66,36,11,14],[78,41,10,9],[90,38,10,12]],ix=[1,2,3,4,5,6,8,10];for(const sh of[-200,-100,100,200])bd.forEach((b,i)=>{const cx=b[0]+b[2]/2+sh;if(cx>-E-8&&cx<100+E+8)sky+=dsG(DSN.bld[ix[i]],cx,50,(b[2]+1)/22,17,38)});
+   let po='';for(let x=8+16*Math.floor((-E-8)/16);x<100+E;x+=16){if(x>=0&&x<=100)continue;po+=`M${x} 48V52`}if(po)ext2=`<path d="${po}" stroke-width=".6"/>`}
+  if(C.int){const wy=a==='p'?16:14,wh=a==='p'?22:24;for(let x=-E+8;x<100+E-8;x+=30){const cx=x+7;if(cx>-8&&cx<108)continue;ext2=(ext2||'')+`<rect x="${x}" y="${wy}" width="14" height="${wh}" rx="1.4" fill="#d4ede6" stroke-width=".8"/><path d="M${x+7} ${wy}V${wy+wh}M${x} ${wy+wh/2}H${x+14}" stroke-width=".5"/><rect x="${x-1.4}" y="${wy+wh}" width="16.8" height="1.8" rx=".5" fill="#c99a6e" stroke-width=".6"/>`}}
+  if(C.city){let cb='';for(const side of[-1,1]){let d=14+R(3)*8,k=0;while(d<E-4){const x=side<0?-d:100+d,v=[1,2,3,4,5,6,8,10][Math.floor(R(k+40)*8)],sc=.85+.35*R(k+70);cb+=dsG(DSN.bld[v],x,63,sc,17,38);if(k%3===1)cb+=dsG(DSN.tree[k%2?4:1],x+(side<0?-9:9),64.5,.5+.15*R(k+8),22,37);d+=13+R(k+90)*9;k++}}trees=cb+trees;s=s.replace(m[0],m[0]+cb)}
   const rope='<path d="M0 12Q25 18 50 12T100 12" stroke-width=".6"/>';
   if(s.includes(rope)){const i0=-Math.ceil(E/50),i1=Math.ceil(E/50)+2,cs=['#f4a79b','#e8d785','#b3de88','#9fd0dc'];let d=`M${50*i0} 12`;for(let i=i0;i<i1;i++)d+=`Q${50*i+25} ${((i%2)+2)%2?6:18} ${50*i+50} 12`;
    let fl='';for(let k=Math.floor((-E-8)/14);8+14*k<=100+E;k++){const x=8+14*k;if(x>=0&&x<=100||x<-E||x>100+E)continue;const i=Math.floor(x/50),t=(x-50*i)/50,y=12+(((i%2)+2)%2?-1:1)*12*t*(1-t);fl+=`<path d="M${x} ${y.toFixed(2)}l2.4 0-1.2 3.4Z" fill="${cs[((k%4)+4)%4]}" stroke-width=".4"/>`}
    s=s.replace(rope,`<path d="${d}" stroke-width=".6"/>`+fl)}
-  return s.replace(ed,stars+brickExt(E,62,100)+edge+trees)}catch(e){errNote('wideArt',e);return art}}
+  if(ext2&&a==='r')s=s.replace(/(<rect x="[^"]*" y="48" width="[^"]*" height="4"[^>]*>)/,'$1'+ext2);else if(ext2&&C.int){const w0=s.match(/<rect x="[^"]*" y="0" width="[^"]*" height="[\d.]+"[^>]*>/);if(w0)s=s.replace(w0[0],w0[0]+ext2)}
+  return sky?s.replace(/(<rect x="[^"]*" width="[^"]*" height="100" fill="rgb\([^"]*\)"[^>]*>)/,'$1'+sky):s}catch(e){errNote('wideArt',e);return art}}
 function portalHTML(a,side,to){const E=TWE(),ok=unlocked(to),g=gyOf(a),cx=side<0?-E+10:100+E-10,my=(g[0]+g[1])/2;
  return `<div class="por${ok?'':' lk'}" style="left:${cx-6}%;top:${my-30}%;width:12%;height:44%"><svg viewBox="0 0 60 100" fill="none" stroke="#7a5f42" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="30" cy="50" rx="25" ry="44" fill="${ok?'#c9bdf3':'#cfc7b6'}" fill-opacity=".6"/><ellipse cx="30" cy="50" rx="17" ry="33" fill="${ok?'#f3ecff':'#e8e2d4'}" fill-opacity=".9" class="psw"/><path d="M30 24c11 7 11 19 0 26s-11 19 0 26" stroke-width="2" stroke="${ok?'#a98fe0':'#b5ad9a'}"/><circle cx="14" cy="14" r="2" fill="#fffdf6" stroke="none"/><circle cx="48" cy="30" r="1.6" fill="#fffdf6" stroke="none"/></svg><b>${ok?'':'🔒 '}${ARN[to]}</b></div>`}
 function tilesRender(a,art){const el=$('ttiles');if(!el)return;if(!LSM()){el.innerHTML='';return}const E=TWE(),G=GRAPH[a]||{};
@@ -2799,6 +2829,6 @@ setInterval(()=>{if(!LSM())return;const E=LSE();let host=null,svgs=[],opt={};
  setInterval(()=>{const g=SCREEN==='garden';document.body.classList.toggle('gar',g);const st=$('stage');if(!st||!LSM())return;},400)})();
 
 /* 버전 표시 */
-(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v206';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
+(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v208';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
 </script>
 </body></html>
