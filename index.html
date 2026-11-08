@@ -2720,5 +2720,10 @@ setInterval(()=>{if(!LSM())return;const E=LSE();let host=null,svgs=[];
 (function(){const b=document.createElement('button');b.id='gohome';b.className='hb2';b.innerHTML=icon('home',30)+'<span>집으로</span>';b.onclick=()=>{if(busy())return;sfx&&sfx('tap');HV='in';setScreen('house');render()};document.body.appendChild(b);
  setInterval(()=>{const g=SCREEN==='garden';document.body.classList.toggle('gar',g);const st=$('stage');if(!st||!LSM())return;},400)})();
 
+/* 진단 표시(임시): 버전 + 옆 배경 이미지 불러오기 확인 */
+(function(){const d=document.createElement('div');d.id='dbg';d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v202 · 이미지 확인중';document.body.appendChild(d);
+ const im=new Image();im.onload=()=>{d.textContent='v202 · 이미지 OK'};im.onerror=()=>{d.textContent='v202 · 이미지 막힘'};im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 1 1" preserveAspectRatio="none"><rect width="1" height="1" fill="#c33"/></svg>');
+ setInterval(()=>{const e=document.querySelector('#ttiles>.lsx');if(!e||getComputedStyle(e).display==='none'||!LSM())return;const m=/url\("?(data:[^")]+)/.exec(getComputedStyle(e).backgroundImage);if(!m){d.textContent='v202 · 배경 없음(스타일 제거됨)';return}const t=new Image();t.onload=()=>{d.dataset.t='ok'};t.onerror=()=>{d.textContent='v202 · 맵 배경 이미지 실패'};t.src=m[1]},3000)})();
+
 </script>
 </body></html>
