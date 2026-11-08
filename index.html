@@ -320,7 +320,7 @@ body.ls .stage>.tbtn,body.ls .stage>.hbtn{left:var(--sl,0);right:auto;width:var(
 body.ls .say{position:fixed;left:50%;top:50px;transform:translateX(-50%);z-index:9;margin:0;min-height:0;font-size:clamp(14px,2.4vw,20px);background:#fffdf6e6;border:3px solid var(--ink);border-radius:999px;padding:2px 14px;pointer-events:none;max-width:70vw}
 body.ls .say:empty{display:none}
 #ttiles{position:absolute;inset:0;display:none}body.ls #ttiles{display:block}
-.lss *,.lss{vector-effect:non-scaling-stroke}.lsx{position:absolute;top:0;height:100%;pointer-events:none;overflow:hidden}
+.lsx{position:absolute;top:0;height:100%;pointer-events:none;overflow:hidden}
 #ttiles .lsx{pointer-events:auto}#ttiles .lsx *{pointer-events:none}
 .lsw{position:absolute;inset:0;pointer-events:none;z-index:0}.lsw .lsx{pointer-events:none}
 body.ls #scene{overflow:visible}
@@ -2691,7 +2691,11 @@ let CAM=0,CAMD='snap';
 function camJump(d){CAMD=d}
 const LSE=()=>{const s=Math.min(innerWidth,innerHeight);return Math.max(0,(innerWidth/s*100-100)/2)};
 function TWE(){return Math.round((LSE()+28)*10)/10}
-function stripOf(svgs,side,E,d){d=d||1.4;const w=document.createElement('div');w.className='lsx';w.style.cssText=(side<0?`left:${-E}%`:'left:100%')+`;width:${E}%`;for(const h of svgs){const t=document.createElement('div');t.innerHTML=h;const sv=t.querySelector('svg');if(!sv)continue;sv.removeAttribute('id');sv.setAttribute('viewBox',side<0?`0 0 ${d} 100`:`${100-d} 0 ${d} 100`);sv.setAttribute('preserveAspectRatio','none');sv.setAttribute('width','100%');sv.setAttribute('height','100%');const ky=Math.min(innerWidth,innerHeight)/100,fx=e=>{const v=e.getAttribute('stroke-width');if(v&&!isNaN(parseFloat(v)))e.setAttribute('stroke-width',(parseFloat(v)*ky).toFixed(2))};fx(sv);sv.querySelectorAll('*').forEach(fx);sv.classList.add('lss');sv.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden;pointer-events:none';w.appendChild(sv)}return w.outerHTML}
+function tileURL(h,side){const t=document.createElement('div');t.innerHTML=h;const sv=t.querySelector('svg');if(!sv)return '';const d=.6,x0=side<0?1:100-1-d;
+ ['id','filter','style'].forEach(k=>sv.removeAttribute(k));sv.setAttribute('viewBox',`${x0} 0 ${d} 100`);sv.setAttribute('preserveAspectRatio','none');sv.setAttribute('width','100%');sv.setAttribute('height','100%');
+ const out=sv.outerHTML.replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" ');
+ return `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(out).replace(/'/g,'%27')}")`}
+function stripOf(svgs,side,E){const w=document.createElement('div');w.className='lsx';w.style.left=side<0?-E+'%':'100%';w.style.width=E+'%';const im=svgs.map(h=>tileURL(h,side)).filter(Boolean);if(!im.length)return '';w.style.backgroundImage=im.join(',');w.style.backgroundSize='100% 100%';w.style.backgroundRepeat='no-repeat';return w.outerHTML}
 function portalHTML(a,side,to){const E=TWE(),ok=unlocked(to),g=gyOf(a),cx=side<0?-E+10:100+E-10,my=(g[0]+g[1])/2;
  return `<div class="por${ok?'':' lk'}" style="left:${cx-6}%;top:${my-30}%;width:12%;height:44%"><svg viewBox="0 0 60 100" fill="none" stroke="#7a5f42" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="30" cy="50" rx="25" ry="44" fill="${ok?'#c9bdf3':'#cfc7b6'}" fill-opacity=".6"/><ellipse cx="30" cy="50" rx="17" ry="33" fill="${ok?'#f3ecff':'#e8e2d4'}" fill-opacity=".9" class="psw"/><path d="M30 24c11 7 11 19 0 26s-11 19 0 26" stroke-width="2" stroke="${ok?'#a98fe0':'#b5ad9a'}"/><circle cx="14" cy="14" r="2" fill="#fffdf6" stroke="none"/><circle cx="48" cy="30" r="1.6" fill="#fffdf6" stroke="none"/></svg><b>${ok?'':'🔒 '}${ARN[to]}</b></div>`}
 function tilesRender(a,art){const el=$('ttiles');if(!el)return;if(!LSM()){el.innerHTML='';return}const E=TWE(),G=GRAPH[a]||{};
@@ -2705,7 +2709,7 @@ $('tscene').addEventListener('click',e=>{const n=e.target.closest&&e.target.clos
 /* 집·정원·마당: 기존 배경을 옆으로 이어 그림 */
 let LSSIG='';
 setInterval(()=>{if(!LSM())return;const E=LSE();let host=null,svgs=[];
- try{if(SCREEN==='garden'){host=$('scene');svgs=['gback','gframe'].map(i=>$(i)?$(i).outerHTML:'')}
+ try{if(SCREEN==='garden'){host=$('scene');svgs=['gframe','gback'].map(i=>$(i)?$(i).outerHTML:'')}
  else if(SCREEN==='house'){host=$('hscene');const [sky,n]=skyN([212,237,230]);svgs=[HV==='out'?SVGH+extBase()+'</svg>':SVGH+roomBaseWF(n,sky,1)+'</svg>']}}catch(e){return}
  if(!host)return;const sig=SCREEN+HV+(typeof curRoom==='function'?curRoom():'')+Math.floor(Date.now()/60000)+JSON.stringify([S.wall,S.rwall,S.rfloor,S.hwf&&0])+Math.round(E);let el=host.querySelector(':scope>.lsw');if(el&&el.dataset.s===sig)return;
  if(!el){el=document.createElement('div');el.className='lsw';host.insertBefore(el,host.firstChild)}el.dataset.s=sig;el.innerHTML=E>0?stripOf(svgs,-1,E)+stripOf(svgs,1,E):''},700);
