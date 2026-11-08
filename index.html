@@ -1070,6 +1070,7 @@ function floorPat(id,y0,y1){const F=HFLOOR.find(x=>x.id===id)||HFLOOR[0];if(F.id
 function roomBaseWF(n,sky,nonav){let s=roomBase(n,sky);const wf=roomWF(),wp=hwallPat(wf.w),fp=floorPat(wf.f,72,100);
  if(wp){const a='<path d="M7 72V32Q7 9 49.5 9T92 32V72Z" fill="#a97e57"/>',i=s.indexOf(a),j=s.indexOf('<path d="M0 72H100V100H0Z"');if(i>=0&&j>i)s=s.slice(0,i)+wp+s.slice(j)}
  if(fp){const a='<path d="M0 72H100V100H0Z" fill="#b48c63" stroke="none"/>';s=s.replace(a,fp);s=s.replace(/<path d="M0 81H100M0 91H100[^"]*" stroke-opacity="\.35" stroke-width="1\.3"\/>/,'')}
+ if(LSM())s=s.replace(/M0 72H100V100H0Z/g,'M-6 72H106V100H-6Z');
  return nonav?s:s+roomNav(curRoom(),n)}
 function hwfBuy(kind,id){const L=kind==='w'?HWALL:kind==='s'?HSTAIR:HFLOOR,x=L.find(t=>t.id===id);if(!x)return;S.hwf=S.hwf||{};if(!hwOwn(id)){if(S.money<x.p)return;S.money-=x.p;S.hwf[id]=1;sfx('coin')}const c=curRoom();if(kind==='s'){S.stair=id;msg=`집 계단을 ${x.n}${jo(x.n,'으로')} 바꿨어요!`}else{if(kind==='w'){S.rwall=S.rwall||{};S.rwall[c]=id}else{S.rfloor=S.rfloor||{};S.rfloor[c]=id}msg=`${ROOMS[c].n}에 ${x.n}${jo(x.n,'을','를')} 썼어요!`}save();render()}
 function hwfPv(kind,id,w){if(kind==='s'){const x=HSTAIR.find(t=>t.id===id)||HSTAIR[0];return `<svg viewBox="66 28 36 46" width="${w}" height="${Math.round(w*.75)}" preserveAspectRatio="xMidYMid slice" fill="none" stroke="#7a5f42" stroke-width="1.2" stroke-linejoin="round" style="border:2px solid #7a5f42;border-radius:8px;background:#a97e57;flex:none">${stairUp(x)}</svg>`}const x=(kind==='w'?HWALL:HFLOOR).find(t=>t.id===id);const inner=kind==='w'?(hwallPat(id)||'<path d="M7 72V32Q7 9 49.5 9T92 32V72Z" fill="#a97e57"/><path d="M34 14V32M68 14V30M17 40V70M83 40V70" stroke-opacity=".4" stroke-width="1.4"/>'):(floorPat(id,72,100)||'<path d="M0 72H100V100H0Z" fill="#b48c63" stroke="none"/><path d="M0 81H100M0 91H100M22 72V81M58 72V81M84 72V81M10 81V91M40 81V91M72 81V91M26 91V100M60 91V100M90 91V100" stroke-opacity=".35" stroke-width="1.3"/>');
@@ -2713,8 +2714,8 @@ function sampleRows(svgs,ux){const rows=new Array(100).fill(null);
 const EXK={v:'brick',n:'meadow',f:'forest',b:'beach',h:'meadow',k:'lawn',c:'camp',t:'rail',r:'check',s:'check',s2:'check',p:'check',y:'plain'};
 const rgbOf=c=>(String(c).match(/[\d.]+/g)||[200,200,200]).slice(0,3).map(Number);
 const shade=(c,k)=>{const [r,g,b]=rgbOf(c);return `rgb(${Math.round(Math.min(255,r*k))},${Math.round(Math.min(255,g*k))},${Math.round(Math.min(255,b*k))})`};
-function extArt(kind,side,E,rows,seed){
- const x0=side<0?-E:100,x1=x0+E,S=[];let y0=0;for(let y=1;y<=100;y++){if(y===100||rows[y]!==rows[y0]){S.push({y0,y1:y,c:rows[y0]});y0=y}}
+function extArt(kind,side,E,rows,seed,ov=0){
+ const x0=side<0?-E:100-ov,x1=side<0?ov:100+E,S=[];let y0=0;for(let y=1;y<=100;y++){if(y===100||rows[y]!==rows[y0]){S.push({y0,y1:y,c:rows[y0]});y0=y}}
  const R=k=>sr(seed,k),seam=side<0?0:100,ramp=x=>Math.min(1,Math.abs(x-seam)/14),L=S.length-1,wavy=!['check','plain','sill','rail'].includes(kind),night=nightF(kh())>.5;
  const topY=(i,x)=>(i>0&&i<L&&wavy)?S[i].y0+ramp(x)*(2.4*Math.sin(x*.07+i*1.7+seed)+1.3*Math.sin(x*.19+i)):S[i].y0;
  let o='',ln='';const gy=S[L].y0;
@@ -2735,11 +2736,11 @@ function extArt(kind,side,E,rows,seed){
    for(let k=0;k<E/3;k++)o+=`<circle cx="${(x0+R(k+200)*E).toFixed(1)}" cy="${(g+3+R(k+300)*(100-g-5)).toFixed(1)}" r=".4" fill="${shade(S[L].c,.88)}" stroke="none"/>`}
   else if(kind==='sill'){for(let i=1;i<=L;i++){if(S[i].y0<68)continue;for(let k=0;k<E/3;k++){const y=S[i].y0+1+R(k+i*50)*(S[i].y1-S[i].y0-2),x=x0+R(k+400+i)*E;o+=`<path d="M${x.toFixed(1)} ${y.toFixed(1)}h${(3+R(k)*5).toFixed(1)}" stroke-opacity=".3" stroke-width=".5" fill="none"/>`}for(let x=x0+R(i)*14;x<x1;x+=17+R(x)*10)o+=`<path d="M${x.toFixed(1)} ${S[i].y0}V${S[i].y1}" stroke-opacity=".28" stroke-width=".6" fill="none"/>`}}
  }catch(e){errNote('extTex',e)}
- return `<svg viewBox="${x0} 0 ${E} 100" preserveAspectRatio="none" filter="url(#rough2)" fill="none" stroke="#7a5f42" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden">${o}</svg>`}
+ return `<svg viewBox="${x0} 0 ${E+ov} 100" preserveAspectRatio="none" filter="url(#rough2)" fill="none" stroke="#7a5f42" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden">${o}</svg>`}
 function stripOf(svgs,side,E,opt){opt=opt||{};let inner='';
- if(opt.tile){const x0=side<0?-E:100;inner=`<svg viewBox="${x0} 0 ${E} 100" preserveAspectRatio="none" filter="url(#rough2)" fill="none" stroke="#7a5f42" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden">`+[1,2].filter(k=>k===1||E>100).map(k=>`<g transform="translate(${side<0?-100*k:100*k} 0)">${opt.tile}</g>`).join('')+'</svg>'}
- else{const rows=sampleRows(svgs,side<0?1.5:98.5);if(!rows[0])return '';inner=extArt(opt.kind||'plain',side,E,rows,opt.seed||3)}
- return `<div class="lsx" style="left:${side<0?-E+'%':'100%'};width:${E}%">${inner}</div>`}
+ const ov=3;if(opt.tile){const x0=side<0?-E:100-ov;inner=`<svg viewBox="${x0} 0 ${E+ov} 100" preserveAspectRatio="none" filter="url(#rough2)" fill="none" stroke="#7a5f42" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden">`+[1,2].filter(k=>k===1||E>100).map(k=>`<g transform="translate(${side<0?-98*k:98*k} 0)">${opt.tile}</g>`).join('')+'</svg>'}
+ else{const rows=sampleRows(svgs,side<0?1.5:98.5);if(!rows[0])return '';inner=extArt(opt.kind||'plain',side,E,rows,opt.seed||3,ov)}
+ return `<div class="lsx" style="left:${side<0?-E+'%':(100-ov)+'%'};width:${E+ov}%">${inner}</div>`}
 /* ===== 한 장짜리 넓은 맵: 원래 그림의 도형 자체를 양옆으로 이어 그림 ===== */
 const WCF={v:{k:'brick',gy:62,tr:26},n:{k:'meadow',gy:62,tr:17},f:{k:'forest',gy:62,tr:9},h:{k:'meadow',gy:70,tr:0},k:{k:'lawn',gy:62,tr:24},c:{k:'camp',gy:62,tr:12},t:{k:'plank',gy:62.4,tr:0},r:{k:'check',gy:52,tr:0,pal:['#efe4cb','#e2d3b0']},s:{k:'check',gy:62.4,tr:0},b:{k:'beach',gy:58,tr:0},s2:{k:'check',gy:62.4,tr:0,int:1},p:{k:'check',gy:70,tr:0,int:1},y:{k:'none',gy:62,tr:0,city:1}};
 var WIDE_OK=new Set(Object.keys(WCF));const WDE=a=>(typeof WIDE_OK!=='undefined'&&WIDE_OK.has(a)&&LSM())?TWE():0;
@@ -2817,7 +2818,7 @@ let RZT=0;addEventListener('resize',()=>{clearTimeout(RZT);RZT=setTimeout(()=>{i
 /* 집·정원·마당: 기존 배경을 옆으로 이어 그림 */
 let LSSIG='';
 setInterval(()=>{if(!LSM())return;const E=LSE();let host=null,svgs=[],opt={};
- try{if(SCREEN==='garden'){host=$('scene');svgs=[$('gback'),$('gframe')];opt={kind:'sill',seed:5}}
+ try{if(SCREEN==='garden'){host=$('scene');svgs=[$('gback'),$('gframe')];opt={kind:'sill',seed:5};const gb=$('gback'),gf=$('gframe'),vc=document.querySelector('#view>svg.vc'),sp=h=>h.replace(/ id="[^"]*"/g,'');if(gb&&gf)opt={tile:sp(gb.innerHTML)+(vc?`<g clip-path="none">${sp(vc.innerHTML)}</g>`:'')+sp(gf.innerHTML)}}
  else if(SCREEN==='house'){host=$('hscene');if(HV==='out'){svgs=[document.querySelector('#hroom>svg')];opt={kind:'meadow',seed:6}}else{const [sky,n]=skyN([212,237,230]);opt={tile:roomBaseWF(n,sky,1)}}}}catch(e){return}
  if(!host)return;const sig=SCREEN+HV+(typeof curRoom==='function'?curRoom():'')+Math.floor(Date.now()/60000)+JSON.stringify([S.wall,S.rwall,S.rfloor,S.hwf&&0])+Math.round(E)+(opt.tile?'t':'');let el=host.querySelector(':scope>.lsw');if(el&&el.dataset.s===sig)return;
  if(!el){el=document.createElement('div');el.className='lsw';host.insertBefore(el,host.firstChild)}el.dataset.s=sig;el.innerHTML=E>0?stripOf(svgs,-1,E,opt)+stripOf(svgs,1,E,opt):''},700);
@@ -2829,6 +2830,6 @@ setInterval(()=>{if(!LSM())return;const E=LSE();let host=null,svgs=[],opt={};
  setInterval(()=>{const g=SCREEN==='garden';document.body.classList.toggle('gar',g);const st=$('stage');if(!st||!LSM())return;},400)})();
 
 /* 버전 표시 */
-(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v208';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
+(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v212';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
 </script>
 </body></html>
