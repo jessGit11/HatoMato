@@ -305,15 +305,19 @@ html,body{touch-action:manipulation;-webkit-touch-callout:none}body{-webkit-user
 .stage>.tbtn button.hb2{width:min(70px,calc(var(--sw,360px)*.19));padding:4px 0 3px!important;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:min(14px,calc(var(--sw,360px)*.038))!important;line-height:1.1;border-radius:16px}.stage>.tbtn button.hb2 svg{width:min(30px,calc(var(--sw,360px)*.08));height:auto}
 
 /* 가로 전체 화면 */
+#title{position:fixed;inset:0;z-index:500;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4vh;cursor:pointer}
+#title h1{width:min(56vw,460px,96vh);margin:0;padding:5px 10px 7px}
+#title #tgo{font-size:clamp(18px,5vh,26px);padding:4px 34px;border-width:3px;border-radius:999px;box-shadow:0 4px 0 var(--ink);background:#f8c6c8;animation:coachb 1.6s ease-in-out infinite}
+#title small{opacity:.6;font-size:clamp(12px,3vh,16px)}
 body.ls{display:block;min-height:0;height:100svh;overflow:hidden}
-body.ls h1,body.ls .dots,body.ls #bar{display:none!important}
+body.ls .dots,body.ls #bar{display:none!important}
 body.ls .app{width:100vw!important;max-width:none;padding:0}
 body.ls .stage{border:0;border-radius:0;height:100svh!important;width:100vw}
 body.ls .stage>.scene{left:var(--sl,0)!important;right:auto!important;width:var(--sw)!important;top:0!important;height:var(--sw)!important}
 body.ls .stage>.band{display:none!important}
 body.ls #tfloor,body.ls #hfloor{display:none}
 body.ls .stage>.tbtn,body.ls .stage>.hbtn{left:var(--sl,0);right:auto;width:var(--sw)}
-body.ls .say{position:fixed;left:50%;top:50px;transform:translateX(-50%);z-index:60;margin:0;min-height:0;font-size:clamp(14px,2.4vw,20px);background:#fffdf6e6;border:3px solid var(--ink);border-radius:999px;padding:2px 14px;pointer-events:none;max-width:70vw}
+body.ls .say{position:fixed;left:50%;top:50px;transform:translateX(-50%);z-index:9;margin:0;min-height:0;font-size:clamp(14px,2.4vw,20px);background:#fffdf6e6;border:3px solid var(--ink);border-radius:999px;padding:2px 14px;pointer-events:none;max-width:70vw}
 body.ls .say:empty{display:none}
 #ttiles{position:absolute;inset:0;display:none}body.ls #ttiles{display:block}
 .nbt{position:absolute;top:0;width:100%;height:100%}.nbt>svg{display:block;width:100%;height:100%}.nbt *{pointer-events:none}
@@ -2464,8 +2468,8 @@ function botHTML(k){const Y=BOTY();
 
 // ---- 화면 크기 자동 맞춤: 폰 높이에 맞춰 게임 화면을 최대한 크게 (정사각 장면 + 위·아래 띠) ----
 function fit(){const app=document.querySelector('.app'),st=$('stage');if(!app||!st)return;const cs=getComputedStyle(document.body),vw=document.documentElement.clientWidth,vh=window.innerHeight;
- {const on=vw>vh*1.15;if(document.body.classList.contains('ls')!==on){document.body.classList.toggle('ls',on);TLA='';if(typeof SCREEN!=='undefined'&&SCREEN==='town')setTimeout(townRender,0)}
- if(on){const s=Math.round(vh),u=s/100,sl=Math.round((vw-s)/2),P=(k,v)=>st.style.setProperty(k,v+'px');P('--sh',vh);P('--st',0);P('--sw',s);P('--sl',sl);P('--bt',0);P('--bb',0);P('--fd',0);P('--below',0);TU=0;BU=0;SPX=s;
+ {const on=true;if(document.body.classList.contains('ls')!==on){document.body.classList.toggle('ls',on);TLA='';if(typeof SCREEN!=='undefined'&&SCREEN==='town')setTimeout(townRender,0)}
+ if(on){const s=Math.round(Math.min(vh,vw)),u=s/100,sl=Math.round((vw-s)/2),P=(k,v)=>st.style.setProperty(k,v+'px');P('--sh',vh);P('--st',0);P('--sw',s);P('--sl',sl);P('--bt',0);P('--bb',0);P('--fd',0);P('--below',0);TU=0;BU=0;SPX=s;
   const tb=st.querySelector(':scope>.tbtn'),th=tb&&tb.offsetHeight?tb.offsetHeight+10:56,hb=st.querySelector(':scope>.hbtn'),bh=hb&&hb.offsetHeight?hb.offsetHeight+12:46;window.FMAXT=Math.max(78,+(100-th/u-1).toFixed(1));window.FMAX=Math.max(80,+(100-bh/u).toFixed(1));st.classList.remove('nar');return}}
  const padX=parseFloat(cs.paddingLeft)+parseFloat(cs.paddingRight),padY=parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom);
  const acs=getComputedStyle(app);let other=parseFloat(acs.paddingTop)+parseFloat(acs.paddingBottom);for(const c of app.children){if(c===st||!(c instanceof HTMLElement))continue;const ccs=getComputedStyle(c);if(c.id==='main'){const mh=c.offsetHeight?c.offsetHeight+parseFloat(ccs.marginTop)+parseFloat(ccs.marginBottom):0;if(mh)window.__mh=mh;other+=window.__mh||61;continue}if(c.id==='say'){other+=Math.max(c.offsetHeight,window.__sy||0)+parseFloat(ccs.marginTop)+parseFloat(ccs.marginBottom);window.__sy=Math.max(c.offsetHeight,window.__sy||0);continue}if(ccs.display==='none'||ccs.position==='absolute'||ccs.position==='fixed')continue;other+=c.offsetHeight+parseFloat(ccs.marginTop)+parseFloat(ccs.marginBottom)}let W=Math.min(vw-padX-(app.offsetWidth-st.offsetWidth),560);let H=Math.floor(vh-padY-other-2);
@@ -2683,6 +2687,9 @@ function tilesRender(a){const el=$('ttiles');if(!el)return;if(!LSM()){el.innerHT
  if(CAMD==='snap')CAM=tg;else if(typeof CAMD==='number')CAM=Math.max(-lim,Math.min(lim,CAM+CAMD*s/100));
  CAMD=null;CAM+=(tg-CAM)*.2;if(Math.abs(tg-CAM)<.3)CAM=tg;sc.style.transform=`translateX(${CAM.toFixed(1)}px)`})();
 $('tscene').addEventListener('click',e=>{const n=e.target.closest&&e.target.closest('.nbt');if(!n||busy()||SCREEN!=='town')return;const r=$('tscene').getBoundingClientRect();walk((e.clientX-r.left)/r.width*100,(e.clientY-r.top)/r.height*100,edgeCheck)});
+
+(function(){const h=document.querySelector('h1.ttl');if(!h)return;const t=document.createElement('div');t.id='title';document.body.appendChild(t);t.appendChild(h);const b=document.createElement('button');b.id='tgo';b.textContent='시작하기';t.appendChild(b);const sm=document.createElement('small');sm.textContent='핸드폰을 가로로 돌려서 즐겨요';t.appendChild(sm);
+ const go=()=>{t.style.transition='opacity .35s';t.style.opacity=0;setTimeout(()=>t.remove(),380);try{sfx('pop')}catch(e){}};t.addEventListener('click',go)})();
 
 </script>
 </body></html>
