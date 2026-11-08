@@ -191,7 +191,7 @@ body.slp .hato.yw{animation:hyawn 1.8s ease-in-out!important}@keyframes hyawn{0%
 .oa-k{animation:oa-k 1.6s ease-in-out infinite}@keyframes oa-k{0%,100%{transform:translateX(-4px)}50%{transform:translateX(-14px)}}
 .oa-tw{animation:oa-tw 1.8s ease-in-out infinite}@keyframes oa-tw{50%{opacity:.2}}
 #tfx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:88}#tart .hato{z-index:2}
-.t-c1{animation:t-cl 70s linear infinite}.t-c2{animation:t-cl 95s linear -30s infinite}@keyframes t-cl{from{transform:translateX(-20px)}to{transform:translateX(120px)}}
+.t-c1{animation:t-cl 70s linear infinite}.t-c2{animation:t-cl 95s linear -30s infinite}@keyframes t-cl{from{transform:translateX(-20px)}to{transform:translateX(120px)}}@keyframes t-clw{from{transform:translateX(var(--c0))}to{transform:translateX(var(--c1))}}
 .t-bd{animation:t-bd 26s linear -6s infinite}@keyframes t-bd{from{transform:translate(-10px,0)}50%{transform:translate(55px,-4px)}to{transform:translate(112px,0)}}
 .t-sm{transform-box:fill-box;animation:t-sm 3.4s ease-out infinite}@keyframes t-sm{0%{transform:translate(0,0) scale(.6);opacity:0}30%{opacity:.8}100%{transform:translate(2px,-7px) scale(1.5);opacity:0}}
 .bch-s{animation:bchs 46s linear infinite}@keyframes bchs{from{transform:translateX(-14px)}to{transform:translateX(116px)}}.bch-b{animation:bchb 3s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}@keyframes bchb{50%{transform:translateY(.9px) rotate(2.4deg)}}.bch-y{animation:bchy 34s linear infinite}@keyframes bchy{from{transform:translateX(-8px)}to{transform:translateX(112px)}}.bch-wl{animation:bchwl .8s ease-in-out infinite;transform-box:fill-box;transform-origin:100% 100%}.bch-wr{animation:bchwr .8s ease-in-out infinite;transform-box:fill-box;transform-origin:0% 100%}@keyframes bchwl{0%,100%{transform:rotate(24deg)}50%{transform:rotate(-24deg)}}@keyframes bchwr{0%,100%{transform:rotate(-24deg)}50%{transform:rotate(24deg)}}
@@ -2208,9 +2208,9 @@ function sSVG(a){const T=tw(),n=nightF(kh())>.5,B=T.build;let bg='',fg='';
  return `${SVGO}${skyPart()}${bg}${growDeco(a,growth())}${homesSVG(a,n,(x,y,r)=>n?`<circle cx="${x}" cy="${y}" r="${r}" fill="url(#glw)" stroke="none"/>`:'')}${window.TBH?TBH.fg(a,fg):fg}${actSVG(a,growth())}${edgeSigns(a)}${sparkG(a)}</svg>${npcLayers(a)}`}
 const cldG=(k,y,sc)=>{const v=[1,2,6][Math.floor(sr(dayNo()*7+k,3)*3)];return dsG(DSN.cloud[v].replace(/#fffdf0/g,cloudFill()),0,y,sc,22,10,'fill-opacity=".92"')};
 function townFX(){const T=tw(),a=T.area,n=nightF(kh())>.5,se=festOn(),g=growth();let s='',h='';if(a==='p')return '';
- if(!n&&WX!=='rain')s+=`<g class="t-c1">${cldG(0,12,.55)}</g><g class="t-c2">${cldG(1,24,.45)}</g>`;
- if(WX==='rain')for(let k=0;k<16;k++)s+=`<path class="t-rn" style="animation-delay:${-k*.13}s" d="M${k*6.4+2} 0l-1.2 4" stroke="#9fd0dc" stroke-width=".4" fill="none"/>`;
- if(WX==='snow'||se==='win')for(let k=0;k<14;k++)s+=`<circle class="t-sn" style="animation-delay:${-k*.7}s" cx="${k*7.4+2}" cy="0" r=".6" fill="#fff"/>`;
+ const wd=WDE(a);if(!n&&WX!=='rain'){if(!wd)s+=`<g class="t-c1">${cldG(0,12,.55)}</g><g class="t-c2">${cldG(1,24,.45)}</g>`;else{const c0=Math.round(-wd-30),c1=Math.round(100+wd+30),len=c1-c0;[[0,12,.55,2],[1,24,.45,1.47]].forEach(([L,y,sc,sp])=>{const dur=len/sp,cnt=Math.max(1,Math.round(len/150));for(let i=0;i<cnt;i++)s+=`<g style="--c0:${c0}px;--c1:${c1}px;animation:t-clw ${dur.toFixed(0)}s linear ${(-dur*i/cnt-L*30).toFixed(1)}s infinite">${cldG(L*10+i,y+(i%2)*(L?4:5),sc)}</g>`})}}
+ if(WX==='rain')for(let k=0;k<16+Math.round(2*wd/6.4);k++)s+=`<path class="t-rn" style="animation-delay:${-k*.13}s" d="M${(k*6.4+2-wd).toFixed(1)} 0l-1.2 4" stroke="#9fd0dc" stroke-width=".4" fill="none"/>`;
+ if(WX==='snow'||se==='win')for(let k=0;k<14+Math.round(2*wd/7.4);k++)s+=`<circle class="t-sn" style="animation-delay:${-k*.7}s" cx="${(k*7.4+2-wd).toFixed(1)}" cy="0" r=".6" fill="#fff"/>`;
    if(se==='sum'&&a==='v')[[22,10],[60,8],[84,14]].forEach((p,k)=>{s+=`<g transform="translate(${p[0]} ${p[1]})"><g class="t-fw" style="animation-delay:${-k*1.3}s">${[0,1,2,3,4,5,6,7].map(r=>`<path d="M0 -2.5V-6.5" transform="rotate(${r*45})" stroke="${['#f47876','#f3e2a0','#9fd0dc'][k%3]}" stroke-width=".7" fill="none"/>`).join('')}</g></g>`});
  if(n&&a!=='v'||a==='f'&&n)for(let k=0;k<6;k++)s+=`<circle class="t-ff" style="animation-delay:${-k*.8}s" cx="${12+k*15}" cy="${66+(k%3)*8}" r=".7" fill="#f9f1a0"/>`;
  if(a==='v'){const bk=1;s+=`<circle class="t-sm" cx="18.2" cy="33" r="1" fill="#fff" fill-opacity=".8"/><circle class="t-sm" style="animation-delay:-1.2s" cx="19" cy="33" r=".8" fill="#fff" fill-opacity=".8"/>`;  s+=`<circle class="t-wd" cx="48" cy="73" r=".8" fill="#9fd0dc"/><circle class="t-wd" style="animation-delay:.5s" cx="50" cy="72" r=".8" fill="#9fd0dc"/><circle class="t-wd" style="animation-delay:1s" cx="52" cy="73" r=".8" fill="#9fd0dc"/>`;
@@ -2229,7 +2229,7 @@ h+=adopted().filter(i=>HAREA[i]===a).map((i,k)=>{const p=HP(i);return hatoEl(hOf
   const c={...T.cat,y:Math.max(T.cat.y,86)};s+=`<g data-t="cat" class="t-cat"><g transform="translate(${c.x} ${c.y})"><ellipse cx="0" cy="-1.6" rx="2.6" ry="1.6" fill="#f3dc86" stroke="#7a5f42" stroke-width=".5"/><circle cx="2.2" cy="-3.2" r="1.3" fill="#f3dc86" stroke="#7a5f42" stroke-width=".5"/><path d="M1.2 -4.2L1.4 -5.4L2.2 -4.5M3 -4.2L3.4 -5.4L3.6 -4.1" fill="#f3dc86" stroke="#7a5f42" stroke-width=".4"/><path d="M-2.4 -2Q-4.4 -3 -3.6 -5" fill="none" stroke="#7a5f42" stroke-width=".7"/><circle cx="0" cy="-2" r="6" fill="#000" fill-opacity="0"/></g></g>`;
   const L=exList();if(L.some(i=>S.hs[i].ex.e<=Date.now()))s+=`<g class="t-bb"><circle cx="68" cy="25.4" r="3" fill="#fff" stroke="#7a5f42" stroke-width=".5"/><text x="68" y="26.6" text-anchor="middle" font-size="3.6" font-weight="700" fill="#f47876" style="font-family:inherit">!</text></g>`;
   else if(L.length)s+=`<g class="t-bb"><circle cx="68" cy="25.4" r="3" fill="#fff" stroke="#7a5f42" stroke-width=".5"/><path d="M66.5 42.4V44.2L67.8 45" stroke="#7a5f42" stroke-width=".5" fill="none"/></g>`}
-  return `<svg id="tfx" viewBox="0 0 100 100" preserveAspectRatio="none">${s}</svg>${h}`}
+  return `<svg id="tfx" viewBox="${-wd} 0 ${100+2*wd} 100" preserveAspectRatio="none"${wd?` style="left:${-wd}%;width:${100+2*wd}%"`:''}>${s}</svg>${h}`}
 const WILD=[{k:'o',n:'주황 하토',cls:'ho',want:['tea','cookie'],x:30,y:80},{k:'g',n:'초록 하토',cls:'hg',want:['lemon','bread'],x:46,y:76}];
 const tMe=()=>S.tmode==='me'&&!!S.me;
 function plRender(){const p=$('tpl');if(!p)return;const T=tw(),i=pH(),me=tMe();if((!me&&i===undefined)||SCREEN!=='town'){p.style.display='none';return}
@@ -2741,7 +2741,7 @@ function stripOf(svgs,side,E,opt){opt=opt||{};let inner='';
  else{const rows=sampleRows(svgs,side<0?1.5:98.5);if(!rows[0])return '';inner=extArt(opt.kind||'plain',side,E,rows,opt.seed||3)}
  return `<div class="lsx" style="left:${side<0?-E+'%':'100%'};width:${E}%">${inner}</div>`}
 /* ===== 한 장짜리 넓은 맵: 원래 그림의 도형 자체를 양옆으로 이어 그림 ===== */
-const WIDE_OK=new Set(['v']);
+var WIDE_OK=new Set(['v']);const WDE=a=>(typeof WIDE_OK!=='undefined'&&WIDE_OK.has(a)&&LSM())?TWE():0;
 const f1=x=>+(+x).toFixed(2);
 function herm(P,sa,sb){const n=P.length,T=[];for(let i=0;i<n;i++)T[i]=i===0?sa:i===n-1?sb:Math.max(-1,Math.min(1,(P[i+1][1]-P[i-1][1])/(P[i+1][0]-P[i-1][0])));
  let d='';for(let i=0;i<n-1;i++){const dx=(P[i+1][0]-P[i][0])/3;d+=`C${f1(P[i][0]+dx)} ${f1(P[i][1]+T[i]*dx)} ${f1(P[i+1][0]-dx)} ${f1(P[i+1][1]-T[i+1]*dx)} ${f1(P[i+1][0])} ${f1(P[i+1][1])}`}return d}
@@ -2768,6 +2768,10 @@ function wideArt(art,a,E){
   const GL=gp(-1),GR=gp(1),edge=`<path d="M${-E} ${f1(GL[0][1])}${herm(GL,0,-.06)}Q50 59 100 62${herm(GR,.06,0)}" stroke-width=".9"/>`;
   let trees='';{const gap=26;for(const side of[-1,1]){let d=16+R(1)*gap*.5,k=0;while(d<E-2){const x=side<0?-d:100+d,v=k%2?4:1,sc=.58+.3*R(k+5);trees+=dsG(DSN.tree[v],x,63.2,sc,22,37);d+=gap*(.7+.6*R(k+9)+(side>0?.05:0));k++}}}
   let stars='';if(night)for(const side of[-1,1])for(let k=0;k<E/6;k++)stars+=`<circle cx="${f1(side<0?-E+R(k+30)*E:100+R(k+60)*E)}" cy="${f1(3+R(k+90+(side>0?7:0))*30)}" r="1.1" fill="#f8f1e2" stroke="none"/>`;
+  const rope='<path d="M0 12Q25 18 50 12T100 12" stroke-width=".6"/>';
+  if(s.includes(rope)){const i0=-Math.ceil(E/50),i1=Math.ceil(E/50)+2,cs=['#f4a79b','#e8d785','#b3de88','#9fd0dc'];let d=`M${50*i0} 12`;for(let i=i0;i<i1;i++)d+=`Q${50*i+25} ${((i%2)+2)%2?6:18} ${50*i+50} 12`;
+   let fl='';for(let k=Math.floor((-E-8)/14);8+14*k<=100+E;k++){const x=8+14*k;if(x>=0&&x<=100||x<-E||x>100+E)continue;const i=Math.floor(x/50),t=(x-50*i)/50,y=12+(((i%2)+2)%2?-1:1)*12*t*(1-t);fl+=`<path d="M${x} ${y.toFixed(2)}l2.4 0-1.2 3.4Z" fill="${cs[((k%4)+4)%4]}" stroke-width=".4"/>`}
+   s=s.replace(rope,`<path d="${d}" stroke-width=".6"/>`+fl)}
   return s.replace(ed,stars+brickExt(E,62,100)+edge+trees)}catch(e){errNote('wideArt',e);return art}}
 function portalHTML(a,side,to){const E=TWE(),ok=unlocked(to),g=gyOf(a),cx=side<0?-E+10:100+E-10,my=(g[0]+g[1])/2;
  return `<div class="por${ok?'':' lk'}" style="left:${cx-6}%;top:${my-30}%;width:12%;height:44%"><svg viewBox="0 0 60 100" fill="none" stroke="#7a5f42" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="30" cy="50" rx="25" ry="44" fill="${ok?'#c9bdf3':'#cfc7b6'}" fill-opacity=".6"/><ellipse cx="30" cy="50" rx="17" ry="33" fill="${ok?'#f3ecff':'#e8e2d4'}" fill-opacity=".9" class="psw"/><path d="M30 24c11 7 11 19 0 26s-11 19 0 26" stroke-width="2" stroke="${ok?'#a98fe0':'#b5ad9a'}"/><circle cx="14" cy="14" r="2" fill="#fffdf6" stroke="none"/><circle cx="48" cy="30" r="1.6" fill="#fffdf6" stroke="none"/></svg><b>${ok?'':'🔒 '}${ARN[to]}</b></div>`}
@@ -2795,6 +2799,6 @@ setInterval(()=>{if(!LSM())return;const E=LSE();let host=null,svgs=[],opt={};
  setInterval(()=>{const g=SCREEN==='garden';document.body.classList.toggle('gar',g);const st=$('stage');if(!st||!LSM())return;},400)})();
 
 /* 버전 표시 */
-(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v205';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
+(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v206';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
 </script>
 </body></html>
