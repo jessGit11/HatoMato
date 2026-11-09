@@ -2282,7 +2282,7 @@ function spreadArt(){if(!LSM())return;const ar=tw().area,SP=['v','n','f','h','c'
  free.forEach(f=>{const o=off(f.key);if(TEDIT||Math.abs(o[0])>=.01||Math.abs(o[1])>=.01){wrap(f.e,f.key,o[0],o[1],0)}})}
 /* 마을 배치 편집 */
 function tlEnter(){if(SCREEN!=='town'||busy())return;TEDIT=true;TDRAFT=JSON.parse(JSON.stringify(S.tl||{}));TUNDO=[];tlUI();townRender()}
-function tlExit(save_){if(save_){const o={};Object.keys(TDRAFT||{}).forEach(a=>{const m={};Object.keys(TDRAFT[a]).forEach(k=>{const v=TDRAFT[a][k];if(k==='~'){if(v)m[k]=1;return}if(Math.abs(v[0])>.01||Math.abs(v[1])>.01)m[k]=v});if(Object.keys(m).length)o[a]=m});S.tl=o;save()}TEDIT=false;TDRAFT=null;TUNDO=[];tlUI();townRender()}
+function tlExit(save_){if(save_){const o={};Object.keys(TDRAFT||{}).forEach(a=>{const m={};Object.keys(TDRAFT[a]).forEach(k=>{const v=TDRAFT[a][k];if(k==='~'){if(v)m[k]=1;return}if(Math.abs(v[0])>.01||Math.abs(v[1])>.01)m[k]=v});if(Object.keys(m).length)o[a]=m});S.tl=o;save();try{CITY.db&&CITY.db.doc('layouts/'+CITY.id).set({tl:JSON.stringify(o),ts:Date.now()}).catch(()=>{})}catch(e){}}TEDIT=false;TDRAFT=null;TUNDO=[];tlUI();townRender()}
 function tlUI(){const sc=$('tscene');if(!sc)return;sc.classList.toggle('tedit',TEDIT);document.body.classList.toggle('tedit',TEDIT);const b=$('tebar');if(b){b.style.display=TEDIT?'flex':'none';$('teundo').disabled=!TUNDO.length;const ub=$('teunb');if(ub){const m=(TDRAFT||{})[tw().area]||{};ub.textContent=m['~']?'묶음 켜기':'묶음 풀기'}}}
 function tlUndo(){if(!TUNDO.length)return;TDRAFT=JSON.parse(TUNDO.pop());tlUI();townRender()}
 (function(){let D=null;const sc=$('tscene');if(!sc)return;
@@ -2846,6 +2846,6 @@ setInterval(()=>{if(!LSM())return;const E=LSE();let host=null,svgs=[],opt={};
  setInterval(()=>{const g=SCREEN==='garden';document.body.classList.toggle('gar',g);const st=$('stage');if(!st||!LSM())return;},400)})();
 
 /* 버전 표시 */
-(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v229';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
+(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v230';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
 </script>
 </body></html>
