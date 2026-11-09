@@ -834,12 +834,13 @@ function gardenWide(){let E=0;try{E=LSM()?LSE():0}catch(e){}const a=$('gback'),f
 function applyWall(){const w=curWall(),g=$('gback');if(!g)return;const E=gardenWide(),L=-E-1,W=102+2*E;window.__wx0=L;window.__wx1=100+E+1;let pt='';try{pt=wallPat(w)}finally{window.__wx0=window.__wx1=null}g.innerHTML=olTone(`<rect x="${L}" width="${W}" height="100" fill="${w.c}" stroke="none"/>${pt}<rect x="16" y="14" width="68" height="60" fill="#d4ede6" stroke="none"/>`);$('scene').style.background=w.c}
 addEventListener('resize',()=>{setTimeout(()=>{try{applyWall()}catch(e){}},300)});
 const rnd=(a,b)=>a+Math.random()*(b-a);const noBird=()=>{const h=kst();return h>=19.5||h<5.5};
+try{['gglass','gframe'].forEach(i=>{const e=$(i);if(e)e.innerHTML=olTone(e.innerHTML)});const _v=document.querySelector('#view .vc');if(_v)_v.innerHTML=olTone(_v.innerHTML)}catch(e){}
 function spawnSky(k,fresh,frac){const now=Date.now(),sel=k==='b'?'#bd .bd':k==='c'?'#cloudG .cldg':'#bd .lf',live=[...document.querySelectorAll(sel)],minp={b:.4,c:.45,l:.35}[k];
  if(!fresh&&!live.every(e=>(now-e.__t0)/(e.__dur*1000)>minp))return;
  const used=live.map(e=>e.__y),pickY=(a,b,gap)=>{let y,t=0;do{y=rnd(a,b);t++}while(t<14&&used.some(u=>Math.abs(u-y)<gap));return y};
  let d=document.createElement('div'),dur,y;
  if(k==='b'){if(noBird())return;dur=rnd(18,32);y=pickY(16,40,10);d.className='bd';d.style.top=y+'%';d.innerHTML=bird;$('bd').appendChild(d)}
- else if(k==='c'){dur=rnd(80,140);y=pickY(14,40,12);const s=rnd(.36,.62),NS='http://www.w3.org/2000/svg';d=document.createElementNS(NS,'g');d.setAttribute('class','cldg');d.innerHTML=`<g transform="scale(${s})"><path d="M10 34Q2 34 3 26T14 18Q16 8 28 9T44 12Q54 4 64 14Q80 14 79 26T68 34Z" fill="${cloudFill()}" stroke-width="4"/></g>`;const w=document.createElementNS(NS,'g');w.setAttribute('transform',`translate(0 ${y})`);w.appendChild(d);d.__w=w;$('cloudG').appendChild(w)}
+ else if(k==='c'){dur=rnd(80,140);y=pickY(14,40,12);const s=rnd(.36,.62),NS='http://www.w3.org/2000/svg';d=document.createElementNS(NS,'g');d.setAttribute('class','cldg');d.innerHTML=`<g transform="scale(${s})"><path d="M10 34Q2 34 3 26T14 18Q16 8 28 9T44 12Q54 4 64 14Q80 14 79 26T68 34Z" fill="${cloudFill()}" stroke="${olCol(cloudFill())}" stroke-width="4"/></g>`;const w=document.createElementNS(NS,'g');w.setAttribute('transform',`translate(0 ${y})`);w.appendChild(d);d.__w=w;$('cloudG').appendChild(w)}
  else{dur=rnd(9,15);y=pickY(20,75,16);d.className='lf';d.style.left=y+'%';d.innerHTML=icon('leaf',22);$('bd').appendChild(d)}
  d.__y=y;d.__dur=dur;d.__t0=now-(fresh?frac*dur*1000:0);
  d.style.animationDuration=dur+'s';d.style.animationDelay=(fresh?-frac*dur:0)+'s';d.style.animationIterationCount='1';
@@ -850,7 +851,7 @@ const roll=()=>{const bad=WX==='rain'||WX==='snow',cb=bad?2:WX==='cloud'?1:0;CAP
 roll();['b','c','l'].forEach(k=>{for(let i=0;i<CAP[k];i++)spawnSky(k,true,(i+.15+Math.random()*.7)/CAP[k])});
 setInterval(()=>{if(noBird())document.querySelectorAll('#bd .bd').forEach(e=>{e.style.transition='opacity .8s';e.style.opacity=0;setTimeout(()=>e.remove(),900)});if(Math.random()<.2)roll();['b','c','l'].forEach(k=>{if(skyCnt(k)<CAP[k]&&Math.random()<.55)spawnSky(k,false)})},2500);
 
-$('nt').innerHTML=[[30,22],[40,30],[52,20],[62,32],[72,24],[46,40],[24,37]].map(([l,t],i)=>`<div class="tw" style="left:${l}%;top:${t}%;animation-delay:${i*.4}s">${icon('star',16)}</div>`).join('')+`<svg class="ic" id="moonG" style="position:absolute;left:50%;top:25%;width:11%;height:auto;transform:translate(-50%,-50%)" viewBox="0 0 64 64" fill="none" stroke="#7a5f42" stroke-width="5"><circle cx="32" cy="32" r="22" fill="#f5e8b8"/>${eyes(25,39,32)}</svg>`;
+$('nt').innerHTML=olTone([[30,22],[40,30],[52,20],[62,32],[72,24],[46,40],[24,37]].map(([l,t],i)=>`<div class="tw" style="left:${l}%;top:${t}%;animation-delay:${i*.4}s">${icon('star',16)}</div>`).join('')+`<svg class="ic" id="moonG" style="position:absolute;left:50%;top:25%;width:11%;height:auto;transform:translate(-50%,-50%)" viewBox="0 0 64 64" fill="none" stroke="#7a5f42" stroke-width="5"><circle cx="32" cy="32" r="22" fill="#f5e8b8"/>${eyes(25,39,32)}</svg>`);
 var SLP=false;const kh=()=>SLP?23.5:kst();
 function kst(){const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Seoul',hour:'numeric',minute:'numeric',hourCycle:'h23'}).formatToParts(new Date());return +p.find(x=>x.type==='hour').value%24+ +p.find(x=>x.type==='minute').value/60}
 const TK=[[0,[200,186,170]],[5,[200,186,170]],[6.5,[234,208,198]],[8,[255,240,226]],[10,[255,255,255]],[16,[255,255,255]],[17.5,[255,238,210]],[18.7,[255,195,155]],[19.8,[228,178,148]],[21,[200,186,170]],[24,[200,186,170]]];
@@ -882,7 +883,7 @@ const dropsHTML=k=>k=='rain'?Array.from({length:26},(_,i)=>`<i class="rd" style=
 function applyWX(code,temp){WX=wxFromCode(code);if(WX==='rain')S.rainAt=Date.now();WXL=wxLabel(code);WT=temp==null?null:temp;try{dateShow()}catch(e){}
  const d=dropsHTML(WX);$('wx').innerHTML=d;$('hwx').innerHTML=d;
  $('view').classList.remove('rainy','cloudy');if(WX==='rain')$('view').classList.add('rainy');else if(WX!=='clear')$('view').classList.add('cloudy');
- document.querySelectorAll('#cloudG path').forEach(p=>p.setAttribute('fill',cloudFill()));roll();sky();try{if(P==='play')hub()}catch(e){}}
+ document.querySelectorAll('#cloudG path').forEach(p=>{p.setAttribute('fill',cloudFill());p.setAttribute('stroke',olCol(cloudFill()))});roll();sky();try{if(P==='play')hub()}catch(e){}}
 async function fetchWX(){try{const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),7000);
   const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.978&current=weather_code,temperature_2m&timezone=Asia%2FSeoul',{signal:ctl.signal});clearTimeout(to);
   const j=await r.json(),c=j&&j.current;if(c&&typeof c.weather_code==='number'){S.wxc={code:c.weather_code,t:Math.round(c.temperature_2m),at:Date.now()};save();applyWX(c.weather_code,S.wxc.t);return true}}catch(e){}return false}
@@ -2830,6 +2831,6 @@ setInterval(()=>{if(!LSM())return;const E=LSE();let host=null,svgs=[],opt={};
  setInterval(()=>{const g=SCREEN==='garden';document.body.classList.toggle('gar',g);const st=$('stage');if(!st||!LSM())return;},400)})();
 
 /* 버전 표시 */
-(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v243';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
+(function(){const d=document.createElement('div');d.style.cssText='position:fixed;left:6px;bottom:2px;z-index:900;font:11px/1.2 sans-serif;color:#7a5f42;background:#fffdf6cc;border-radius:6px;padding:1px 5px;pointer-events:none';d.textContent='v244';document.body.appendChild(d);setTimeout(()=>d.remove(),6000)})();
 </script>
 </body></html>
