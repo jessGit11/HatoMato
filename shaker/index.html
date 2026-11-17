@@ -384,7 +384,6 @@ function draw(){
     // shadow
     ctx.save();
     ctx.translate(b.x, b.y);
-    ctx.rotate(b.a);
     const sq=b.squash, lift = b===drag.body ? 1.1 : 1;
     ctx.scale((1+sq)*lift, (1-sq)*lift);
     ctx.drawImage(im, -w/2, -h/2, w, h);
