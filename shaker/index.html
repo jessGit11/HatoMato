@@ -234,13 +234,15 @@ function toScreen(x, y){ // device x(right) y(up) -> screen x(right) y(down)
   const a = screenAngle(), c=Math.cos(a), s=Math.sin(a);
   return [ x*c + y*s, -( -x*s + y*c ) ];
 }
+const IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+const SIGN = IS_IOS ? -1 : 1;
 function onMotion(e){
   const ag = e.accelerationIncludingGravity;
   const al = e.acceleration;
   if (!ag || ag.x==null) return;
   if (!motionWorking){ motionWorking=true; }
-  // iOS & Android both: accelerationIncludingGravity points opposite gravity (device frame, y up)
-  let [sx, sy] = toScreen(ag.x, ag.y);
+  // Android reports +9.8 on y when upright; iOS Safari reports the opposite sign.
+  let [sx, sy] = toScreen(ag.x*SIGN, ag.y*SIGN);
   // gravity on screen = -reading
   const sgx = -sx, sgy = -sy;
   const mag = Math.hypot(sgx, sgy);
@@ -248,7 +250,7 @@ function onMotion(e){
   gx += (tgx-gx)*0.25; gy += (tgy-gy)*0.25;
   // shake detection from linear acceleration
   let lx, ly;
-  if (al && al.x!=null){ [lx, ly] = toScreen(al.x, al.y); lx=-lx; ly=-ly; }
+  if (al && al.x!=null){ [lx, ly] = toScreen(al.x*SIGN, al.y*SIGN); lx=-lx; ly=-ly; }
   else { lx = sgx - gx/G*9.81; ly = sgy - gy/G*9.81; }
   const lm = Math.hypot(lx, ly);
   if (lm > 7) {
