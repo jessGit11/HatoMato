@@ -50,17 +50,17 @@
 (() => {
 const N_IMG = 10;
 // per-character sound personality
-const VOICES = [
-  {type:'boing', f:520},  // sleepy
-  {type:'squeak',f:880},  // laughing
-  {type:'boing', f:400},  // pouty
-  {type:'boing', f:620},  // blush
-  {type:'chime', f:1046}, // hearts
-  {type:'thud',  f:140},  // stone
-  {type:'pop',   f:700},  // basic
-  {type:'bass',  f:110},  // sunglasses
-  {type:'chime', f:1318}, // heart
-  {type:'crunch',f:300},  // cake
+const VOICES = [   // f = base pitch, d = length, w = wobble, n = squelch amount
+  {f:330, d:0.20, w:1.0, n:0.5},  // sleepy
+  {f:520, d:0.15, w:1.4, n:0.6},  // laughing
+  {f:290, d:0.20, w:0.8, n:0.5},  // pouty
+  {f:420, d:0.18, w:1.1, n:0.6},  // blush
+  {f:620, d:0.15, w:1.3, n:0.4},  // hearts
+  {f:150, d:0.17, w:0.5, n:0.9},  // stone (heavier, wetter "뿍")
+  {f:380, d:0.18, w:1.0, n:0.5},  // basic
+  {f:200, d:0.22, w:0.7, n:0.6},  // sunglasses
+  {f:720, d:0.14, w:1.2, n:0.4},  // heart
+  {f:260, d:0.22, w:0.9, n:1.0},  // cake (extra squishy)
 ];
 
 const cv = document.getElementById('c');
@@ -96,93 +96,61 @@ function noise(){
   for (let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
   return noiseBuf;
 }
-let lastSoundAt=0, soundsThisFrame=0;
+let soundsThisFrame=0;
+// chewy "mochi" squish: pitch dips then springs up, resonant lowpass sweep ("wah"), tiny wet squelch
 function play(kind, vel){
   if (!AC || muted || soundsThisFrame>3) return;
-  const now = AC.currentTime;
   soundsThisFrame++;
-  const v = VOICES[kind];
-  const amp = Math.min(1, 0.15 + vel/1400) * 0.9;
-  const pitchJ = 1 + (Math.random()-.5)*0.18;
-  const g = AC.createGain(); g.connect(master);
-  const o = AC.createOscillator();
-  let f = v.f*pitchJ;
-  switch(v.type){
-    case 'boing':
-      o.type='sine';
-      o.frequency.setValueAtTime(f*1.6, now);
-      o.frequency.exponentialRampToValueAtTime(f*0.55, now+0.22);
-      g.gain.setValueAtTime(0.0001, now);
-      g.gain.exponentialRampToValueAtTime(amp, now+0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, now+0.28);
-      { // wobble
-        const lfo=AC.createOscillator(), lg=AC.createGain();
-        lfo.frequency.value=28; lg.gain.value=f*0.08; lfo.connect(lg); lg.connect(o.frequency);
-        lfo.start(now); lfo.stop(now+0.3);
-      }
-      o.connect(g); o.start(now); o.stop(now+0.3); break;
-    case 'squeak':
-      o.type='triangle';
-      o.frequency.setValueAtTime(f, now);
-      o.frequency.exponentialRampToValueAtTime(f*1.9, now+0.07);
-      o.frequency.exponentialRampToValueAtTime(f*1.2, now+0.14);
-      g.gain.setValueAtTime(0.0001, now);
-      g.gain.exponentialRampToValueAtTime(amp*0.7, now+0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, now+0.16);
-      o.connect(g); o.start(now); o.stop(now+0.18); break;
-    case 'chime': {
-      o.type='sine'; o.frequency.value=f;
-      const o2=AC.createOscillator(); o2.type='sine'; o2.frequency.value=f*2.01;
-      const g2=AC.createGain(); g2.gain.value=0.35; o2.connect(g2); g2.connect(g);
-      g.gain.setValueAtTime(0.0001, now);
-      g.gain.exponentialRampToValueAtTime(amp*0.55, now+0.005);
-      g.gain.exponentialRampToValueAtTime(0.0001, now+0.6);
-      o.connect(g); o.start(now); o2.start(now); o.stop(now+0.62); o2.stop(now+0.62); break; }
-    case 'thud': {
-      o.type='sine';
-      o.frequency.setValueAtTime(f*2, now);
-      o.frequency.exponentialRampToValueAtTime(f*0.6, now+0.12);
-      g.gain.setValueAtTime(0.0001, now);
-      g.gain.exponentialRampToValueAtTime(amp, now+0.004);
-      g.gain.exponentialRampToValueAtTime(0.0001, now+0.18);
-      o.connect(g); o.start(now); o.stop(now+0.2);
-      const n=AC.createBufferSource(); n.buffer=noise();
-      const bp=AC.createBiquadFilter(); bp.type='lowpass'; bp.frequency.value=900;
-      const ng=AC.createGain(); ng.gain.setValueAtTime(amp*0.5, now); ng.gain.exponentialRampToValueAtTime(0.0001, now+0.07);
-      n.connect(bp); bp.connect(ng); ng.connect(master); n.start(now); n.stop(now+0.08); break; }
-    case 'bass':
-      o.type='square';
-      const lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.setValueAtTime(1400, now); lp.frequency.exponentialRampToValueAtTime(200, now+0.2);
-      o.frequency.setValueAtTime(f*pitchJ, now);
-      o.frequency.setValueAtTime(f*1.5*pitchJ, now+0.07);
-      g.gain.setValueAtTime(0.0001, now);
-      g.gain.exponentialRampToValueAtTime(amp*0.45, now+0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, now+0.24);
-      o.connect(lp); lp.connect(g); o.start(now); o.stop(now+0.26); break;
-    case 'pop':
-      o.type='sine';
-      o.frequency.setValueAtTime(f*0.6, now);
-      o.frequency.exponentialRampToValueAtTime(f*2.2, now+0.05);
-      g.gain.setValueAtTime(0.0001, now);
-      g.gain.exponentialRampToValueAtTime(amp*0.8, now+0.004);
-      g.gain.exponentialRampToValueAtTime(0.0001, now+0.09);
-      o.connect(g); o.start(now); o.stop(now+0.1); break;
-    case 'crunch': {
-      const n=AC.createBufferSource(); n.buffer=noise();
-      const bp=AC.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=2200*pitchJ; bp.Q.value=1.2;
-      g.gain.setValueAtTime(0.0001, now);
-      g.gain.exponentialRampToValueAtTime(amp*0.9, now+0.004);
-      g.gain.exponentialRampToValueAtTime(0.0001, now+0.12);
-      n.connect(bp); bp.connect(g); n.start(now); n.stop(now+0.14);
-      o.type='sine'; o.frequency.setValueAtTime(f, now); o.frequency.exponentialRampToValueAtTime(f*0.5,now+0.1);
-      const og=AC.createGain(); og.gain.setValueAtTime(amp*0.4,now); og.gain.exponentialRampToValueAtTime(0.0001,now+0.12);
-      o.connect(og); og.connect(master); o.start(now); o.stop(now+0.13); break; }
+  const now = AC.currentTime, v = VOICES[kind];
+  const amp = Math.min(1, 0.18 + vel/1500) * 0.85;
+  const j = 1 + (Math.random()-.5)*0.16;
+  const f = v.f*j, d = v.d*(0.9+Math.random()*0.2);
+
+  const out = AC.createGain(); out.connect(master);
+  out.gain.setValueAtTime(0.0001, now);
+  out.gain.exponentialRampToValueAtTime(amp, now+0.008);
+  out.gain.setValueAtTime(amp, now+d*0.25);
+  out.gain.exponentialRampToValueAtTime(0.0001, now+d);
+
+  const lp = AC.createBiquadFilter(); lp.type='lowpass'; lp.Q.value=9;
+  lp.frequency.setValueAtTime(f*1.2, now);
+  lp.frequency.exponentialRampToValueAtTime(f*5, now+d*0.3);
+  lp.frequency.exponentialRampToValueAtTime(f*1.1, now+d);
+  lp.connect(out);
+
+  // body: squash (dip) -> spring back up (the "쫀득")
+  const o1 = AC.createOscillator(); o1.type='triangle';
+  o1.frequency.setValueAtTime(f*0.75, now);
+  o1.frequency.exponentialRampToValueAtTime(f*0.6, now+d*0.15);
+  o1.frequency.exponentialRampToValueAtTime(f*1.35, now+d*0.55);
+  o1.frequency.exponentialRampToValueAtTime(f*1.15, now+d);
+  const o2 = AC.createOscillator(); o2.type='sine';
+  o2.frequency.setValueAtTime(f*0.5, now);
+  o2.frequency.exponentialRampToValueAtTime(f*0.68, now+d);
+  const g2 = AC.createGain(); g2.gain.value=0.7;
+  o1.connect(lp); o2.connect(g2); g2.connect(lp);
+
+  // jelly wobble
+  const lfo = AC.createOscillator(), lg = AC.createGain();
+  lfo.frequency.setValueAtTime(22, now); lfo.frequency.linearRampToValueAtTime(12, now+d);
+  lg.gain.value = f*0.06*v.w; lfo.connect(lg); lg.connect(o1.frequency);
+
+  [o1,o2,lfo].forEach(o=>{ o.start(now); o.stop(now+d+0.02); });
+
+  // wet squelch at the start
+  if (v.n>0){
+    const n = AC.createBufferSource(); n.buffer = noise();
+    const bp = AC.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=3;
+    bp.frequency.setValueAtTime(900*j, now); bp.frequency.exponentialRampToValueAtTime(2600*j, now+0.035);
+    const ng = AC.createGain();
+    ng.gain.setValueAtTime(amp*0.35*v.n, now); ng.gain.exponentialRampToValueAtTime(0.0001, now+0.045);
+    n.connect(bp); bp.connect(ng); ng.connect(master); n.start(now); n.stop(now+0.05);
   }
 }
 
 // ---------- bodies ----------
 const bodies = [];
-function baseR(){ return Math.max(30, Math.min(W,H) * 0.105); }
+function baseR(){ return Math.max(22, Math.min(W,H) * 0.068); }
 function addBody(kind, x, y){
   const r = baseR() * (kind===9 ? 1.15 : 1) * (0.92 + Math.random()*0.16);
   bodies.push({
