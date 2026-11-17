@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>말랑 쉐이커</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#fff6ec; --ink:#4a3a33; --pink:#f59a96; --leaf:#a9d18e; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { margin:0; height:100%; overflow:hidden; background:var(--bg); font-family:'Gaegu', system-ui, sans-serif; color:var(--ink); touch-action:none; user-select:none; -webkit-user-select:none; }
+  canvas { position:fixed; inset:0; width:100%; height:100%; display:block; }
+  .bar { position:fixed; left:0; right:0; bottom:0; display:flex; justify-content:center; gap:10px; padding:12px 12px calc(14px + env(safe-area-inset-bottom)); pointer-events:none; }
+  .bar button { pointer-events:auto; font:700 20px 'Gaegu', sans-serif; color:var(--ink); background:#fff; border:3px solid var(--ink); border-radius:999px; padding:8px 16px; box-shadow:0 4px 0 var(--ink); cursor:pointer; }
+  .bar button:active { transform:translateY(3px); box-shadow:0 1px 0 var(--ink); }
+  .bar .main { background:var(--pink); }
+  .hint { position:fixed; top:calc(12px + env(safe-area-inset-top)); left:0; right:0; text-align:center; font-size:20px; opacity:.55; pointer-events:none; transition:opacity .6s; }
+  .shake-flash { position:fixed; inset:0; pointer-events:none; box-shadow:inset 0 0 0 0 rgba(245,154,150,0); transition:box-shadow .25s; }
+  .shake-flash.on { box-shadow:inset 0 0 60px 10px rgba(245,154,150,.55); transition:none; }
+  #start { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; background:rgba(255,246,236,.92); z-index:5; text-align:center; padding:24px; }
+  #start h1 { margin:0; font-size:52px; letter-spacing:1px; }
+  #start p { margin:0; font-size:22px; line-height:1.35; }
+  #start .go { font:700 30px 'Gaegu', sans-serif; background:var(--pink); color:var(--ink); border:4px solid var(--ink); border-radius:999px; padding:10px 34px; box-shadow:0 6px 0 var(--ink); margin-top:8px; }
+  #start .faces { display:flex; gap:4px; }
+  #start .faces img { width:58px; animation:bob 1.2s ease-in-out infinite; }
+  #start .faces img:nth-child(2){animation-delay:.15s} #start .faces img:nth-child(3){animation-delay:.3s} #start .faces img:nth-child(4){animation-delay:.45s}
+  @keyframes bob { 50% { transform:translateY(-10px) rotate(-6deg); } }
+  #toast { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#fff; border:3px solid var(--ink); border-radius:18px; padding:12px 18px; font-size:20px; text-align:center; opacity:0; pointer-events:none; transition:opacity .4s; max-width:85vw; z-index:4; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="shake-flash" id="flash"></div>
+<div class="hint" id="hint">폰을 흔들어 보세요!</div>
+<div class="bar">
+  <button id="btnShake" class="main">흔들기!</button>
+  <button id="btnAdd">＋ 추가</button>
+  <button id="btnMute">🔊</button>
+</div>
+<div id="toast"></div>
+<div id="start">
+  <div class="faces"><img src="img/c6.png" alt=""><img src="img/c4.png" alt=""><img src="img/c8.png" alt=""><img src="img/c7.png" alt=""></div>
+  <h1>말랑 쉐이커</h1>
+  <p>폰을 흔들면 친구들이 날아다녀요<br>캐릭터를 끌어서 던질 수도 있어요</p>
+  <button class="go" id="go">시작!</button>
+</div>
+
+<script>
+(() => {
+const N_IMG = 10;
+// per-character sound personality
+const VOICES = [
+  {type:'boing', f:520},  // sleepy
+  {type:'squeak',f:880},  // laughing
+  {type:'boing', f:400},  // pouty
+  {type:'boing', f:620},  // blush
+  {type:'chime', f:1046}, // hearts
+  {type:'thud',  f:140},  // stone
+  {type:'pop',   f:700},  // basic
+  {type:'bass',  f:110},  // sunglasses
+  {type:'chime', f:1318}, // heart
+  {type:'crunch',f:300},  // cake
+];
+
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+let W=0, H=0, DPR=1;
+function resize(){
+  DPR = Math.min(window.devicePixelRatio||1, 2.5);
+  W = innerWidth; H = innerHeight;
+  cv.width = W*DPR; cv.height = H*DPR;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+addEventListener('resize', resize); resize();
+
+const imgs = [];
+for (let i=0;i<N_IMG;i++){ const im=new Image(); im.src=`img/c${i}.png`; imgs.push(im); }
+
+// ---------- audio ----------
+let AC=null, master=null, muted=false;
+function initAudio(){
+  if (AC) return;
+  try {
+    AC = new (window.AudioContext||window.webkitAudioContext)();
+    master = AC.createGain(); master.gain.value = 0.55;
+    const comp = AC.createDynamicsCompressor();
+    master.connect(comp); comp.connect(AC.destination);
+  } catch(e){ AC=null; }
+}
+let noiseBuf=null;
+function noise(){
+  if (noiseBuf) return noiseBuf;
+  noiseBuf = AC.createBuffer(1, AC.sampleRate*0.3, AC.sampleRate);
+  const d = noiseBuf.getChannelData(0);
+  for (let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+  return noiseBuf;
+}
+let lastSoundAt=0, soundsThisFrame=0;
+function play(kind, vel){
+  if (!AC || muted || soundsThisFrame>3) return;
+  const now = AC.currentTime;
+  soundsThisFrame++;
+  const v = VOICES[kind];
+  const amp = Math.min(1, 0.15 + vel/1400) * 0.9;
+  const pitchJ = 1 + (Math.random()-.5)*0.18;
+  const g = AC.createGain(); g.connect(master);
+  const o = AC.createOscillator();
+  let f = v.f*pitchJ;
+  switch(v.type){
+    case 'boing':
+      o.type='sine';
+      o.frequency.setValueAtTime(f*1.6, now);
+      o.frequency.exponentialRampToValueAtTime(f*0.55, now+0.22);
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(amp, now+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, now+0.28);
+      { // wobble
+        const lfo=AC.createOscillator(), lg=AC.createGain();
+        lfo.frequency.value=28; lg.gain.value=f*0.08; lfo.connect(lg); lg.connect(o.frequency);
+        lfo.start(now); lfo.stop(now+0.3);
+      }
+      o.connect(g); o.start(now); o.stop(now+0.3); break;
+    case 'squeak':
+      o.type='triangle';
+      o.frequency.setValueAtTime(f, now);
+      o.frequency.exponentialRampToValueAtTime(f*1.9, now+0.07);
+      o.frequency.exponentialRampToValueAtTime(f*1.2, now+0.14);
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(amp*0.7, now+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, now+0.16);
+      o.connect(g); o.start(now); o.stop(now+0.18); break;
+    case 'chime': {
+      o.type='sine'; o.frequency.value=f;
+      const o2=AC.createOscillator(); o2.type='sine'; o2.frequency.value=f*2.01;
+      const g2=AC.createGain(); g2.gain.value=0.35; o2.connect(g2); g2.connect(g);
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(amp*0.55, now+0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, now+0.6);
+      o.connect(g); o.start(now); o2.start(now); o.stop(now+0.62); o2.stop(now+0.62); break; }
+    case 'thud': {
+      o.type='sine';
+      o.frequency.setValueAtTime(f*2, now);
+      o.frequency.exponentialRampToValueAtTime(f*0.6, now+0.12);
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(amp, now+0.004);
+      g.gain.exponentialRampToValueAtTime(0.0001, now+0.18);
+      o.connect(g); o.start(now); o.stop(now+0.2);
+      const n=AC.createBufferSource(); n.buffer=noise();
+      const bp=AC.createBiquadFilter(); bp.type='lowpass'; bp.frequency.value=900;
+      const ng=AC.createGain(); ng.gain.setValueAtTime(amp*0.5, now); ng.gain.exponentialRampToValueAtTime(0.0001, now+0.07);
+      n.connect(bp); bp.connect(ng); ng.connect(master); n.start(now); n.stop(now+0.08); break; }
+    case 'bass':
+      o.type='square';
+      const lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.setValueAtTime(1400, now); lp.frequency.exponentialRampToValueAtTime(200, now+0.2);
+      o.frequency.setValueAtTime(f*pitchJ, now);
+      o.frequency.setValueAtTime(f*1.5*pitchJ, now+0.07);
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(amp*0.45, now+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, now+0.24);
+      o.connect(lp); lp.connect(g); o.start(now); o.stop(now+0.26); break;
+    case 'pop':
+      o.type='sine';
+      o.frequency.setValueAtTime(f*0.6, now);
+      o.frequency.exponentialRampToValueAtTime(f*2.2, now+0.05);
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(amp*0.8, now+0.004);
+      g.gain.exponentialRampToValueAtTime(0.0001, now+0.09);
+      o.connect(g); o.start(now); o.stop(now+0.1); break;
+    case 'crunch': {
+      const n=AC.createBufferSource(); n.buffer=noise();
+      const bp=AC.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=2200*pitchJ; bp.Q.value=1.2;
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(amp*0.9, now+0.004);
+      g.gain.exponentialRampToValueAtTime(0.0001, now+0.12);
+      n.connect(bp); bp.connect(g); n.start(now); n.stop(now+0.14);
+      o.type='sine'; o.frequency.setValueAtTime(f, now); o.frequency.exponentialRampToValueAtTime(f*0.5,now+0.1);
+      const og=AC.createGain(); og.gain.setValueAtTime(amp*0.4,now); og.gain.exponentialRampToValueAtTime(0.0001,now+0.12);
+      o.connect(og); og.connect(master); o.start(now); o.stop(now+0.13); break; }
+  }
+}
+
+// ---------- bodies ----------
+const bodies = [];
+function baseR(){ return Math.max(30, Math.min(W,H) * 0.105); }
+function addBody(kind, x, y){
+  const r = baseR() * (kind===9 ? 1.15 : 1) * (0.92 + Math.random()*0.16);
+  bodies.push({
+    kind, r, x: x ?? r + Math.random()*(W-2*r), y: y ?? r + Math.random()*(H*0.5),
+    vx:(Math.random()-.5)*300, vy:(Math.random()-.5)*300,
+    a:(Math.random()-.5)*0.6, va:0, m: r*r*(kind===5?2.2:1),
+    squash:0, lastHit:0, face:0
+  });
+}
+function seed(){ for (let i=0;i<N_IMG;i++) addBody(i); }
+seed();
+
+// ---------- gravity & motion ----------
+let gx=0, gy=1400;          // px/s^2
+const G = 1400;
+let motionWorking=false;
+let lastShakeAt=0;
+function shake(power){       // power ~ px/s impulse
+  const t = performance.now();
+  for (const b of bodies){
+    if (b===drag.body) continue;
+    const ang = Math.random()*Math.PI*2;
+    const k = power*(0.6+Math.random()*0.8) * (b.kind===5?0.7:1);
+    b.vx += Math.cos(ang)*k; b.vy += Math.sin(ang)*k - power*0.25;
+    b.va += (Math.random()-.5)*14;
+  }
+  if (t-lastShakeAt>120){ flash(); lastShakeAt=t; }
+  hideHint();
+}
+function shakeDir(ax, ay){   // directional jolt from accelerometer (px/s)
+  for (const b of bodies){
+    if (b===drag.body) continue;
+    b.vx += ax*(0.8+Math.random()*0.4) + (Math.random()-.5)*Math.abs(ax+ay)*0.35;
+    b.vy += ay*(0.8+Math.random()*0.4) + (Math.random()-.5)*Math.abs(ax+ay)*0.35;
+    b.va += (Math.random()-.5)*10;
+  }
+  const t=performance.now();
+  if (t-lastShakeAt>150){ flash(); lastShakeAt=t; }
+  hideHint();
+}
+const flashEl=document.getElementById('flash');
+function flash(){ flashEl.classList.add('on'); requestAnimationFrame(()=>requestAnimationFrame(()=>flashEl.classList.remove('on'))); if (navigator.vibrate) try{navigator.vibrate(15)}catch(e){} }
+
+function screenAngle(){
+  const o = (screen.orientation && screen.orientation.angle) ?? window.orientation ?? 0;
+  return (o||0) * Math.PI/180;
+}
+function toScreen(x, y){ // device x(right) y(up) -> screen x(right) y(down)
+  const a = screenAngle(), c=Math.cos(a), s=Math.sin(a);
+  return [ x*c + y*s, -( -x*s + y*c ) ];
+}
+function onMotion(e){
+  const ag = e.accelerationIncludingGravity;
+  const al = e.acceleration;
+  if (!ag || ag.x==null) return;
+  if (!motionWorking){ motionWorking=true; }
+  // iOS & Android both: accelerationIncludingGravity points opposite gravity (device frame, y up)
+  let [sx, sy] = toScreen(ag.x, ag.y);
+  // gravity on screen = -reading
+  const sgx = -sx, sgy = -sy;
+  const mag = Math.hypot(sgx, sgy);
+  const tgx = sgx/9.81*G, tgy = sgy/9.81*G;
+  gx += (tgx-gx)*0.25; gy += (tgy-gy)*0.25;
+  // shake detection from linear acceleration
+  let lx, ly;
+  if (al && al.x!=null){ [lx, ly] = toScreen(al.x, al.y); lx=-lx; ly=-ly; }
+  else { lx = sgx - gx/G*9.81; ly = sgy - gy/G*9.81; }
+  const lm = Math.hypot(lx, ly);
+  if (lm > 7) {
+    // objects lag behind phone movement: push opposite to phone acceleration
+    shakeDir(lx*28, ly*28);
+  }
+}
+async function enableMotion(){
+  try {
+    if (typeof DeviceMotionEvent!=='undefined' && typeof DeviceMotionEvent.requestPermission==='function'){
+      const r = await DeviceMotionEvent.requestPermission();
+      if (r!=='granted') throw 0;
+    }
+    addEventListener('devicemotion', onMotion);
+  } catch(e){}
+  setTimeout(()=>{
+    if (!motionWorking) toast('여기선 흔들기 센서가 막혀 있어요 📵<br>화면을 손가락으로 마구 문지르거나<br><b>흔들기!</b> 버튼을 눌러 주세요');
+  }, 1500);
+}
+
+// ---------- pointer: drag/throw + finger-shake ----------
+const drag = { body:null, id:null, ox:0, oy:0, hist:[] };
+let rub = { id:null, x:0, y:0, t:0, lastDir:0, energy:0 };
+function hit(x,y){
+  for (let i=bodies.length-1;i>=0;i--){ const b=bodies[i]; if ((b.x-x)**2+(b.y-y)**2 < (b.r*1.05)**2) return b; }
+  return null;
+}
+cv.addEventListener('pointerdown', e=>{
+  initAudio(); if (AC && AC.state==='suspended') AC.resume();
+  const b = hit(e.clientX, e.clientY);
+  if (b && drag.id===null){
+    drag.body=b; drag.id=e.pointerId; drag.ox=b.x-e.clientX; drag.oy=b.y-e.clientY; drag.hist=[{x:e.clientX,y:e.clientY,t:performance.now()}];
+    bodies.splice(bodies.indexOf(b),1); bodies.push(b);
+    b.face=1; play(b.kind, 300);
+  } else if (rub.id===null){
+    rub = { id:e.pointerId, x:e.clientX, y:e.clientY, t:performance.now(), vx:0, vy:0, energy:0 };
+  }
+  cv.setPointerCapture(e.pointerId);
+});
+cv.addEventListener('pointermove', e=>{
+  const t=performance.now();
+  if (e.pointerId===drag.id && drag.body){
+    drag.hist.push({x:e.clientX,y:e.clientY,t}); if (drag.hist.length>6) drag.hist.shift();
+  } else if (e.pointerId===rub.id){
+    const dt=Math.max(8, t-rub.t);
+    const vx=(e.clientX-rub.x)/dt*1000, vy=(e.clientY-rub.y)/dt*1000;
+    // direction reversals = shaking gesture
+    const rev = (vx*rub.vx + vy*rub.vy) < 0;
+    const sp = Math.hypot(vx,vy);
+    if (sp>600){
+      rub.energy += sp*dt/1000;
+      if (rev || rub.energy>220){
+        shakeDir(vx*0.9, vy*0.9);
+        rub.energy=0;
+      }
+    }
+    rub.x=e.clientX; rub.y=e.clientY; rub.t=t; rub.vx=vx; rub.vy=vy;
+  }
+});
+function endPtr(e){
+  if (e.pointerId===drag.id && drag.body){
+    const h=drag.hist, b=drag.body;
+    if (h.length>=2){
+      const a=h[0], z=h[h.length-1], dt=Math.max(16, z.t-a.t);
+      b.vx=(z.x-a.x)/dt*1000; b.vy=(z.y-a.y)/dt*1000;
+      const cap=4000, sp=Math.hypot(b.vx,b.vy); if (sp>cap){ b.vx*=cap/sp; b.vy*=cap/sp; }
+      b.va += (Math.random()-.5)*8;
+    }
+    b.face=0; drag.body=null; drag.id=null;
+  }
+  if (e.pointerId===rub.id) rub.id=null;
+}
+cv.addEventListener('pointerup', endPtr);
+cv.addEventListener('pointercancel', endPtr);
+
+// ---------- physics ----------
+const REST_WALL = 0.62, REST_BALL = 0.7, FRICTION_AIR = 0.12;
+function step(dt){
+  // dragging body follows finger
+  if (drag.body && drag.hist.length){
+    const p=drag.hist[drag.hist.length-1], b=drag.body;
+    const tx=p.x+drag.ox, ty=p.y+drag.oy;
+    b.vx=(tx-b.x)/dt; b.vy=(ty-b.y)/dt; b.x=tx; b.y=ty; b.va*=0.9;
+  }
+  const t = performance.now();
+  for (const b of bodies){
+    if (b===drag.body) continue;
+    b.vx += gx*dt; b.vy += gy*dt;
+    const damp = Math.exp(-FRICTION_AIR*dt);
+    b.vx*=damp; b.vy*=damp; b.va*=Math.exp(-1.2*dt);
+    b.x += b.vx*dt; b.y += b.vy*dt; b.a += b.va*dt;
+  }
+  // collisions between bodies (few iterations)
+  for (let it=0; it<3; it++){
+    for (let i=0;i<bodies.length;i++){
+      const A=bodies[i];
+      for (let j=i+1;j<bodies.length;j++){
+        const B=bodies[j];
+        const dx=B.x-A.x, dy=B.y-A.y, rr=A.r+B.r;
+        const d2=dx*dx+dy*dy;
+        if (d2>=rr*rr || d2===0) continue;
+        const d=Math.sqrt(d2), nx=dx/d, ny=dy/d, ov=rr-d;
+        const ia = A===drag.body?0:1/A.m, ib = B===drag.body?0:1/B.m, is=ia+ib;
+        if (is===0) continue;
+        A.x -= nx*ov*ia/is; A.y -= ny*ov*ia/is;
+        B.x += nx*ov*ib/is; B.y += ny*ov*ib/is;
+        const rv = (B.vx-A.vx)*nx + (B.vy-A.vy)*ny;
+        if (rv<0){
+          const jimp = -(1+REST_BALL)*rv/is;
+          A.vx -= jimp*nx*ia; A.vy -= jimp*ny*ia;
+          B.vx += jimp*nx*ib; B.vy += jimp*ny*ib;
+          // spin from tangential velocity
+          const tv = (B.vx-A.vx)*(-ny) + (B.vy-A.vy)*nx;
+          A.va -= tv/A.r*0.05; B.va += tv/B.r*0.05;
+          if (it===0 && -rv>260) impact(-rv>420 && Math.random()<.5 ? A : B, -rv, t);
+        }
+      }
+    }
+    // walls
+    for (const b of bodies){
+      if (b===drag.body){ b.x=Math.max(b.r,Math.min(W-b.r,b.x)); b.y=Math.max(b.r,Math.min(H-b.r,b.y)); continue; }
+      let hitV=0;
+      if (b.x<b.r){ b.x=b.r; if (b.vx<0){ hitV=Math.max(hitV,-b.vx); b.vx=-b.vx*REST_WALL; b.va += b.vy/b.r*0.3; } }
+      if (b.x>W-b.r){ b.x=W-b.r; if (b.vx>0){ hitV=Math.max(hitV,b.vx); b.vx=-b.vx*REST_WALL; b.va -= b.vy/b.r*0.3; } }
+      if (b.y<b.r){ b.y=b.r; if (b.vy<0){ hitV=Math.max(hitV,-b.vy); b.vy=-b.vy*REST_WALL; b.va -= b.vx/b.r*0.3; } }
+      if (b.y>H-b.r){ b.y=H-b.r; if (b.vy>0){ hitV=Math.max(hitV,b.vy); b.vy=-b.vy*REST_WALL; b.va += b.vx/b.r*0.3; } }
+      // rolling friction on floor-ish contact
+      if (it===0 && hitV>230) impact(b, hitV, t);
+    }
+  }
+  for (const b of bodies){ b.squash *= Math.exp(-9*dt); if (b.face===2 && t-b.lastHit>350) b.face=0; }
+}
+function impact(b, v, t){
+  b.squash = Math.min(0.28, Math.max(b.squash, v/5000));
+  if (t-b.lastHit < 70) return;
+  b.lastHit=t; b.face=2;
+  play(b.kind, v);
+  if (v>700) spawnStars(b.x, b.y, Math.min(6, v/350|0));
+}
+
+// ---------- little particles ----------
+const parts=[];
+const PCOL=['#f59a96','#a9d18e','#ffd27a','#ffffff'];
+function spawnStars(x,y,n){
+  for(let i=0;i<n;i++){ const a=Math.random()*Math.PI*2, s=120+Math.random()*260;
+    parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:0.5+Math.random()*0.3,c:PCOL[i%4],r:3+Math.random()*4}); }
+  if (parts.length>200) parts.splice(0, parts.length-200);
+}
+
+// ---------- render ----------
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  // dotted background
+  ctx.fillStyle='rgba(74,58,51,.05)';
+  const sp=34; for(let y=sp/2;y<H;y+=sp) for(let x=((y/sp|0)%2?sp:sp/2);x<W;x+=sp){ ctx.beginPath(); ctx.arc(x,y,2,0,7); ctx.fill(); }
+  for (const p of parts){ ctx.globalAlpha=Math.max(0,p.l*1.6); ctx.fillStyle=p.c; ctx.strokeStyle='#4a3a33'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,7); ctx.fill(); ctx.stroke(); }
+  ctx.globalAlpha=1;
+  for (const b of bodies){
+    const im=imgs[b.kind]; if (!im.complete || !im.naturalWidth) continue;
+    const s = (b.r*2.15) / Math.max(im.naturalWidth, im.naturalHeight);
+    const w=im.naturalWidth*s, h=im.naturalHeight*s;
+    // shadow
+    ctx.save();
+    ctx.translate(b.x, b.y);
+    ctx.rotate(b.a);
+    const sq=b.squash, lift = b===drag.body ? 1.1 : 1;
+    ctx.scale((1+sq)*lift, (1-sq)*lift);
+    ctx.drawImage(im, -w/2, -h/2, w, h);
+    ctx.restore();
+  }
+}
+
+let last=performance.now();
+function loop(t){
+  let dt=(t-last)/1000; last=t; if (dt>0.05) dt=0.05;
+  soundsThisFrame=0;
+  const sub=3; for(let i=0;i<sub;i++) step(dt/sub);
+  for (const p of parts){ p.vy+=600*dt; p.x+=p.vx*dt; p.y+=p.vy*dt; p.l-=dt; }
+  for (let i=parts.length-1;i>=0;i--) if (parts[i].l<=0) parts.splice(i,1);
+  draw();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+// ---------- UI ----------
+const hint=document.getElementById('hint');
+let hintHidden=false; function hideHint(){ if(!hintHidden){ hintHidden=true; hint.style.opacity=0; } }
+const toastEl=document.getElementById('toast'); let toastT=0;
+function toast(html){ toastEl.innerHTML=html; toastEl.style.opacity=1; clearTimeout(toastT); toastT=setTimeout(()=>toastEl.style.opacity=0, 3800); }
+
+document.getElementById('go').addEventListener('click', ()=>{
+  initAudio(); if (AC && AC.state==='suspended') AC.resume();
+  document.getElementById('start').style.display='none';
+  enableMotion();
+  shake(900);
+});
+document.getElementById('btnShake').addEventListener('click', ()=>{ initAudio(); if (AC&&AC.state==='suspended') AC.resume(); shake(1500); });
+document.getElementById('btnAdd').addEventListener('click', ()=>{
+  initAudio();
+  if (bodies.length>=30){ toast('너무 꽉 찼어요! 🥵'); return; }
+  const k=Math.random()*N_IMG|0; addBody(k, W/2+(Math.random()-.5)*40, baseR()+10); play(k, 500);
+});
+const mb=document.getElementById('btnMute');
+mb.addEventListener('click', ()=>{ muted=!muted; mb.textContent=muted?'🔇':'🔊'; });
+})();
+</script>
+</body>
+</html>
