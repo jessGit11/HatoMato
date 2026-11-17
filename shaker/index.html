@@ -150,7 +150,7 @@ function play(kind, vel){
 
 // ---------- bodies ----------
 const bodies = [];
-function baseR(){ return Math.max(22, Math.min(W,H) * 0.068); }
+function baseR(){ return Math.max(16, Math.min(W,H) * 0.05); }
 function addBody(kind, x, y){
   const r = baseR() * (kind===9 ? 1.15 : 1) * (0.92 + Math.random()*0.16);
   bodies.push({
@@ -175,7 +175,7 @@ function shake(power){       // power ~ px/s impulse
     const ang = Math.random()*Math.PI*2;
     const k = power*(0.6+Math.random()*0.8) * (b.kind===5?0.7:1);
     b.vx += Math.cos(ang)*k; b.vy += Math.sin(ang)*k - power*0.25;
-    b.va += (Math.random()-.5)*14;
+    b.va += (Math.random()-.5)*4;
   }
   if (t-lastShakeAt>120){ flash(); lastShakeAt=t; }
   hideHint();
@@ -183,9 +183,9 @@ function shake(power){       // power ~ px/s impulse
 function shakeDir(ax, ay){   // directional jolt from accelerometer (px/s)
   for (const b of bodies){
     if (b===drag.body) continue;
-    b.vx += ax*(0.8+Math.random()*0.4) + (Math.random()-.5)*Math.abs(ax+ay)*0.35;
-    b.vy += ay*(0.8+Math.random()*0.4) + (Math.random()-.5)*Math.abs(ax+ay)*0.35;
-    b.va += (Math.random()-.5)*10;
+    b.vx += ax*(0.85+Math.random()*0.3) + (Math.random()-.5)*Math.abs(ax+ay)*0.12;
+    b.vy += ay*(0.85+Math.random()*0.3) + (Math.random()-.5)*Math.abs(ax+ay)*0.12;
+    b.va += (Math.random()-.5)*3;
   }
   const t=performance.now();
   if (t-lastShakeAt>150){ flash(); lastShakeAt=t; }
@@ -221,9 +221,9 @@ function onMotion(e){
   if (al && al.x!=null){ [lx, ly] = toScreen(al.x*SIGN, al.y*SIGN); lx=-lx; ly=-ly; }
   else { lx = sgx - gx/G*9.81; ly = sgy - gy/G*9.81; }
   const lm = Math.hypot(lx, ly);
-  if (lm > 7) {
+  if (lm > 10) {
     // objects lag behind phone movement: push opposite to phone acceleration
-    shakeDir(lx*28, ly*28);
+    shakeDir(lx*13, ly*13);
   }
 }
 async function enableMotion(){
@@ -271,7 +271,7 @@ cv.addEventListener('pointermove', e=>{
     if (sp>600){
       rub.energy += sp*dt/1000;
       if (rev || rub.energy>220){
-        shakeDir(vx*0.9, vy*0.9);
+        shakeDir(vx*0.45, vy*0.45);
         rub.energy=0;
       }
     }
@@ -284,7 +284,7 @@ function endPtr(e){
     if (h.length>=2){
       const a=h[0], z=h[h.length-1], dt=Math.max(16, z.t-a.t);
       b.vx=(z.x-a.x)/dt*1000; b.vy=(z.y-a.y)/dt*1000;
-      const cap=4000, sp=Math.hypot(b.vx,b.vy); if (sp>cap){ b.vx*=cap/sp; b.vy*=cap/sp; }
+      const cap=2500, sp=Math.hypot(b.vx,b.vy); if (sp>cap){ b.vx*=cap/sp; b.vy*=cap/sp; }
       b.va += (Math.random()-.5)*8;
     }
     b.face=0; drag.body=null; drag.id=null;
@@ -295,7 +295,7 @@ cv.addEventListener('pointerup', endPtr);
 cv.addEventListener('pointercancel', endPtr);
 
 // ---------- physics ----------
-const REST_WALL = 0.62, REST_BALL = 0.7, FRICTION_AIR = 0.12;
+const REST_WALL = 0.38, REST_BALL = 0.45, FRICTION_AIR = 0.9;
 function step(dt){
   // dragging body follows finger
   if (drag.body && drag.hist.length){
@@ -308,7 +308,7 @@ function step(dt){
     if (b===drag.body) continue;
     b.vx += gx*dt; b.vy += gy*dt;
     const damp = Math.exp(-FRICTION_AIR*dt);
-    b.vx*=damp; b.vy*=damp; b.va*=Math.exp(-1.2*dt);
+    b.vx*=damp; b.vy*=damp; b.va*=Math.exp(-3*dt);
     b.x += b.vx*dt; b.y += b.vy*dt; b.a += b.va*dt;
   }
   // collisions between bodies (few iterations)
@@ -356,7 +356,7 @@ function impact(b, v, t){
   if (t-b.lastHit < 70) return;
   b.lastHit=t; b.face=2;
   play(b.kind, v);
-  if (v>700) spawnStars(b.x, b.y, Math.min(6, v/350|0));
+  if (v>1200) spawnStars(b.x, b.y, Math.min(3, v/500|0));
 }
 
 // ---------- little particles ----------
@@ -414,9 +414,9 @@ document.getElementById('go').addEventListener('click', ()=>{
   initAudio(); if (AC && AC.state==='suspended') AC.resume();
   document.getElementById('start').style.display='none';
   enableMotion();
-  shake(900);
+  shake(450);
 });
-document.getElementById('btnShake').addEventListener('click', ()=>{ initAudio(); if (AC&&AC.state==='suspended') AC.resume(); shake(1500); });
+document.getElementById('btnShake').addEventListener('click', ()=>{ initAudio(); if (AC&&AC.state==='suspended') AC.resume(); shake(800); });
 document.getElementById('btnAdd').addEventListener('click', ()=>{
   initAudio();
   if (bodies.length>=30){ toast('너무 꽉 찼어요! 🥵'); return; }
